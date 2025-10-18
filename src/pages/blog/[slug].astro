@@ -1,0 +1,104 @@
+---
+import Layout from "../../layouts/SiteLayout.astro";
+import Hero from "../../components/Hero.astro";
+import * as wp from "../../lib/wp";
+
+export async function getStaticPaths() {
+  // pré-génère les dernières pages (tu peux augmenter per_page)
+  const items = await wp.getPosts({ per_page: 50 });
+  return items.map((p: any) => ({ params: { slug: p.slug } }));
+}
+
+const { slug } = Astro.params;
+
+// Article courant
+const post = await wp.getPostBySlug(slug!);
+if (!post) throw new Error("Article introuvable");
+
+// Image mise en avant
+const m = post?._embedded?.["wp:featuredmedia"]?.[0];
+const s = m?.media_details?.sizes || {};
+const pick = s?.large || s?.medium_large || s?.medium || s?.full || m;
+const coverSrc = pick?.source_url || m?.source_url || "";
+const coverAlt =
+  m?.alt_text || m?.title?.rendered || post?.title?.rendered || "";
+
+// Métadonnées
+const dateStr = new Date(post.date).toLocaleDateString("fr-FR", {
+  dateStyle: "long",
+});
+const plain = (post.content?.rendered || "").replace(/<[^>]*>/g, " ");
+const words = plain.trim().split(/\s+/).filter(Boolean).length;
+const readMin = Math.max(1, Math.round(words / 200));
+
+// Précédent / suivant (dans l'ordre chronologique décroissant par défaut)
+const all = await wp.getPosts({ per_page: 100 });
+const idx = all.findIndex((p: any) => p.id === post.id);
+const prev = idx > 0 ? all[idx - 1] : null; // article plus récent
+const next = idx >= 0 && idx < all.length - 1 ? all[idx + 1] : null; // article plus ancien
+---
+
+<Layout
+  title={`${post.title.rendered} — Parlons web`}
+  description={post.excerpt?.rendered?.replace(/<[^>]+>/g, "").slice(0, 150)}
+>
+  <!-- Hero compact -->
+  <Hero
+    slot="hero"
+    variant="blog"
+    kicker="Article"
+    title={post.title.rendered}
+    lead={`${dateStr} • ${readMin} min de lecture`}
+    actions={[{ href: "/blog", label: "Tous les articles", kind: "ghost" }]}
+  />
+
+  <!-- Image de couverture -->
+  {
+    coverSrc && (
+      <p style="margin:.6rem 0 1rem">
+        <img
+          src={coverSrc}
+          alt={coverAlt}
+          loading="lazy"
+          style="width:100%;height:auto;border-radius:12px;background:#3B3950"
+        />
+      </p>
+    )
+  }
+
+  <!-- Contenu -->
+  <article class="prose" set:html={post.content.rendered} />
+
+  <!-- Navigation précédent / suivant -->
+  {
+    (prev || next) && (
+      <nav
+        aria-label="Navigation des articles"
+        style="display:flex;justify-content:space-between;gap:1rem;margin:2rem 0 0"
+      >
+        <div>
+          {next && (
+            <a
+              href={`/blog/${next.slug}`}
+              class="btn btn--ghost"
+              aria-label={`Article plus ancien : ${next.title.rendered.replace(/<[^>]+>/g, "")}`}
+            >
+              ← {next.title.rendered}
+            </a>
+          )}
+        </div>
+        <div>
+          {prev && (
+            <a
+              href={`/blog/${prev.slug}`}
+              class="btn btn--ghost"
+              aria-label={`Article plus récent : ${prev.title.rendered.replace(/<[^>]+>/g, "")}`}
+            >
+              {prev.title.rendered} →
+            </a>
+          )}
+        </div>
+      </nav>
+    )
+  }
+</Layout>

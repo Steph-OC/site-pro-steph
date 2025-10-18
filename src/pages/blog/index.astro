@@ -1,0 +1,85 @@
+---
+import Layout from "@/layouts/SiteLayout.astro";
+import Hero from "@/components/Hero.astro";
+import * as wp from "@/lib/wp";
+import Stagger from "@/components/Stagger.jsx";
+import StaggerItem from "@/components/StaggerItem.jsx";
+
+const posts = await wp.getPosts({ per_page: 6 }); // assure _embed=1 côté lib
+---
+
+<Layout
+  title="Parlons web — Blog"
+  description="Articles courts sur WordPress, accessibilité, performance et bonnes pratiques."
+>
+  <Hero
+    slot="hero"
+    variant="blog"
+    kicker="Parlons web"
+    title="Articles & notes"
+    lead="Des billets concis sur WordPress, l’accessibilité, la performance et des astuces concrètes."
+  />
+
+  {
+    posts.length === 0 ? (
+      <p>Aucun article pour le moment.</p>
+    ) : (
+      <Stagger client:visible gap={0.08}>
+        <ul
+          class="grid"
+          style="list-style:none; padding:0; margin:1rem 0 0;
+           display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px;"
+        >
+          {posts.map((p) => {
+            const m = p?._embedded?.["wp:featuredmedia"]?.[0];
+            const s = m?.media_details?.sizes || {};
+            const pick =
+              s?.medium || s?.medium_large || s?.large || s?.full || m;
+            const src = pick?.source_url || m?.source_url || "";
+            const alt =
+              m?.alt_text || m?.title?.rendered || p?.title?.rendered || "";
+
+            return (
+              /* ⬇️ slide-up léger */
+              <StaggerItem dir="up" distance={24}>
+                <li
+                  class="card"
+                  style="border:1px solid var(--border); border-radius:14px; overflow:hidden; background:var(--card);"
+                >
+                  {src && (
+                    <a
+                      href={`/blog/${p.slug}`}
+                      aria-label={`Lire: ${p.title.rendered.replace(/<[^>]+>/g, "")}`}
+                    >
+                      <img
+                        src={src}
+                        alt={alt}
+                        loading="lazy"
+                        style="display:block; width:100%; aspect-ratio:16/9; object-fit:cover; background:#3B3950"
+                      />
+                    </a>
+                  )}
+                  <div class="content" style="padding:12px;">
+                    <h3 style='margin:.2rem 0 .25rem; font-family:"Josefin Sans",sans-serif;'>
+                      <a
+                        href={`/blog/${p.slug}`}
+                        style="text-decoration:none; color:inherit"
+                        set:html={p.title.rendered}
+                      />
+                    </h3>
+                    {p.excerpt?.rendered && (
+                      <div
+                        style="color:var(--muted); font-size:.92rem"
+                        set:html={p.excerpt.rendered}
+                      />
+                    )}
+                  </div>
+                </li>
+              </StaggerItem>
+            );
+          })}
+        </ul>
+      </Stagger>
+    )
+  }
+</Layout>

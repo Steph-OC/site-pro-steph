@@ -1,0 +1,21 @@
+---
+import Layout from "../layouts/SiteLayout.astro";
+import Hero from "../components/Hero.astro";
+---
+
+<Layout
+  title="Services"
+  description="Création, refonte et accompagnement WordPress."
+>
+  <Hero
+    slot="hero"
+    variant="services"
+    kicker="Offres"
+    title="Création, refonte & optimisation"
+    lead="Trois offres claires et adaptées à vos besoins : sites sur mesure, refonte/optimisation, et accompagnement durable."
+    actions={[
+      { href: "/#contact", label: "Demander un devis", kind: "accent" },
+    ]}
+  />
+  <!-- contenu services… -->
+</Layout>

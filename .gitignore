@@ -1,8 +1,13 @@
 # build output
 dist/
 
-# generated types
+# astro generated types (peut apparaître selon la config)
 .astro/
+
+# vite / caches
+.vite/
+.cache/
+astro.db
 
 # dependencies
 node_modules/
@@ -13,12 +18,19 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# environment variables
+# environment variables (ne JAMAIS commiter vos secrets)
 .env
+.env.local
+.env.*.local
 .env.production
+.env.development
+.env.test
 
-# macOS-specific files
+# OS / éditeurs
 .DS_Store
-
-# jetbrains setting folder
+Thumbs.db
+.vscode/
 .idea/
+
+# tests / coverage (si tu ajoutes des tests plus tard)
+coverage/

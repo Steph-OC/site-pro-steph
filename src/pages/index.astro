@@ -1,11 +1,154 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import Layout from "@/layouts/SiteLayout.astro";
+import Hero from "@/components/Hero.astro";
+import * as wp from "@/lib/wp";
+import FadeIn from "@/components/FadeIn.jsx"; // ⬅️ Framer Motion
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const lastProjects = await wp.getCPTList("projets", { per_page: 2 });
+
+function hostOf(url) {
+  try {
+    return new URL(url).host.replace(/^www\./, "");
+  } catch {
+    return "";
+  }
+}
 ---
 
-<Layout>
-	<Welcome />
+<Layout
+  title="Développeuse WordPress — rapide & accessible"
+  description="Sites WordPress sur mesure, performance, accessibilité et SEO."
+  full={true}
+>
+  <Hero
+    slot="hero"
+    variant="home"
+    bleed={true}
+    kicker="WordPress sur mesure"
+    title="Des sites rapides, élégants et accessibles"
+    lead="Je conçois, code et optimise votre site de A à Z — avec un focus sur la performance, l’accessibilité et la pérennité."
+    actions={[
+      { href: "/#contact", label: "Me contacter", kind: "accent" },
+      { href: "/realisations", label: "Voir mes réalisations", kind: "ghost" },
+    ]}
+  />
+
+  <section aria-labelledby="home-works" style="padding-block:1rem 0">
+    <h2
+      id="home-works"
+      style='font-family:"Josefin Sans",sans-serif; margin:.2rem 0 .6rem'
+    >
+      Dernières réalisations
+    </h2>
+
+    {
+      lastProjects.length === 0 ? (
+        <p>Aucune réalisation pour le moment.</p>
+      ) : (
+        <div class="cards-home">
+          {lastProjects.map((p, i) => {
+            const m = p?._embedded?.["wp:featuredmedia"]?.[0];
+            const s = m?.media_details?.sizes || {};
+            const pic =
+              s?.medium || s?.medium_large || s?.large || s?.full || m;
+            const src = pic?.source_url || m?.source_url || "";
+            const alt =
+              m?.alt_text || m?.title?.rendered || p?.title?.rendered || "";
+            const siteUrl = p?.acf?.site_url;
+
+            return (
+              <FadeIn
+                client:visible
+                dir={i % 2 === 0 ? "left" : "right"}
+                distance="screen"
+                delay={i * 0.08}
+              >
+                <article class="card">
+                  {src && (
+                    <img
+                      class="thumb"
+                      src={src}
+                      alt={alt}
+                      loading="lazy"
+                      style="display:block; width:100%; aspect-ratio:16/9; object-fit:cover; background:#3B3950"
+                    />
+                  )}
+                  <div style="padding:12px">
+                    <h3
+                      style='margin:.2rem 0 .35rem; font-family:"Josefin Sans",sans-serif'
+                      set:html={p.title.rendered}
+                    />
+                    {p.excerpt?.rendered && (
+                      <div
+                        style="color:var(--muted); font-size:.95rem"
+                        set:html={p.excerpt.rendered}
+                      />
+                    )}
+                    {siteUrl && (
+                      <p style="margin:.6rem 0 0">
+                        <a
+                          class="btn btn--accent"
+                          href={siteUrl}
+                          target="_blank"
+                          rel="noopener"
+                          aria-label={`Ouvrir le site du projet (${hostOf(siteUrl)})`}
+                        >
+                          Voir le site ↗
+                        </a>
+                      </p>
+                    )}
+                  </div>
+                </article>
+              </FadeIn>
+            );
+          })}
+        </div>
+      )
+    }
+
+    <p style="margin:0">
+      <a
+        href="/realisations"
+        class="btn btn--ghost"
+        aria-label="Voir toutes les réalisations"
+      >
+        Voir toutes les réalisations
+      </a>
+    </p>
+  </section>
 </Layout>
+
+<style>
+  /* Grille centrée — ajuste la taille des cartes ici */
+  .cards-home {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 500px));
+    justify-content: center;
+    align-items: start;
+    margin: 0 0 1rem;
+  }
+  .cards-home .card {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--card);
+    width: 100%;
+    max-width: 500px; /* ← agrandis/rétrécis (ex: 360–520px) */
+    justify-self: center;
+  }
+  .cards-home .thumb {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16/9; /* 4/3 si tu veux moins haut */
+    object-fit: cover;
+    background: #3b3950;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+</style>
