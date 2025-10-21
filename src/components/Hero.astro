@@ -3,167 +3,147 @@ const {
   title = "",
   lead = "",
   kicker = "",
-  variant = "default", // "home" | "services" | "realisations" | "blog" | "contact" | "default"
-  actions = [], // [{ href, label, kind: "accent"|"ghost"|"primary" }]
-  bleed = false, // ⬅️ new: full-bleed background while content stays centered
+  variant = "default",
+  actions = [],
+  bleed = false,
+  bg = "glass",
+  visual = "codeReveal",
 } = Astro.props;
+
+/* Zone visible du code : 340×176 (x:90→430, y:96→272) */
+const AREA_W = 340;
+const AREA_H = 176;
+
+/* Motif de code (vertical) */
+const STEP = 22;   // pas vertical entre lignes
+const BAR_H = 12;  // hauteur d’une “ligne de code”
+
+/* Calculs pour le défilement */
+const H = BAR_H;
+const CHUNK_H = AREA_H + 120; // amplitude du scroll
+const ROWS = Math.ceil((AREA_H + 120) / STEP) + 6;
+const COL_MIN = Math.floor(AREA_W * 0.70);
+const COL_MAX = Math.floor(AREA_W * 0.98);
+
+/* Timings (s) */
+const CODE_DUR = 12;
+const FADE_DUR = 0.45;
+const SITE_DUR = 4;
+const TOTAL = CODE_DUR + FADE_DUR + SITE_DUR + FADE_DUR;
 ---
 
-<section class={`hero hero--${variant} ${bleed ? "is-bleed" : ""}`}>
-  <div class="hero__inner">
-    {kicker && <p class="kicker">{kicker}</p>}
-    {title && <h1>{title}</h1>}
-    {lead && <p class="lead">{lead}</p>}
+<section class={`hero hero--${variant} ${bleed ? "is-bleed" : ""}`} data-bg={bg}>
+  <div class="hero__bg" aria-hidden="true"></div>
 
-    {
-      actions.length > 0 && (
-        <div class="hero-actions">
-          {actions.map((a: any) => (
-            <a
-              class={`btn ${a.kind === "accent" ? "btn--accent" : a.kind === "ghost" ? "btn--ghost" : ""}`}
-              href={a.href}
+  <div class="hero__inner">
+    <div class={`hero__grid ${visual !== "none" ? "has-visual" : ""}`}>
+      <div class="hero__content">
+        {kicker && <p class="kicker">{kicker}</p>}
+        {title && <h1>{title}</h1>}
+        {lead && <p class="lead">{lead}</p>}
+        {actions.length > 0 && (
+          <div class="hero-actions">
+            {actions.map((a: any) => (
+              <a class={`btn ${a.kind === "accent" ? "btn--accent" : a.kind === "ghost" ? "btn--ghost" : ""}`} href={a.href}>
+                {a.label}
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {visual === "codeReveal" && (
+        <aside class="hero__visual" aria-hidden="true">
+          <div class="pc-tilt">
+            <svg
+              class="pc"
+              viewBox="0 0 520 420"
+              role="img"
+              aria-labelledby="t"
+              style={`--chunk:${CHUNK_H}px; --area:${AREA_H}px; --t:${CODE_DUR + FADE_DUR + SITE_DUR + FADE_DUR}s;`}
             >
-              {a.label}
-            </a>
-          ))}
-        </div>
-      )
-    }
+              <title id="t">Le code qui devient un site</title>
+
+              <!-- Ombre au sol -->
+              <ellipse cx="260" cy="380" rx="180" ry="18" fill="var(--pc-shadow)" />
+
+              <!-- Châssis -->
+              <rect data-role="chassis" x="60" y="40" width="400" height="260" rx="16"
+                    fill="var(--pc-surface)" stroke="var(--pc-border-strong)" stroke-width="2" />
+              <rect x="60" y="40" width="400" height="36" rx="16" fill="var(--pc-chrome)" />
+              <circle cx="86"  cy="58" r="4" fill="var(--orange)" />
+              <circle cx="102" cy="58" r="4" fill="var(--green)" />
+              <circle cx="118" cy="58" r="4" fill="var(--gray)" />
+
+              <!-- Fenêtre -->
+              <rect data-role="screen" x="80" y="86" width="360" height="196" rx="8"
+                    fill="var(--pc-surface-2)" stroke="var(--pc-border-strong)" />
+
+              <defs>
+                <clipPath id="screenArea">
+                  <rect x="90" y="96" width={AREA_W} height={AREA_H} rx="6" />
+                </clipPath>
+              </defs>
+
+              <!-- SITE -->
+              <g clip-path="url(#screenArea)" id="siteLayer" opacity="0">
+                <rect x="90" y="96" width={AREA_W} height="32" rx="6"
+                      fill="color-mix(in srgb, var(--green) 55%, var(--pc-surface-2))"/>
+                <rect x="100" y="105" width="160" height="12" rx="4"
+                      fill="color-mix(in srgb, var(--white) 96%, var(--pc-surface-2))"/>
+                <rect x="266" y="105" width="60" height="12" rx="4"
+                      fill="color-mix(in srgb, var(--white) 86%, var(--pc-surface-2))"/>
+                <rect x="90" y="136" width={AREA_W} height="72" rx="8"
+                      fill="color-mix(in srgb, var(--orange) 45%, var(--pc-surface-2))"/>
+                <rect x="106" y="150" width="260" height="12" rx="4"
+                      fill="color-mix(in srgb, var(--white) 94%, var(--pc-surface-2))"/>
+                <rect x="106" y="168" width="180" height="10" rx="4"
+                      fill="color-mix(in srgb, var(--white) 80%, var(--pc-surface-2))"/>
+                <rect x="90" y="214" width={(AREA_W - 12) / 2} height="56" rx="8"
+                      fill="color-mix(in srgb, var(--gray) 26%, var(--pc-surface-2))"/>
+                <rect x={90 + (AREA_W + 12) / 2} y="214" width={(AREA_W - 12) / 2} height="56" rx="8"
+                      fill="color-mix(in srgb, var(--gray) 26%, var(--pc-surface-2))"/>
+                <rect x="90" y="272" width={(AREA_W - 12) / 2} height="22" rx="6"
+                      fill="color-mix(in srgb, var(--green) 42%, var(--pc-surface-2))"/>
+                <rect x={90 + (AREA_W + 12) / 2} y="272" width={(AREA_W - 12) / 2} height="22" rx="6"
+                      fill="color-mix(in srgb, var(--orange) 42%, var(--pc-surface-2))"/>
+              </g>
+
+              <!-- CODE -->
+              <g clip-path="url(#screenArea)">
+                <g transform="translate(90,96)">
+                  <g class="code-run">
+                    <g class="code-fade">
+                      {
+                        Array.from({ length: ROWS }).map((_, i) => {
+                          const y = i * STEP;
+                          const w = Math.max(COL_MIN, COL_MAX - (i % 6) * 10);
+                          const color =
+                            i % 6 === 2 ? "var(--orange)" :
+                            i % 3 === 0 ? "var(--green)"  : "var(--pc-code-dim)";
+                          return <rect x="0" y={y} width={w} height={BAR_H} rx="6" fill={color} />;
+                        })
+                      }
+                    </g>
+                  </g>
+                </g>
+              </g>
+
+              <!-- Socle -->
+              <rect x="220" y="304" width="80" height="18" rx="6"
+                    fill="color-mix(in srgb, var(--gray) 16%, var(--card))" />
+              <rect x="160" y="322" width="200" height="22" rx="8"
+                    fill="color-mix(in srgb, var(--gray) 10%, var(--card))" stroke="var(--pc-border-strong)" />
+            </svg>
+
+            <div class="pc-gloss"></div>
+          </div>
+        </aside>
+      )}
+    </div>
   </div>
 </section>
 
-<style>
-  .hero {
-    position: relative;
-    padding-block: 2.6rem 1.25rem;
-    border-bottom: 1px solid var(--border);
-    overflow: hidden; /* guard */
-  }
-
-  /* ✅ Centered content even when background is full-bleed */
-  .hero__inner {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding-inline: clamp(12px, 2vw, 24px);
-  }
-
-  /* Full-bleed background handled via ::before */
-  .is-bleed::before {
-    content: "";
-    position: absolute;
-    z-index: -1;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100vw;
-    top: 0;
-    bottom: 0;
-    pointer-events: none;
-  }
-
-  /* Variants define the gradient color on the ::before layer */
-  .is-bleed.hero--home::before {
-    background: linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--card) 45%, transparent),
-      transparent
-    );
-  }
-  .is-bleed.hero--services::before {
-    background: linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--green) 12%, var(--bg)),
-      var(--bg)
-    );
-  }
-  .is-bleed.hero--realisations::before {
-    background: linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--orange) 10%, var(--bg)),
-      var(--bg)
-    );
-  }
-  .is-bleed.hero--blog::before {
-    background: linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--gray) 12%, var(--bg)),
-      var(--bg)
-    );
-  }
-  .is-bleed.hero--contact::before {
-    background: linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--green) 16%, var(--bg)),
-      var(--bg)
-    );
-  }
-
-  /* If not bleeding, keep a subtle background inside the container only (optional) */
-  .hero--home:not(.is-bleed) {
-    background: linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--card) 45%, transparent),
-      transparent
-    );
-  }
-  .hero--services:not(.is-bleed) {
-    background: linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--green) 12%, var(--bg)),
-      var(--bg)
-    );
-  }
-  .hero--realisations:not(.is-bleed) {
-    background: linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--orange) 10%, var(--bg)),
-      var(--bg)
-    );
-  }
-  .hero--blog:not(.is-bleed) {
-    background: linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--gray) 12%, var(--bg)),
-      var(--bg)
-    );
-  }
-  .hero--contact:not(.is-bleed) {
-    background: linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--green) 16%, var(--bg)),
-      var(--bg)
-    );
-  }
-
-  .hero h1 {
-    font-family: "Josefin Sans", sans-serif;
-    font-weight: 700;
-    margin: 0 0 0.45rem;
-    font-size: clamp(1.9rem, 2vw + 1rem, 2.5rem);
-    letter-spacing: -0.01em;
-  }
-  .hero .lead {
-    margin: 0.2rem 0 1rem;
-    color: var(--muted);
-    max-width: 68ch;
-    line-height: 1.6;
-  }
-  .hero .kicker {
-    display: inline-block;
-    font:
-      600 0.8rem/1 "Lato",
-      sans-serif;
-    letter-spacing: 0.02em;
-    padding: 0.28rem 0.5rem;
-    border-radius: 999px;
-    border: 1px solid var(--border);
-    color: var(--fg);
-    margin: 0 0 0.6rem;
-    background: color-mix(in oklab, var(--card) 60%, transparent);
-  }
-  .hero-actions {
-    display: flex;
-    gap: 0.6rem;
-    flex-wrap: wrap;
-    margin-top: 0.2rem;
-  }
+<style is:global>
+/* Laisse ce bloc vide: tous les styles sont dans styles.css */
 </style>

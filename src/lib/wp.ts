@@ -1,7 +1,7 @@
 // src/lib/wp.ts
 const WP = (import.meta.env.WP_URL || "").replace(/\/$/, "");
 
-async function wpFetch<T = any>(path: string): Promise<T> {
+async function wpFetch(path) {
   if (!WP) throw new Error("WP_URL manquant dans .env");
   const url = `${WP}/wp-json/wp/v2${path}`;
   const res = await fetch(url, { headers: { Accept: "application/json" } });
@@ -9,73 +9,53 @@ async function wpFetch<T = any>(path: string): Promise<T> {
   return res.json();
 }
 
-/* =========================
-   Pages
-   ========================= */
-export async function getPageBySlug(slug: string) {
-  const arr = await wpFetch<any[]>(`/pages?slug=${encodeURIComponent(slug)}`);
-  return arr[0];
-}
-
-/* =========================
-   CPT (ex: "projets")
-   ========================= */
-export async function getCPTList(
-  type: string,
-  { per_page = 12, page = 1 }: { per_page?: number; page?: number } = {}
-) {
-  // IMPORTANT : pas de _fields ici, sinon on perd des infos dans _embedded (images, etc.)
-  return wpFetch<any[]>(
-    `/${encodeURIComponent(type)}?per_page=${per_page}&page=${page}&_embed=1`
-  );
-}
-
-export async function getCPTBySlug(type: string, slug: string) {
-  const arr = await wpFetch<any[]>(
-    `/${encodeURIComponent(type)}?slug=${encodeURIComponent(slug)}&_embed=1`
-  );
-  return arr[0];
-}
-
-/* =========================
-   Blog (posts)
-   ========================= */
-export async function getPosts({
-  per_page = 6,
-  page = 1,
-}: { per_page?: number; page?: number } = {}) {
-  return wpFetch<any[]>(`/posts?per_page=${per_page}&page=${page}&_embed=1`);
-}
-
-export async function getPostBySlug(slug: string) {
-  const arr = await wpFetch<any[]>(`/posts?slug=${encodeURIComponent(slug)}&_embed=1`);
-  return arr[0];
-}
-
-/* =========================
-   Médias (image à la une)
-   ========================= */
-export function getFeatured(item: any) {
-  const media = item?._embedded?.["wp:featuredmedia"]?.[0];
-  if (!media) return { src: "", alt: "", width: undefined, height: undefined };
-
-  const sizes = media?.media_details?.sizes || {};
-  // Choix de taille raisonnable (léger -> grand)
-  const pick =
-    sizes?.medium ||
-    sizes?.medium_large ||
-    sizes?.large ||
-    sizes?.full ||
-    media;
-
+export function getFeatured(item) {
+  const m = item?._embedded?.["wp:featuredmedia"]?.[0];
+  const s = m?.media_details?.sizes || {};
+  const pick = s?.medium || s?.medium_large || s?.large || s?.full || m;
   return {
-    src: pick?.source_url || media?.source_url || "",
-    alt:
-      media?.alt_text ||
-      media?.title?.rendered ||
-      item?.title?.rendered ||
-      "",
+    src: pick?.source_url || m?.source_url || "",
+    alt: m?.alt_text || m?.title?.rendered || item?.title?.rendered || "",
     width: pick?.width,
     height: pick?.height,
   };
 }
+
+const strip = (html = "") => html.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+
+export function normalizeProjet(item) {
+  return {
+    id: item?.id,
+    slug: item?.slug,
+    title: item?.title?.rendered || "",
+    excerpt: strip(item?.excerpt?.rendered || item?.content?.rendered || ""),
+    siteUrl: item?.acf?.site_url || "",
+    image: getFeatured(item),
+    raw: item,
+  };
+}
+
+export async function getProjets({ per_page = 12, page = 1 } = {}) {
+  const items = await wpFetch(`/projets?per_page=${per_page}&page=${page}&_embed=1`);
+  return items.map(normalizeProjet);
+}
+
+// Alias (si d’anciennes pages appellent encore getCPTList)
+export async function getCPTList(type, { per_page = 12, page = 1 } = {}) {
+  if (type === "projets") return getProjets({ per_page, page });
+  return wpFetch(`/${encodeURIComponent(type)}?per_page=${per_page}&page=${page}&_embed=1`);
+}
+
+/** Articles (listing) */
+export async function getPosts({ per_page = 6, page = 1 } = {}) {
+  return wpFetch<any[]>(`/posts?per_page=${per_page}&page=${page}&_embed=1`);
+}
+
+/** Article par slug (pour /blog/[slug]) */
+export async function getPostBySlug(slug: string) {
+  const arr = await wpFetch<any[]>(`/posts?slug=${encodeURIComponent(slug)}&_embed=1`);
+  return arr[0]; // undefined si non trouvé
+}
+
+// (optionnel) Alias rétro-compat si tu avais d'autres noms avant
+export const getArticles = getPosts;

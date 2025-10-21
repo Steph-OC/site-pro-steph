@@ -1,0 +1,60 @@
+---
+// src/components/ProjetCard.astro
+const { p } = Astro.props; // { title, excerpt, siteUrl, image }
+function hostOf(url) {
+  try {
+    return new URL(url).host.replace(/^www\./, "");
+  } catch {
+    return "";
+  }
+}
+const img = p.image || { src: "", alt: "" };
+const srcset = img.src
+  ? `${img.src} 1x` // on garde simple; tu peux ajouter medium_large/large si dispo
+  : "";
+---
+
+<article
+  class="card"
+  style="border:1px solid var(--border); border-radius:14px; overflow:hidden; background:var(--card);"
+>
+  {
+    img.src && (
+      <img
+        src={img.src}
+        srcset={srcset}
+        alt={img.alt}
+        loading="lazy"
+        decoding="async"
+        width={img.width}
+        height={img.height}
+        style="display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:#3b3950"
+      />
+    )
+  }
+  <div style="padding:12px">
+    <h3 style='margin:.2rem 0 .3rem; font-family:"Josefin Sans",sans-serif'>
+      {p.title}
+    </h3>
+    {
+      p.excerpt && (
+        <p style="color:var(--muted); margin:.2rem 0 .6rem">{p.excerpt}</p>
+      )
+    }
+    {
+      p.siteUrl && (
+        <p style="margin:0">
+          <a
+            class="btn btn--accent"
+            href={p.siteUrl}
+            target="_blank"
+            rel="noopener"
+            aria-label={`Ouvrir le site du projet (${hostOf(p.siteUrl)})`}
+          >
+            Voir le site ↗
+          </a>
+        </p>
+      )
+    }
+  </div>
+</article>

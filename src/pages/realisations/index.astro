@@ -1,128 +1,111 @@
 ---
+// src/pages/realisations/index.astro
 import Layout from "@/layouts/SiteLayout.astro";
-import Hero from "@/components/Hero.astro";
-import * as wp from "@/lib/wp";
-import Stagger from "@/components/Stagger.jsx";
-import StaggerItem from "@/components/StaggerItem.jsx";
+import ProjetCard from "@/components/ProjetCard.astro";
+import { getProjets } from "@/lib/wp";
 
-const page = await wp.getPageBySlug("realisations");
-const projects = await wp.getCPTList("projets", { per_page: 12 });
+let projets = [];
+let wpOK = true;
+
+try {
+  projets = await getProjets({ per_page: 12 });
+} catch (e) {
+  console.error("[WP] Réalisations:", e);
+  wpOK = false;
+}
 ---
 
 <Layout
-  title={page?.title?.rendered ?? "Réalisations"}
-  description="Sélection de réalisations récentes."
+  title="Réalisations — sélection de projets"
+  description="Exemples concrets pour pros : ce qui bloquait, ce que nous avons amélioré, et l’impact."
 >
-  <Hero
-    slot="hero"
-    variant="realisations"
-    kicker="Portfolio"
-    title={page?.title?.rendered ?? "Réalisations"}
-    lead="Des sites WordPress sur-mesure, rapides, durables et accessibles."
-  />
-
-  {page && <div class="prose" set:html={page.content.rendered} />}
+  <section class="hero">
+    <h1>Réalisations</h1>
+    <p class="lead">
+      Exemples de projets pour TPE/PME et indépendants : résumé clair, lien vers
+      le site en ligne.
+    </p>
+  </section>
 
   {
-    projects.length === 0 ? (
-      <p>Aucune réalisation pour le moment.</p>
+    !wpOK ? (
+      <p role="status">
+        Les projets sont momentanément indisponibles. Réessayez dans un instant.
+      </p>
+    ) : projets.length === 0 ? (
+      <p>Aucune réalisation publiée pour le moment.</p>
     ) : (
-      <Stagger client:visible gap={0.1}>
-        <ul class="grid works">
-          {projects.map((p, i) => {
-            const m = p?._embedded?.["wp:featuredmedia"]?.[0];
-            const s = m?.media_details?.sizes || {};
-            const pick =
-              s?.medium || s?.medium_large || s?.large || s?.full || m;
-            const src = pick?.source_url || m?.source_url || "";
-            const alt =
-              m?.alt_text || m?.title?.rendered || p?.title?.rendered || "";
-            const siteUrl = p?.acf?.site_url;
-            const dir = i % 2 === 0 ? "left" : "right";
-
-            return (
-              <StaggerItem dir={dir} distance="screen">
-                <li class="card">
-                  {src && (
-                    <img class="thumb" src={src} alt={alt} loading="lazy" />
-                  )}
-                  <div class="content">
-                    <h3 class="title" set:html={p.title?.rendered} />
-                    {p.excerpt?.rendered && (
-                      <div class="excerpt" set:html={p.excerpt.rendered} />
-                    )}
-                    {siteUrl && (
-                      <p class="actions">
-                        <a
-                          class="btn btn--accent"
-                          href={siteUrl}
-                          target="_blank"
-                          rel="noopener"
-                        >
-                          Voir le site ↗
-                        </a>
-                      </p>
-                    )}
-                  </div>
-                </li>
-              </StaggerItem>
-            );
-          })}
+      <>
+        <h2 class="visually-hidden">Liste de projets</h2>
+        <ul class="grid works" aria-label="Réalisations">
+          {projets.map((p) => (
+            <li class="item">
+              <ProjetCard p={p} />
+            </li>
+          ))}
         </ul>
-      </Stagger>
+
+        <section class="cta">
+          <h2 class="visually-hidden">Passer à l’action</h2>
+          <a class="btn btn--accent" href="/contact/">
+            Vous voulez un résultat similaire ? Planifier un appel 15&nbsp;min
+          </a>
+        </section>
+      </>
     )
   }
 </Layout>
+
 <style>
-  /* Grille plus dense et centrée */
-  .grid.works {
+  .visually-hidden {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .works {
     list-style: none;
     padding: 0;
     margin: 1rem 0 0;
     display: grid;
     gap: 16px;
-    /* ⬇️ colonnes plus étroites (réduit la taille globale) */
-    grid-template-columns: repeat(auto-fit, minmax(220px, 500px));
-    justify-content: center; /* centre la grille */
+    grid-template-columns: repeat(auto-fit, minmax(220px, 300px));
+    justify-content: center;
     align-items: start;
   }
 
-  /* Card plus petite et centrée dans sa colonne */
-  .grid.works .card {
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    overflow: hidden;
-    background: var(--card);
-    max-width: 500px; /* ⬅️ taille cible de la carte */
+  .works .item {
+    max-width: 300px;
     justify-self: center;
   }
 
-  /* Vignette moins haute qu’un 16/9 pour compacter */
-  .grid.works .thumb {
-    display: block;
-    width: 100%;
-    aspect-ratio: 4 / 3; /* ⬅️ moins haut que 16/9 */
-    object-fit: cover;
-    background: #3b3950;
+  /* Bouton / CTA */
+  .cta {
+    display: grid;
+    place-items: center;
+    margin: 1.2rem 0 0;
   }
-
-  .grid.works .content {
-    padding: 10px;
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 0.9rem;
+    border-radius: 12px;
+    text-decoration: none;
+    border: 1px solid var(--border);
+    background: var(--primary);
+    color: #23212e;
+    box-shadow: var(--shadow);
   }
-  .grid.works .title {
-    font-family: "Josefin Sans", sans-serif;
-    margin: 0.15rem 0 0.3rem;
-    font-size: 1rem; /* ⬅️ titre un peu plus petit */
-  }
-  .grid.works .excerpt {
-    color: var(--muted);
-    font-size: 0.9rem;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden; /* 2 lignes max */
-  }
-  .grid.works .actions {
-    margin: 0.5rem 0 0;
+  .btn--accent {
+    background: var(--orange);
+    border-color: transparent;
+    color: #23212e;
   }
 </style>

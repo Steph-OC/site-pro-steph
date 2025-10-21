@@ -1,217 +1,65 @@
 ---
+import IosPointer from "@/components/IosPointer.jsx";
 const {
   title = "Stéphanie Quibel — Développeuse WordPress",
   description = "",
 } = Astro.props;
+import "../styles/theme.css"; // <-- nouveau
 ---
 
 <!doctype html>
-<html lang="fr" data-theme="dark">
+<html lang="fr">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
+
+    <!-- Fonts (si tu préfères garder ici plutôt que via @import) -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@600;700&family=Lato:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
-    <style>
-      /* ===== Thème ===== */
-      :root {
-        --white: #fff;
-        --offwhite: #f8f8f4;
-        --gray: #3c394c;
-        --green: #799a79;
-        --orange: #d98a4d;
-        --bg: var(--offwhite);
-        --fg: #1d1b26;
-        --muted: #5c596e;
-        --card: #fff;
-        --border: #e8e6ef;
-        --link: var(--gray);
-        --btn-bg: var(--gray);
-        --btn-fg: #fff;
-        --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-        /* marge latérale ~50px (réduite sur mobile) */
-        --page-pad: clamp(16px, 5vw, 50px);
-      }
-      html[data-theme="dark"] {
-        --bg: #23212e;
-        --fg: #f4f4f1;
-        --muted: #c6c6c1;
-        --card: #2a2738;
-        --border: #3b3950;
-        --link: var(--fg);
-        --btn-bg: var(--green);
-        --btn-fg: #23212e;
-        --shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
-      }
+    <link rel="icon" href="/favicon.png" type="image/png" />
+    <meta name="theme-color" content="#23212E" />
 
-      /* ===== Base ===== */
-      * {
-        box-sizing: border-box;
-      }
-      html {
-        color-scheme: light dark;
-      }
-      body {
-        margin: 0;
-        background: var(--bg);
-        color: var(--fg);
-        font-family:
-          "Lato",
-          system-ui,
-          -apple-system,
-          Segoe UI,
-          Roboto,
-          sans-serif;
-        overflow-x: hidden;
-      }
-      a {
-        color: var(--link);
-      }
-
-      /* Conteneur pleine largeur avec marge latérale ~50px partout */
-      .container {
-        width: 100%;
-        padding-inline: var(--page-pad);
-      }
-
-      /* ===== Header ===== */
-      header {
-        position: sticky;
-        top: 0;
-        z-index: 50;
-        backdrop-filter: saturate(180%) blur(6px);
-        background: color-mix(in oklab, var(--bg) 85%, transparent);
-        border-bottom: 1px solid var(--border);
-      }
-      .nav {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-        padding-block: 1rem;
-      }
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-        font-weight: 700;
-        text-decoration: none;
-        color: var(--fg);
-      }
-      .brand-badge {
-        width: 28px;
-        height: 28px;
-        border-radius: 8px;
-        background: var(--green);
-        display: grid;
-        place-items: center;
-        color: #23212e;
-        font-weight: 900;
-        font-family: "Josefin Sans", sans-serif;
-      }
-      nav ul {
-        display: flex;
-        gap: 0.9rem;
-        list-style: none;
-        padding: 0;
-        margin: 0;
-      }
-      nav a {
-        text-decoration: none;
-        padding: 0.5rem 0.65rem;
-        border-radius: 10px;
-      }
-      nav a[aria-current="page"] {
-        background: var(--card);
-        border: 1px solid var(--border);
-      }
-
-      /* ===== Boutons ===== */
-      .btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.55rem;
-        padding: 0.62rem 0.9rem;
-        border-radius: 12px;
-        text-decoration: none;
-        border: 1px solid var(--border);
-        background: var(--btn-bg);
-        color: var(--btn-fg);
-      }
-      .btn:hover {
-        filter: brightness(1.03);
-        box-shadow: var(--shadow);
-      }
-      .btn--ghost {
-        background: transparent;
-        color: var(--fg);
-      }
-      .btn--accent {
-        background: var(--orange);
-        border-color: transparent;
-        color: #23212e;
-      }
-
-      /* ===== Hero (typographie) ===== */
-      .hero {
-        padding-block: 2.2rem 1.2rem;
-      }
-      .hero h1 {
-        font-family: "Josefin Sans", sans-serif;
-        font-weight: 700;
-        margin: 0 0 0.5rem;
-      }
-      .hero p {
-        margin: 0.2rem 0 1rem;
-        color: var(--muted);
-        max-width: 70ch;
-      }
-
-      /* ===== Footer ===== */
-      footer {
-        border-top: 1px solid var(--border);
-        margin-top: 2rem;
-      }
-      .foot {
-        display: flex;
-        justify-content: space-between;
-        gap: 1rem;
-        padding: 0.9rem 0;
-        font-size: 0.95rem;
-        color: var(--muted);
-      }
-    </style>
-
+    <!-- Init thème: lit la préférence et n’impose rien si “system” -->
     <script is:inline>
-      (function () {
+      (() => {
         try {
-          const saved = localStorage.getItem("theme");
-          if (saved === "light" || saved === "dark") {
-            document.documentElement.dataset.theme = saved;
+          const pref = localStorage.getItem("theme-pref") || "system";
+          if (pref === "light" || pref === "dark") {
+            document.documentElement.dataset.theme = pref;
           } else {
-            const prefersDark = window.matchMedia(
-              "(prefers-color-scheme: dark)"
-            ).matches;
-            document.documentElement.dataset.theme = prefersDark
-              ? "dark"
-              : "light";
+            document.documentElement.removeAttribute("data-theme");
           }
         } catch {}
       })();
     </script>
   </head>
+
+  <IosPointer
+    client:idle
+    color="var(--green)"
+    radius={12}
+    pad={6}
+    magnetRadius={90}
+    targets='[data-pointer], .nav a, a[href], button, [role="button"]'
+  />
+
   <body>
     <header>
       <div class="container nav">
         <a class="brand" href="/"
-          ><span class="brand-badge">S</span><span>Stéphanie&nbsp;Quibel</span
-          ></a
-        >
+          ><img
+            class="brand-logo"
+            src="/logo.svg"
+            alt="Stéphanie Quibel"
+            width="80"
+            height="80"
+          />
+        </a>
         <nav aria-label="Navigation principale">
           <ul>
             <li>
@@ -246,24 +94,31 @@ const {
               >
             </li>
             <li><a href="/#a-propos">À propos</a></li>
-            <li><a href="/#contact" class="btn btn--ghost">Contact</a></li>
+            <li>
+              <a
+                href="/contact"
+                class="btn btn--ghost"
+                aria-current={Astro.url.pathname.startsWith("/contact")
+                  ? "page"
+                  : undefined}>Contact</a
+              >
+            </li>
           </ul>
         </nav>
+
+        <!-- Toggle 3 états System → Light → Dark -->
         <button
           id="theme-toggle"
           class="btn btn--ghost"
           type="button"
-          aria-label="Basculer clair/sombre">🌓</button
+          aria-label="Thème : auto"
+          title="Changer le thème">🌓</button
         >
       </div>
     </header>
 
-    <!-- HERO : pleine largeur avec même marge latérale -->
-    <div class="container">
-      <slot name="hero" />
-    </div>
+    <slot name="hero" />
 
-    <!-- CONTENU : pleine largeur avec même marge latérale -->
     <main class="container">
       <slot />
     </main>
@@ -275,14 +130,48 @@ const {
       </div>
     </footer>
 
+    <!-- Toggle logic (3 états + persistance + respect système) -->
     <script is:inline>
-      document.getElementById("theme-toggle")?.addEventListener("click", () => {
-        const el = document.documentElement;
-        el.dataset.theme = el.dataset.theme === "dark" ? "light" : "dark";
-        try {
-          localStorage.setItem("theme", el.dataset.theme);
-        } catch {}
-      });
+      (function () {
+        const KEY = "theme-pref"; // "system" | "light" | "dark"
+        const order = ["system", "light", "dark"];
+        const btn = document.getElementById("theme-toggle");
+
+        function apply(pref) {
+          if (pref === "light" || pref === "dark") {
+            document.documentElement.dataset.theme = pref;
+          } else {
+            document.documentElement.removeAttribute("data-theme");
+          }
+          try {
+            localStorage.setItem(KEY, pref);
+          } catch {}
+          if (btn)
+            btn.setAttribute(
+              "aria-label",
+              "Thème : " + (pref === "system" ? "auto" : pref)
+            );
+        }
+
+        function next(pref) {
+          return order[(order.indexOf(pref) + 1) % order.length];
+        }
+
+        const saved = localStorage.getItem(KEY) || "system";
+        apply(saved);
+
+        btn?.addEventListener("click", () => {
+          const current = localStorage.getItem(KEY) || "system";
+          apply(next(current));
+        });
+
+        // Si l’utilisateur change la préférence système en live et qu’on est sur “system”
+        const mq = window.matchMedia("(prefers-color-scheme: dark)");
+        mq.addEventListener?.("change", () => {
+          const pref = localStorage.getItem(KEY) || "system";
+          if (pref === "system") apply("system");
+        });
+      })();
     </script>
   </body>
 </html>

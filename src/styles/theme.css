@@ -1,0 +1,326 @@
+/* =========================================================
+   Thème & typographie (point d’unification)
+   ========================================================= */
+:root{
+  --white:#FFFFFF;
+  --offwhite:#F8F8F4;
+  --gray:#3C394C;
+  --green:#799A79;
+  --orange:#D98A4D;
+
+  --bg: var(--offwhite);
+  --fg: #1D1B26;
+  --muted: #5C596E;
+  --card: #FFFFFF;
+  --border: #E8E6EF;
+  --link: var(--gray);
+
+  --btn-bg: var(--green);
+  --btn-fg: #FFFFFF;
+
+  --shadow: 0 8px 24px rgba(0,0,0,.08);
+  --page-pad: clamp(16px, 5vw, 50px);
+
+  /* ====== Contrôles globaux du HERO ====== */
+  --hero-max: 1280px;
+  --hero-grid-left: 0.9fr;
+  --hero-grid-right: 1.1fr;
+
+  /* ====== Visuel PC ====== */
+  --pc-max: 1000px;
+  --pc-scale: 1.60;            /* échelle de base du SVG */
+  --pc-tilt-y: -18deg;
+  --pc-tilt-x: 5deg;
+
+  /* Surfaces (clair) */
+  --pc-surface: var(--card);
+  --pc-surface-2: color-mix(in srgb, var(--card) 85%, var(--bg));
+  --pc-chrome: color-mix(in srgb, var(--gray) 15%, var(--card));
+  --pc-border-strong: color-mix(in srgb, var(--gray) 42%, var(--border));
+  --pc-code-dim: color-mix(in srgb, var(--gray) 46%, transparent);
+  --pc-shadow: color-mix(in srgb, #000 28%, transparent);
+
+  /* Contour (clair) */
+  --pc-contour: color-mix(in srgb, var(--gray) 45%, transparent);
+
+  /* Teinte du halo (light) */
+  --pc-shine-color: color-mix(in srgb, var(--offwhite) 32%, var(--white) 68%);
+}
+
+:root[data-theme="dark"]{
+  --bg:#23212E;
+  --fg:#F4F4F1;
+  --muted:#C6C6C1;
+  --card:#2A2738;
+  --border:#3B3950;
+  --link: var(--fg);
+
+  --btn-bg: var(--green);
+  --btn-fg:#FFFFFF;
+  --shadow: 0 8px 24px rgba(0,0,0,.28);
+
+  /* Surfaces (sombre) — légèrement plus claires que le fond pour lire les bords */
+  --pc-surface:   color-mix(in srgb, var(--bg) 86%, #fff 14%);
+  --pc-surface-2: color-mix(in srgb, var(--bg) 82%, #fff 18%);
+  --pc-chrome:    color-mix(in srgb, var(--bg) 80%, #fff 20%);
+  --pc-code-dim:  color-mix(in srgb, var(--fg) 55%, transparent);
+  --pc-shadow:    color-mix(in srgb, #000 45%, transparent);
+
+  /* Contour (sombre) — lisible, sans halo */
+  --pc-contour: color-mix(in srgb, #A9A6C4 44%, transparent);
+}
+
+/* Suit la préférence système si rien n’est forcé */
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ color-scheme: dark; } }
+@media (prefers-color-scheme: light){ :root:not([data-theme="dark"]){ color-scheme: light; } }
+
+/* =========================================================
+   Base
+   ========================================================= */
+*{ box-sizing: border-box; }
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--fg);
+  font-family:"Lato",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  overflow-x:hidden;
+}
+a{ color:var(--link); }
+.container{ width:100%; padding-inline:var(--page-pad); }
+
+/* Cache visuellement mais présent dans le DOM (honeypot) */
+.visually-hidden{
+  position:absolute !important; width:1px; height:1px;
+  margin:-1px; padding:0; border:0;
+  overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%);
+  white-space:nowrap;
+}
+
+/* =========================================================
+   Header & navigation
+   ========================================================= */
+header{
+  position:sticky; top:0; z-index:50;
+  backdrop-filter:saturate(180%) blur(6px);
+  background: color-mix(in srgb, var(--bg) 85%, transparent);
+  border-bottom:1px solid var(--border);
+}
+.nav{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:1rem; padding-block:1rem;
+}
+.brand{ display:flex; align-items:center; gap:.6rem; font-weight:700; text-decoration:none; color:var(--fg); }
+nav ul{ display:flex; gap:.9rem; list-style:none; padding:0; margin:0; }
+nav a{ text-decoration:none; padding:.5rem .65rem; border-radius:10px; }
+nav a[aria-current="page"]{ background:var(--card); border:1px solid var(--border); }
+
+/* Hauteur homogène pour liens / bouton / toggle */
+header nav li{ display:flex; }
+header .nav a, header .nav .btn, #theme-toggle{
+  display:inline-flex; align-items:center; line-height:1; padding-block:.5rem;
+}
+
+/* =========================================================
+   Boutons
+   ========================================================= */
+.btn{
+  display:inline-flex; align-items:center; gap:.55rem;
+  padding:.62rem .9rem; border-radius:12px; text-decoration:none;
+  border:1px solid var(--border);
+  background:var(--btn-bg); color:var(--btn-fg);
+}
+.btn:hover{ filter:brightness(1.03); box-shadow:var(--shadow); }
+.btn--ghost{ background:transparent; color:var(--fg); }
+.btn--accent{ background:var(--orange); border-color:transparent; color:#23212e; }
+
+/* =========================================================
+   Sections / Footer
+   ========================================================= */
+.hero{ position:relative; padding-block: clamp(40px, 8vw, 112px) clamp(24px, 4vw, 48px); border-bottom:1px solid var(--border); overflow:clip; }
+.hero__inner{ max-width: var(--hero-max, 1280px); margin:0 auto; padding-inline: clamp(12px, 2vw, 24px); position:relative; z-index:1; }
+.hero__bg{ position:absolute; inset:0; z-index:0; }
+.is-bleed .hero__bg::before{
+  content:""; position:absolute; inset:0; left:50%; transform:translateX(-50%); width:100vw; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(1200px 600px at 0% 0%, color-mix(in srgb, var(--green) 22%, transparent) 0%, transparent 60%),
+    radial-gradient(900px 520px at 100% 10%, color-mix(in srgb, var(--orange) 18%, transparent) 0%, transparent 60%),
+    linear-gradient(180deg, color-mix(in srgb, var(--card) 40%, transparent), transparent 60%);
+}
+
+.hero__grid{ display:grid; gap: clamp(16px, 3vw, 32px); align-items:center; }
+.hero__grid.has-visual{ grid-template-columns: var(--hero-grid-left, 0.9fr) var(--hero-grid-right, 1.1fr); }
+@media (max-width: 900px){ .hero__grid.has-visual{ grid-template-columns: 1fr; } }
+
+.hero__content{ min-width:0; }
+.hero__visual{ min-height:280px; display:grid; place-items:center; }
+
+.hero h1{ font-family:"Josefin Sans",sans-serif; font-weight:700; margin:0 0 .5rem; }
+.hero p{ margin:.2rem 0 1rem; color:var(--muted); max-width:70ch; }
+
+/* =========================================================
+   Visuel PC (SVG) — commun
+   ========================================================= */
+.pc{ width:100%; max-width: var(--pc-max, 1000px); height:auto; }
+
+.pc-tilt{
+  position:relative;
+  transform-style:preserve-3d;
+  perspective:1000px;
+  transform: scale(var(--pc-scale)) rotateY(var(--pc-tilt-y)) rotateX(var(--pc-tilt-x)) translateZ(0);
+  transform-origin: 50% 50%;
+  transition: transform .55s cubic-bezier(.22,.61,.36,1), filter .35s ease;
+  filter: drop-shadow(0 24px 40px color-mix(in srgb, var(--gray) 22%, transparent));
+  will-change: transform, filter;
+}
+
+/* Contours (châssis + écran) — contrôlés par variable */
+.pc [data-role="chassis"],
+.pc [data-role="screen"]{
+  stroke: var(--pc-contour);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+}
+
+.pc-gloss{
+  position:absolute; inset:0; pointer-events:none; border-radius:20px;
+  background: linear-gradient(120deg, color-mix(in srgb, var(--white) 14%, transparent) 10%, transparent 35% 65%, color-mix(in srgb, var(--white) 10%, transparent) 90%);
+  mix-blend-mode:screen; opacity:.35; transform:translateZ(1px);
+  mask-image: radial-gradient(100% 100% at 0 0, #000 0, transparent 70%);
+}
+
+/* Dark: pas de halo fixe ni d’ombre de container trop marquée */
+html[data-theme="dark"] .pc-gloss{ display:none; opacity:0; }
+html[data-theme="dark"] .pc-tilt{ filter: none; }
+
+/* =========================================================
+   Animations (code/site à l’intérieur de l’écran)
+   ========================================================= */
+@keyframes codeScroll {
+  0%     { transform: translateY(calc(-1 * var(--chunk))); }
+  71.01% { transform: translateY(calc(var(--area) + 24px)); }
+  71.02% { transform: translateY(calc(-1 * var(--chunk))); } /* reset instant */
+  100%   { transform: translateY(calc(-1 * var(--chunk))); }
+}
+@keyframes codeFadeKF {
+  0%     { opacity: 1; }
+  71.01% { opacity: 1; }
+  73.67% { opacity: 0; }
+  97.34% { opacity: 0; }
+  100%   { opacity: 1; }
+}
+@keyframes siteFadeKF {
+  0%     { opacity: 0; }
+  71.01% { opacity: 0; }
+  73.67% { opacity: 1; }
+  97.34% { opacity: 1; }
+  100%   { opacity: 0; }
+}
+.code-run  { animation: codeScroll var(--t) linear infinite; transform-box: fill-box; transform-origin: left top; }
+.code-fade { animation: codeFadeKF var(--t) linear infinite; }
+#siteLayer { animation: siteFadeKF var(--t) linear infinite; }
+
+/* =========================================================
+   Hover : pivot “profil” léger (sans scale) + halo oblique coloré
+   ========================================================= */
+.hero__visual:hover .pc-tilt{
+  transform:
+    scale(var(--pc-scale))                         /* taille inchangée */
+    rotateY(calc(var(--pc-tilt-y) - 10deg))        /* + de profil */
+    rotateX(calc(var(--pc-tilt-x) + 1deg))         /* légère bascule */
+    translateX(4px)                                /* micro décalage */
+    translateZ(8px);                               /* un poil de profondeur */
+  filter: drop-shadow(0 26px 44px color-mix(in srgb, var(--gray) 24%, transparent));
+  transition: transform .55s cubic-bezier(.22,.61,.36,1), filter .35s ease;
+}
+
+/* Micro-parallaxe interne (subtile) */
+.hero__visual:hover #siteLayer,
+.hero__visual:hover .code-run{
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  transform: translateX(2px) translateY(-1px) scale(1.003);
+  transition: transform .35s ease;
+}
+
+/* Trait de lumière : base */
+.pc-tilt{ position: relative; overflow: visible; }
+.pc-tilt::after{
+  content:"";
+  position:absolute; inset:0;
+  pointer-events:none; border-radius:20px;
+  transform: translateX(-20%) skewX(-14deg);
+  opacity:0; will-change: transform, opacity;
+  mix-blend-mode: screen;
+  background:
+    linear-gradient(100deg,
+      transparent 0%,
+      color-mix(in srgb, var(--white) 30%, transparent) 48%,
+      transparent 62%);
+}
+
+/* Light : halo coloré */
+:root:not([data-theme="dark"]) .pc-tilt::after{
+  background:
+    linear-gradient(100deg,
+      transparent 0%,
+      color-mix(in srgb, var(--pc-shine-color) 100%, transparent) 48%,
+      transparent 62%);
+}
+:root:not([data-theme="dark"]) .hero__visual:hover .pc-tilt::after{
+  opacity:.52;
+}
+
+/* Dark : halo plus discret */
+html[data-theme="dark"] .pc-tilt::after{
+  background:
+    linear-gradient(100deg,
+      transparent 0%,
+      color-mix(in srgb, var(--white) 22%, transparent) 48%,
+      transparent 62%);
+}
+.hero__visual:hover .pc-tilt::after{
+  animation: pcShineSlow 1400ms cubic-bezier(.22,.61,.36,1) forwards;
+}
+@keyframes pcShineSlow{
+  0%   { transform: translateX(-20%) skewX(-14deg); opacity:0; }
+  10%  { opacity:.45; }
+  70%  { opacity:.40; }
+  100% { transform: translateX(120%) skewX(-14deg); opacity:0; }
+}
+
+/* Accessibilité (réduction mouvements) */
+@media (prefers-reduced-motion: reduce){
+  .hero__visual:hover .pc-tilt{ transform:none !important; filter:none !important; }
+  .hero__visual:hover #siteLayer,
+  .hero__visual:hover .code-run{ transform:none !important; }
+  .pc-tilt::after{ animation:none !important; opacity:0 !important; }
+}
+
+/* =========================================================
+   Grilles / listes utilitaires, formulaires, carte, logo
+   ========================================================= */
+.muted { color: var(--muted); }
+.actions { display:flex; gap:.6rem; flex-wrap:wrap; }
+.grid { display:grid; gap:16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.kpis .stat { text-align:center; padding:16px; border:1px solid var(--border); background:var(--card); border-radius:14px; }
+.kpis .v { font-family:"Josefin Sans", sans-serif; font-weight:700; font-size: clamp(26px, 4.5vw, 42px); }
+.faq { border:1px solid var(--border); border-radius:12px; padding:12px; background:var(--card); }
+.faq + .faq { margin-top:10px; }
+.split { display:grid; gap:24px; grid-template-columns:1fr; align-items:start; }
+@media (min-width:900px){ .split { grid-template-columns: 1.2fr 0.8fr; } }
+.answer { border-left: 6px solid var(--green); }
+.list { display:grid; gap:12px; margin:0; padding:0; list-style:none; }
+.item { display:flex; gap:.6rem; align-items:flex-start; }
+.dot { width:10px; height:10px; border-radius:999px; background:var(--orange); margin-top:.5rem; flex:none; }
+
+.formgrid{ display:grid; gap:12px; grid-template-columns:1fr; }
+@media (min-width:720px){ .formgrid{ grid-template-columns:1fr 1fr; } }
+.field{
+  width:100%; padding:.65rem; border-radius:10px;
+  border:1px solid var(--border); background:var(--card); color:var(--fg);
+  font:inherit;
+}
+.field:focus-visible{ outline:3px solid color-mix(in srgb, var(--green) 35%, #fff 65%); outline-offset:2px; }
+
+.local iframe { width:100%; height:260px; border:0; border-radius:12px; }
+.brand-logo{ display:block; height:80px; width:auto; }

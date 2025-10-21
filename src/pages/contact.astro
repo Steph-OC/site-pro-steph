@@ -1,0 +1,291 @@
+---
+import SiteLayout from "@/layouts/SiteLayout.astro";
+
+/* Helpers locaux (pour ne PAS modifier src/lib/wp.ts) */
+const WP = (import.meta.env.WP_URL || "").replace(/\/$/, "");
+async function getPageBySlug(slug) {
+  if (!WP) throw new Error("WP_URL manquant dans .env");
+  const url = new URL("/wp-json/wp/v2/pages", WP);
+  url.searchParams.set("slug", slug);
+  url.searchParams.set("_embed", "1");
+  const res = await fetch(url.toString(), {
+    headers: { Accept: "application/json" },
+  });
+  if (!res.ok) return null;
+  const arr = await res.json();
+  return arr?.[0] || null;
+}
+
+const item = await getPageBySlug("contact");
+const acf = item?.acf || {};
+
+const title = "Contact — Stéphanie Quibel";
+const description =
+  "Parlons de votre projet WordPress : création, refonte, performance, accessibilité, SEO. Réponse sous 24h.";
+
+// Contenus ACF / fallback
+const introHtml = acf.intro_rich_text || item?.content?.rendered || "";
+const email = acf.email || "contact@stephaniequibel.fr";
+const telephone = acf.telephone || ""; // ACF téléphone (optionnel)
+const help =
+  acf.contact_notes ||
+  "Réponse sous 24 h. Vos données ne sont jamais revendues.";
+---
+
+<SiteLayout {title} {description}>
+  <!-- HERO -->
+  <Fragment slot="hero">
+    <section class="hero">
+      <div class="container">
+        <h1>Contact</h1>
+        {
+          introHtml ? (
+            <div class="muted" set:html={introHtml} />
+          ) : (
+            <p class="muted">{help}</p>
+          )
+        }
+
+        <div class="actions" style="display:flex;gap:.6rem;flex-wrap:wrap;">
+          <a class="btn btn--accent" href={`mailto:${email}`}>{email}</a>
+          {
+            telephone && (
+              <a
+                class="btn btn--ghost"
+                href={`tel:${telephone.replace(/\s+/g, "")}`}
+              >
+                {telephone}
+              </a>
+            )
+          }
+        </div>
+      </div>
+    </section>
+  </Fragment>
+
+  <!-- FORMULAIRE -->
+  <section class="container section">
+    <div class="two-col">
+      <!-- Colonne 1 : formulaire (narrow) -->
+      <article class="card">
+        <div class="card__body">
+          <h2>Parlons de votre projet</h2>
+
+          <form
+            id="contact-form"
+            class="flow"
+            method="POST"
+            action="/api/contact"
+            novalidate
+            aria-describedby="contact-help"
+          >
+            <!-- Honeypot -->
+            <input
+              type="text"
+              name="website"
+              tabindex="-1"
+              autocomplete="off"
+              class="visually-hidden"
+              aria-hidden="true"
+            />
+
+            <div class="grid formgrid">
+              <p>
+                <label for="name">Votre nom</label>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  class="field"
+                  required
+                  autocomplete="name"
+                />
+              </p>
+              <p>
+                <label for="email">Votre e-mail</label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  class="field"
+                  required
+                  inputmode="email"
+                  autocomplete="email"
+                />
+              </p>
+            </div>
+
+            <p>
+              <label for="phone">Votre téléphone (optionnel)</label>
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                class="field"
+                inputmode="tel"
+                autocomplete="tel"
+              />
+            </p>
+
+            <p>
+              <label for="subject">Sujet</label>
+              <input id="subject" name="subject" type="text" class="field" />
+            </p>
+
+            <p>
+              <label for="message">Votre message</label>
+              <textarea id="message" name="message" rows="6" class="field"
+              ></textarea>
+            </p>
+
+            <p id="contact-help" class="muted">
+              Réponse sous 24 h. Vos données ne sont jamais revendues.
+            </p>
+
+            <div class="actions">
+              <button class="btn btn--accent btn--lg" type="submit"
+                >Envoyer</button
+              >
+              <a class="btn btn--ghost" href="mailto:contact@stephaniequibel.fr"
+                >Ou écrire directement</a
+              >
+            </div>
+
+            <p id="form-status" class="muted" role="status" aria-live="polite">
+            </p>
+          </form>
+        </div>
+      </article>
+
+      <!-- Colonne 2 : image “Zones desservies” -->
+      <!-- Colonne 2 : illustration inline (pas d'image à fournir) -->
+      <aside class="card">
+        <div class="card__body">
+          <h2>Zones desservies</h2>
+          <p class="muted">
+            Béziers, Montpelliers, Narbonne… et à distance partout en France.
+          </p>
+
+          <figure class="zones-figure">
+            <svg
+              class="zones-svg"
+              viewBox="0 0 600 360"
+              role="img"
+              aria-labelledby="zonesTitle zonesDesc"
+              width="600"
+              height="360"
+            >
+              <title id="zonesTitle">Zones desservies</title>
+              <desc id="zonesDesc"
+                >Illustration stylisée avec un repère près de Béziers et des
+                connexions à distance.</desc
+              >
+
+              <!-- Fond -->
+              <rect x="0" y="0" width="600" height="360" rx="14" class="z-bg"
+              ></rect>
+
+              <!-- Halo central -->
+              <circle cx="410" cy="220" r="120" class="z-halo"></circle>
+
+              <!-- Lignes (connexions) -->
+              <g class="z-lines">
+                <line x1="410" y1="220" x2="110" y2="80"></line>
+                <line x1="410" y1="220" x2="520" y2="90"></line>
+                <line x1="410" y1="220" x2="140" y2="300"></line>
+                <line x1="410" y1="220" x2="560" y2="300"></line>
+              </g>
+
+              <!-- Repère / Béziers -->
+              <g class="z-pin">
+                <circle cx="410" cy="220" r="10"></circle>
+                <path
+                  d="M410 200c14 0 24 10 24 23 0 16-21 39-24 42-3-3-24-26-24-42 0-13 10-23 24-23z"
+                ></path>
+              </g>
+
+              <!-- Pastilles (autres villes) -->
+              <g class="z-dots">
+                <circle cx="110" cy="80" r="6"></circle>
+                <circle cx="520" cy="90" r="6"></circle>
+                <circle cx="140" cy="300" r="6"></circle>
+                <circle cx="560" cy="300" r="6"></circle>
+              </g>
+            </svg>
+            <figcaption class="muted">
+              Réponse sous 24 h — échanges visio/téléphone.
+            </figcaption>
+          </figure>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- JS: envoi AJAX + messages d'état -->
+  <script is:inline>
+    (function () {
+      const f = document.getElementById("contact-form");
+      const s = document.getElementById("form-status");
+      if (!f || !s) return;
+
+      f.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        s.textContent = "";
+
+        // honeypot
+        if (f.website && f.website.value.trim()) {
+          s.textContent = "Message non envoyé (anti-spam).";
+          return;
+        }
+
+        const name = f.name.value.trim();
+        const email = f.email.value.trim();
+        if (!name || !email) {
+          s.textContent = "Veuillez renseigner votre nom et votre e-mail.";
+          return;
+        }
+
+        try {
+          const fd = new FormData(f);
+          const r = await fetch(f.action, { method: "POST", body: fd });
+          const j = await r.json().catch(() => ({}));
+          if (r.ok && j.ok) {
+            s.textContent = "Merci ! Votre message a bien été envoyé.";
+            f.reset();
+          } else {
+            s.textContent = j.error || "Impossible d’envoyer pour le moment.";
+          }
+        } catch {
+          s.textContent = "Erreur réseau.";
+        }
+      });
+    })();
+  </script>
+
+  <style>
+    .flow > * + * {
+      margin-top: 0.9rem;
+    }
+    .formgrid {
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 720px) {
+      .formgrid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    .field {
+      width: 100%;
+      padding: 0.65rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      color: var(--fg);
+      font: inherit;
+    }
+    .field:focus-visible {
+      outline: 3px solid color-mix(in srgb, var(--green), #fff 35%);
+      outline-offset: 2px;
+    }
+  </style>
+</SiteLayout>

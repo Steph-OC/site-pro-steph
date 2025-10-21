@@ -1,154 +1,208 @@
 ---
-import Layout from "@/layouts/SiteLayout.astro";
+import SiteLayout from "@/layouts/SiteLayout.astro";
 import Hero from "@/components/Hero.astro";
-import * as wp from "@/lib/wp";
-import FadeIn from "@/components/FadeIn.jsx"; // ⬅️ Framer Motion
 
-const lastProjects = await wp.getCPTList("projets", { per_page: 2 });
-
-function hostOf(url) {
-  try {
-    return new URL(url).host.replace(/^www\./, "");
-  } catch {
-    return "";
-  }
-}
+const title = "Développeuse WordPress freelance — Stéphanie Quibel";
+const description =
+  "Sites WordPress rapides, accessibles et bien référencés. Refonte, création, maintenance. Réponse sous 24h.";
 ---
 
-<Layout
-  title="Développeuse WordPress — rapide & accessible"
-  description="Sites WordPress sur mesure, performance, accessibilité et SEO."
-  full={true}
->
-  <Hero
-    slot="hero"
-    variant="home"
-    bleed={true}
-    kicker="WordPress sur mesure"
-    title="Des sites rapides, élégants et accessibles"
-    lead="Je conçois, code et optimise votre site de A à Z — avec un focus sur la performance, l’accessibilité et la pérennité."
-    actions={[
-      { href: "/#contact", label: "Me contacter", kind: "accent" },
-      { href: "/realisations", label: "Voir mes réalisations", kind: "ghost" },
-    ]}
-  />
+<SiteLayout {title} {description}>
+  <Fragment slot="hero">
+    <Hero
+      variant="home"
+      bg="glass"
+      bleed={true}
+      visual="codeReveal"
+      kicker="WordPress sur mesure"
+      title="Développeuse WordPress — sites rapides & accessibles"
+      lead="Je conçois et optimise des sites vitrine & blog qui chargent vite, sont confortables à lire et visibles localement. Réponse sous 24h."
+      actions={[
+        {
+          href: "/realisations/",
+          label: "Voir mes réalisations",
+          kind: "accent",
+        },
+        { href: "/contact", label: "Parler de votre projet", kind: "ghost" },
+      ]}
+    />
+  </Fragment>
 
-  <section aria-labelledby="home-works" style="padding-block:1rem 0">
-    <h2
-      id="home-works"
-      style='font-family:"Josefin Sans",sans-serif; margin:.2rem 0 .6rem'
-    >
-      Dernières réalisations
-    </h2>
-
-    {
-      lastProjects.length === 0 ? (
-        <p>Aucune réalisation pour le moment.</p>
-      ) : (
-        <div class="cards-home">
-          {lastProjects.map((p, i) => {
-            const m = p?._embedded?.["wp:featuredmedia"]?.[0];
-            const s = m?.media_details?.sizes || {};
-            const pic =
-              s?.medium || s?.medium_large || s?.large || s?.full || m;
-            const src = pic?.source_url || m?.source_url || "";
-            const alt =
-              m?.alt_text || m?.title?.rendered || p?.title?.rendered || "";
-            const siteUrl = p?.acf?.site_url;
-
-            return (
-              <FadeIn
-                client:visible
-                dir={i % 2 === 0 ? "left" : "right"}
-                distance="screen"
-                delay={i * 0.08}
-              >
-                <article class="card">
-                  {src && (
-                    <img
-                      class="thumb"
-                      src={src}
-                      alt={alt}
-                      loading="lazy"
-                      style="display:block; width:100%; aspect-ratio:16/9; object-fit:cover; background:#3B3950"
-                    />
-                  )}
-                  <div style="padding:12px">
-                    <h3
-                      style='margin:.2rem 0 .35rem; font-family:"Josefin Sans",sans-serif'
-                      set:html={p.title.rendered}
-                    />
-                    {p.excerpt?.rendered && (
-                      <div
-                        style="color:var(--muted); font-size:.95rem"
-                        set:html={p.excerpt.rendered}
-                      />
-                    )}
-                    {siteUrl && (
-                      <p style="margin:.6rem 0 0">
-                        <a
-                          class="btn btn--accent"
-                          href={siteUrl}
-                          target="_blank"
-                          rel="noopener"
-                          aria-label={`Ouvrir le site du projet (${hostOf(siteUrl)})`}
-                        >
-                          Voir le site ↗
-                        </a>
-                      </p>
-                    )}
-                  </div>
-                </article>
-              </FadeIn>
-            );
-          })}
-        </div>
-      )
-    }
-
-    <p style="margin:0">
-      <a
-        href="/realisations"
-        class="btn btn--ghost"
-        aria-label="Voir toutes les réalisations"
-      >
-        Voir toutes les réalisations
-      </a>
-    </p>
+  <section class="container">
+    <div class="grid kpis">
+      <div class="stat">
+        <div class="v">≤ 2,5 s</div>
+        <div class="muted">LCP visé (chargement principal)</div>
+      </div>
+      <div class="stat">
+        <div class="v">≥ 95/100</div>
+        <div class="muted">Score accessibilité</div>
+      </div>
+      <div class="stat">
+        <div class="v">24 h</div>
+        <div class="muted">Délai de réponse</div>
+      </div>
+    </div>
   </section>
-</Layout>
 
-<style>
-  /* Grille centrée — ajuste la taille des cartes ici */
-  .cards-home {
-    display: grid;
-    gap: 18px;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 500px));
-    justify-content: center;
-    align-items: start;
-    margin: 0 0 1rem;
-  }
-  .cards-home .card {
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    overflow: hidden;
-    background: var(--card);
-    width: 100%;
-    max-width: 500px; /* ← agrandis/rétrécis (ex: 360–520px) */
-    justify-self: center;
-  }
-  .cards-home .thumb {
-    display: block;
-    width: 100%;
-    aspect-ratio: 16/9; /* 4/3 si tu veux moins haut */
-    object-fit: cover;
-    background: #3b3950;
-  }
+  <section id="services" class="container">
+    <div class="grid cards">
+      <article class="card">
+        <div class="card__body">
+          <h2>Création & refonte WordPress</h2>
+          <p class="muted">
+            Site sur mesure, rapide, facile à faire évoluer. Intégration
+            soignée, SEO de base inclus.
+          </p>
+        </div>
+      </article>
+      <article class="card">
+        <div class="card__body">
+          <h2>Performance & SEO local</h2>
+          <p class="muted">
+            Images responsives, pages stables, optimisation “près de moi”, fiche
+            Google Business.
+          </p>
+        </div>
+      </article>
+      <article class="card">
+        <div class="card__body">
+          <h2>Accessibilité</h2>
+          <p class="muted">
+            Contrastes, navigation au clavier, éléments de formulaire clairs,
+            animations adaptées.
+          </p>
+        </div>
+      </article>
+    </div>
+  </section>
 
-  @media (prefers-reduced-motion: reduce) {
-    * {
-      animation: none !important;
-      transition: none !important;
-    }
-  }
-</style>
+  <section id="realisations" class="container">
+    <article class="card">
+      <div class="card__body">
+        <h2>Étude de cas — Site vitrine artisanal</h2>
+        <p>
+          <strong>Problème :</strong> site lent et mal lisible.
+          <strong>Solution :</strong> refonte WordPress + images optimisées.
+          <strong>Résultat :</strong> +42% de demandes de devis, chargement divisé
+          par 3.
+        </p>
+      </div>
+    </article>
+  </section>
+
+  <section class="container">
+    <div class="grid">
+      <article class="card">
+        <div class="card__body">
+          <h2>Témoignage</h2>
+          <p>
+            “Clair, rapide, efficace. On a gagné en visibilité et en contacts.”
+          </p>
+          <p class="muted">— Client satisfait</p>
+        </div>
+      </article>
+      <article class="card">
+        <div class="card__body local">
+          <h2>Zones desservies</h2>
+          <p class="muted">
+            Béziers, Agde, Pézenas… et à distance partout en France.
+          </p>
+          <iframe
+            title="Plan Béziers"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            src="https://maps.google.com/maps?q=B%C3%A9ziers&t=&z=12&ie=UTF8&iwloc=&output=embed"
+          ></iframe>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="faq" class="container">
+    <h2>FAQ</h2>
+    <details class="faq">
+      <summary>Combien coûte un site vitrine WordPress ?</summary>
+      <p>
+        Selon le périmètre, entre 1 500€ et 4 000€ en moyenne. Je fournis un
+        devis détaillé.
+      </p>
+    </details>
+    <details class="faq">
+      <summary>Quels délais pour la livraison ?</summary>
+      <p>De 2 à 6 semaines selon le contenu et les fonctionnalités.</p>
+    </details>
+  </section>
+
+  <section class="container">
+    <article class="card">
+      <div class="card__body">
+        <h2>Parlons de votre projet</h2>
+        <p class="muted">
+          Réponse sous 24 h. Vos données ne sont jamais revendues.
+        </p>
+        <div class="actions" style="display:flex;gap:.6rem;flex-wrap:wrap;">
+          <a class="btn btn--accent btn--lg" href="/contact"
+            >Ouvrir la page Contact</a
+          >
+          <a class="btn btn--ghost" href="mailto:contact@stephaniequibel.fr"
+            >Écrire un e-mail</a
+          >
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: "Stéphanie Quibel",
+      url: "https://stephaniequibel.fr/",
+      sameAs: ["https://www.linkedin.com"],
+      logo: "https://stephaniequibel.fr/logo.png",
+    })}
+  />
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "ProfessionalService",
+      name: "Stéphanie Quibel — Développeuse WordPress",
+      url: "https://stephaniequibel.fr/",
+      areaServed: { "@type": "AdministrativeArea", name: "Hérault" },
+      serviceArea: [
+        { "@type": "City", name: "Béziers" },
+        { "@type": "City", name: "Agde" },
+      ],
+      email: "mailto:contact@stephaniequibel.fr",
+      telephone: "+33-6-00-00-00-00",
+    })}
+  />
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "Combien coûte un site vitrine WordPress ?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Selon le périmètre, entre 1 500€ et 4 000€ en moyenne, incluant design, intégration et optimisation.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Quels délais de livraison ?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Entre 2 et 6 semaines selon le contenu et les fonctionnalités.",
+          },
+        },
+      ],
+    })}
+  />
+</SiteLayout>
