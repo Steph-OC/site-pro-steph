@@ -745,3 +745,18 @@ html[data-theme="dark"] .pc-tilt::after {
     opacity: 0 !important;
   }
 }
+/* Icônes du bouton thème */
+.theme-icon {
+  display: none;
+}
+:root[data-theme="light"] .theme-icon--sun {
+  display: inline;
+}
+:root[data-theme="dark"] .theme-icon--moon {
+  display: inline;
+}
+
+/* Optionnel: un peu d’espace entre icône et rien (pas de texte) */
+#theme-toggle {
+  gap: 0.25rem;
+}
