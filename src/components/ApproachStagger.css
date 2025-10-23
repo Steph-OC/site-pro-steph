@@ -71,7 +71,7 @@
   border-color: var(--green);
 }
 .approach-stagger .c-2 .stagger__dot {
-  border-color: color-mix(in srgb, var(--gray) 45%, var(--border));
+  border-color: color-mix(in srgb, var(--gray) 45%, var(--offwhite) 55%);
 }
 .approach-stagger .c-3 .stagger__dot {
   border-color: var(--orange);
@@ -136,9 +136,9 @@
   border-color: color-mix(in srgb, var(--green) 40%, transparent);
 }
 .approach-stagger .c-2 .stagger__icon {
-  background: color-mix(in srgb, var(--gray) 14%, var(--card) 86%);
-  color: color-mix(in srgb, var(--gray) 80%, #000 20%);
-  border-color: color-mix(in srgb, var(--gray) 35%, transparent);
+  background: color-mix(in srgb, var(--offwhite) 14%, var(--card) 86%);
+  color: color-mix(in srgb, var(--offwhite) 80%, #000 20%);
+  border-color: color-mix(in srgb, var(--offwhite) 35%, transparent);
 }
 .approach-stagger .c-3 .stagger__icon {
   background: color-mix(in srgb, var(--orange) 18%, var(--card) 82%);

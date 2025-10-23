@@ -5,6 +5,7 @@ const {
   description = "",
 } = Astro.props;
 import "@/styles/theme.css";
+import "@/styles/badges.css";
 ---
 
 <!doctype html>
@@ -64,28 +65,32 @@ import "@/styles/theme.css";
               <a
                 href="/"
                 aria-current={Astro.url.pathname === "/" ? "page" : undefined}
-                >Accueil</a>
+                >Accueil</a
+              >
             </li>
             <li>
               <a
                 href="/services"
                 aria-current={Astro.url.pathname.startsWith("/services")
                   ? "page"
-                  : undefined}>Services</a>
+                  : undefined}>Services</a
+              >
             </li>
             <li>
               <a
                 href="/realisations"
                 aria-current={Astro.url.pathname.startsWith("/realisations")
                   ? "page"
-                  : undefined}>Réalisations</a>
+                  : undefined}>Réalisations</a
+              >
             </li>
             <li>
               <a
                 href="/blog"
                 aria-current={Astro.url.pathname.startsWith("/blog")
                   ? "page"
-                  : undefined}>Parlons web</a>
+                  : undefined}>Parlons web</a
+              >
             </li>
             <li><a href="/#a-propos">À propos</a></li>
             <li>
@@ -94,7 +99,8 @@ import "@/styles/theme.css";
                 class="btn btn--ghost"
                 aria-current={Astro.url.pathname.startsWith("/contact")
                   ? "page"
-                  : undefined}>Contact</a>
+                  : undefined}>Contact</a
+              >
             </li>
           </ul>
         </nav>

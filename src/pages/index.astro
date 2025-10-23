@@ -1,9 +1,11 @@
 ---
 import SiteLayout from "@/layouts/SiteLayout.astro";
 import Hero from "@/components/Hero.astro";
-import Counter from "@/components/Counter.tsx";
 import Services from "@/components/Services.tsx";
 import ApproachStagger from "@/components/ApproachStagger";
+import BadgesHex from "@/components/BadgesHex.astro";
+import BadgesMotion from "@/components/BadgesMotion";
+import CursorText from "@/components/CursorText";
 
 const title = "Développeuse WordPress freelance — Stéphanie Quibel";
 const description =
@@ -31,56 +33,19 @@ const description =
     />
   </Fragment>
 
-  <!-- KPIs : bande alt + largeur étroite -->
-  <section class="section--alt">
-    <div class="container container--narrow">
-      <div class="grid kpis">
-        <div class="stat">
-          <div class="v">
-            ≤ <Counter
-              client:visible
-              value={2.5}
-              decimals={1}
-              suffix=" s"
-              locale="fr-FR"
-              ariaLabel="LCP visé 2,5 secondes"
-            />
-          </div>
-          <div class="muted">LCP visé (chargement principal)</div>
-        </div>
-        <div class="stat">
-          <div class="v">
-            ≥ <Counter
-              client:visible
-              value={95}
-              decimals={0}
-              suffix="/100"
-              locale="fr-FR"
-              ariaLabel="Score accessibilité 95 sur 100"
-            />
-          </div>
-          <div class="muted">Score accessibilité</div>
-        </div>
-        <div class="stat">
-          <div class="v">
-            <Counter
-              client:visible
-              value={24}
-              decimals={0}
-              suffix=" h"
-              locale="fr-FR"
-              ariaLabel="Délai de réponse vingt-quatre heures"
-            />
-          </div>
-          <div class="muted">Délai de réponse</div>
-        </div>
-      </div>
-    </div>
+  <!-- PRINCIPES / Badges -->
+  <section class="container container--xl">
+    <header class="section-head">
+      <h2>Principes clés</h2>
+      <p class="section-sub">Ce qui guide chaque projet.</p>
+    </header>
+
+    <BadgesMotion client:visible />
   </section>
 
   <!-- Services : island React -->
   <section class="section--stripe">
-    <div class="container container--wide">
+    <div class="container container--xl">
       <Services client:visible />
     </div>
   </section>
@@ -161,68 +126,91 @@ const description =
           Réponse sous 24 h. Vos données ne sont jamais revendues.
         </p>
         <div class="actions" style="display:flex;gap:.6rem;flex-wrap:wrap;">
-          <a class="btn btn--accent btn--lg" href="/contact"
-            >Ouvrir la page Contact</a
+          <a
+            class="btn btn--accent btn--lg cursor-hover-item"
+            href="/contact"
+            data-cursor-text="CONTACT"
+            data-cursor-text-repeat="6">Ouvrir la page Contact</a
           >
-          <a class="btn btn--ghost" href="mailto:contact@stephaniequibel.fr"
-            >Écrire un e-mail</a
+          <a
+            class="btn btn--ghost cursor-hover-item"
+            href="mailto:contact@stephaniequibel.fr"
+            data-cursor-text="ÉCRIRE UN E-MAIL"
+            data-cursor-text-repeat="5">Écrire un e-mail</a
           >
         </div>
       </div>
     </article>
   </section>
-
-  <!-- JSON-LD (inchangé) -->
-  <script
-    type="application/ld+json"
-    set:html={JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      name: "Stéphanie Quibel",
-      url: "https://stephaniequibel.fr/",
-      sameAs: ["https://www.linkedin.com"],
-      logo: "https://stephaniequibel.fr/logo.png",
-    })}
-  />
-  <script
-    type="application/ld+json"
-    set:html={JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "ProfessionalService",
-      name: "Stéphanie Quibel — Développeuse WordPress",
-      url: "https://stephaniequibel.fr/",
-      areaServed: { "@type": "AdministrativeArea", name: "Hérault" },
-      serviceArea: [
-        { "@type": "City", name: "Béziers" },
-        { "@type": "City", name: "Agde" },
-      ],
-      email: "mailto:contact@stephaniequibel.fr",
-      telephone: "+33-6-00-00-00-00",
-    })}
-  />
-  <script
-    type="application/ld+json"
-    set:html={JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: [
-        {
-          "@type": "Question",
-          name: "Combien coûte un site vitrine WordPress ?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Selon le périmètre, entre 1 500€ et 4 000€ en moyenne, incluant design, intégration et optimisation.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Quels délais de livraison ?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Entre 2 et 6 semaines selon le contenu et les fonctionnalités.",
-          },
-        },
-      ],
-    })}
-  />
 </SiteLayout>
+<!-- JSON-LD (inchangé) -->
+<script
+  type="application/ld+json"
+  set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Stéphanie Quibel",
+    url: "https://stephaniequibel.fr/",
+    sameAs: ["https://www.linkedin.com"],
+    logo: "https://stephaniequibel.fr/logo.png",
+  })}
+/>
+<script
+  type="application/ld+json"
+  set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    name: "Stéphanie Quibel — Développeuse WordPress",
+    url: "https://stephaniequibel.fr/",
+    areaServed: { "@type": "AdministrativeArea", name: "Hérault" },
+    serviceArea: [
+      { "@type": "City", name: "Béziers" },
+      { "@type": "City", name: "Agde" },
+    ],
+    email: "mailto:contact@stephaniequibel.fr",
+    telephone: "+33-6-00-00-00-00",
+  })}
+/>
+<script
+  type="application/ld+json"
+  set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "Combien coûte un site vitrine WordPress ?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Selon le périmètre, entre 1 500€ et 4 000€ en moyenne, incluant design, intégration et optimisation.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Quels délais de livraison ?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Entre 2 et 6 semaines selon le contenu et les fonctionnalités.",
+        },
+      },
+    ],
+  })}
+/>
+
+<!-- Curseur texte (island React) — texte + grand et rayon plus large -->
+<!--
+CursorText (curseur texte tournant)
+- largeSize : diamètre de l’anneau/zone au survol
+- smallSize : taille du point central au repos
+- textSize  : taille de police du texte tournant
+- radius    : rayon du cercle de texte (plus grand ⇒ texte plus éloigné du centre)
+-->
+<!-- Curseur texte (React côté client) -->
+<CursorText
+  client:only="react"
+  targets=".hex-badges .cursor-hover-item"
+  largeSize={150}
+  smallSize={24}
+  textSize={22}
+  blendMode="normal"
+/>

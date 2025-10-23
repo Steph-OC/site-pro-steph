@@ -760,3 +760,14 @@ html[data-theme="dark"] .pc-tilt::after {
 #theme-toggle {
   gap: 0.25rem;
 }
+@media (hover: hover) and (pointer: fine) {
+  html.use-ios-pointer body {
+    cursor: none;
+  } /* ta classe est déjà posée par IosPointer */
+}
+:root {
+  --cursor-color: #1d1b26;
+}
+:root[data-theme="dark"] {
+  --cursor-color: #fff;
+}

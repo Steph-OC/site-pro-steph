@@ -1,0 +1,201 @@
+---
+import {
+  Accessibility,
+  Leaf,
+  AlignLeft,
+  Wrench,
+  Shield,
+  Gauge,
+} from "lucide-react";
+
+interface Item {
+  label: string;
+}
+
+const {
+  items = [
+    { label: "Accessibilité" },
+    { label: "Sobriété" },
+    { label: "Lisibilité" },
+    { label: "Maintenance" },
+    { label: "Sécurité" },
+    { label: "Performance" },
+  ],
+}: { items?: Item[] } = Astro.props;
+
+const key = (s: string) =>
+  s
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+
+function getIcon(label: string) {
+  switch (key(label)) {
+    case "accessibilite":
+      return Accessibility;
+    case "sobriete":
+      return Leaf;
+    case "lisibilite":
+      return AlignLeft;
+    case "maintenance":
+      return Wrench;
+    case "securite":
+      return Shield;
+    case "performance":
+      return Gauge;
+    default:
+      return Gauge;
+  }
+}
+
+const n = items.length;
+
+/** Couleur par pastille (icône + curseur au survol) */
+const colorByKey: Record<string, string> = {
+  accessibilite: "#2C84DB",
+  sobriete: "#EE8E48",
+  lisibilite: "#D84A7D",
+  maintenance: "#C13A2E",
+  securite: "#7256C2",
+  performance: "#148B7E",
+};
+---
+
+<div class="hex-badges" style={`--n:${n}`}>
+  <ul class="row" role="list">
+    {
+      items.map(({ label }) => {
+        const Icon = getIcon(label);
+        const cls = key(label);
+        const col = colorByKey[cls] ?? "#333";
+        return (
+          <li
+            class={"badge cursor-hover-item " + cls}
+            title={label}
+            data-cursor-text={label.toUpperCase()}
+            data-cursor-text-repeat="6"
+            data-cursor-color={col}
+            style={`--icon:${col}`}
+          >
+            <div class="circle" aria-hidden="true">
+              <Icon strokeWidth={2} />
+            </div>
+            <span class="sr-only">{label}</span>
+          </li>
+        );
+      })
+    }
+  </ul>
+</div>
+
+<style>
+  /* ===== Visually hidden (a11y) ===== */
+  .sr-only {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* ===== Conteneur : 1 ligne, pastilles + grandes ===== */
+  .hex-badges {
+    --n: 6;
+    --gap: clamp(18px, 2.4vw, 32px);
+    --s-min: 140px; /* min desktop */
+    --s-max: 200px; /* max desktop (monte à 176/192 si tu veux) */
+    --s: clamp(
+      var(--s-min),
+      calc((100% - (var(--n) - 1) * var(--gap)) / var(--n)),
+      var(--s-max)
+    );
+    width: 100%;
+    margin: 0 auto;
+    overflow-x: hidden;
+  }
+  .hex-badges .row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--gap);
+    list-style: none;
+    margin: calc(var(--s) * 0.28) 0;
+    padding: 0;
+    flex-wrap: nowrap;
+  }
+
+  /* ===== Badge “pastille seule” ===== */
+  .badge {
+    position: relative;
+    width: var(--s);
+    height: calc(var(--s) * 1.05); /* un peu de marge verticale */
+    display: inline-block;
+    transition:
+      transform 0.18s ease,
+      filter 0.18s ease;
+    filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.08));
+  }
+  .badge::before,
+  .badge::after {
+    display: none;
+  }
+
+  /* Pastille + icône colorée */
+  .badge .circle {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: calc(var(--s) * 0.78);
+    height: calc(var(--s) * 0.78);
+    border-radius: 50%;
+    background: var(--circle-bg, #fff);
+    display: grid;
+    place-items: center;
+    color: var(--icon, #333); /* ← couleur d’icône */
+    z-index: 1;
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, #000 7%, transparent),
+      0 6px 18px rgba(0, 0, 0, 0.06);
+  }
+  .badge .circle svg {
+    width: calc(var(--s) * 0.36) !important;
+    height: calc(var(--s) * 0.36) !important;
+    stroke: currentColor !important; /* Lucide = stroke */
+    fill: none;
+  }
+
+  /* Hover lift */
+  .badge:hover {
+    transform: translateY(-3px);
+  }
+
+  /* Dark theme */
+  :root[data-theme="dark"] .badge .circle {
+    --circle-bg: color-mix(in srgb, var(--card) 88%, var(--bg) 12%);
+    color: var(--icon, var(--fg));
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, #fff 12%, transparent),
+      0 8px 20px rgba(0, 0, 0, 0.28);
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .hex-badges {
+      --s-min: 76px;
+      --s-max: 132px;
+      --gap: clamp(14px, 2vw, 24px);
+    }
+  }
+  @media (max-width: 640px) {
+    .hex-badges {
+      --s-min: 64px;
+      --s-max: 104px;
+      --gap: clamp(12px, 1.6vw, 18px);
+    }
+  }
+</style>
