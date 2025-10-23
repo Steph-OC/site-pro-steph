@@ -1,6 +1,9 @@
 ---
 import SiteLayout from "@/layouts/SiteLayout.astro";
 import Hero from "@/components/Hero.astro";
+import Counter from "@/components/Counter.tsx";
+import Services from "@/components/Services.tsx";
+import ApproachStagger from "@/components/ApproachStagger";
 
 const title = "Développeuse WordPress freelance — Stéphanie Quibel";
 const description =
@@ -28,57 +31,63 @@ const description =
     />
   </Fragment>
 
-  <section class="container">
-    <div class="grid kpis">
-      <div class="stat">
-        <div class="v">≤ 2,5 s</div>
-        <div class="muted">LCP visé (chargement principal)</div>
-      </div>
-      <div class="stat">
-        <div class="v">≥ 95/100</div>
-        <div class="muted">Score accessibilité</div>
-      </div>
-      <div class="stat">
-        <div class="v">24 h</div>
-        <div class="muted">Délai de réponse</div>
+  <!-- KPIs : bande alt + largeur étroite -->
+  <section class="section--alt">
+    <div class="container container--narrow">
+      <div class="grid kpis">
+        <div class="stat">
+          <div class="v">
+            ≤ <Counter
+              client:visible
+              value={2.5}
+              decimals={1}
+              suffix=" s"
+              locale="fr-FR"
+              ariaLabel="LCP visé 2,5 secondes"
+            />
+          </div>
+          <div class="muted">LCP visé (chargement principal)</div>
+        </div>
+        <div class="stat">
+          <div class="v">
+            ≥ <Counter
+              client:visible
+              value={95}
+              decimals={0}
+              suffix="/100"
+              locale="fr-FR"
+              ariaLabel="Score accessibilité 95 sur 100"
+            />
+          </div>
+          <div class="muted">Score accessibilité</div>
+        </div>
+        <div class="stat">
+          <div class="v">
+            <Counter
+              client:visible
+              value={24}
+              decimals={0}
+              suffix=" h"
+              locale="fr-FR"
+              ariaLabel="Délai de réponse vingt-quatre heures"
+            />
+          </div>
+          <div class="muted">Délai de réponse</div>
+        </div>
       </div>
     </div>
   </section>
 
-  <section id="services" class="container">
-    <div class="grid cards">
-      <article class="card">
-        <div class="card__body">
-          <h2>Création & refonte WordPress</h2>
-          <p class="muted">
-            Site sur mesure, rapide, facile à faire évoluer. Intégration
-            soignée, SEO de base inclus.
-          </p>
-        </div>
-      </article>
-      <article class="card">
-        <div class="card__body">
-          <h2>Performance & SEO local</h2>
-          <p class="muted">
-            Images responsives, pages stables, optimisation “près de moi”, fiche
-            Google Business.
-          </p>
-        </div>
-      </article>
-      <article class="card">
-        <div class="card__body">
-          <h2>Accessibilité</h2>
-          <p class="muted">
-            Contrastes, navigation au clavier, éléments de formulaire clairs,
-            animations adaptées.
-          </p>
-        </div>
-      </article>
+  <!-- Services : island React -->
+  <section class="section--stripe">
+    <div class="container container--wide">
+      <Services client:visible />
     </div>
   </section>
 
-  <section id="realisations" class="container">
-    <article class="card">
+  <!-- Étude de cas -->
+  <section id="realisations" class="container section--cut container--narrow">
+    <article class="case">
       <div class="card__body">
         <h2>Étude de cas — Site vitrine artisanal</h2>
         <p>
@@ -91,6 +100,12 @@ const description =
     </article>
   </section>
 
+  <!-- Mon approche : island React -->
+  <section class="container container--narrow">
+    <ApproachStagger client:visible />
+  </section>
+
+  <!-- Témoignage / Zones -->
   <section class="container">
     <div class="grid">
       <article class="card">
@@ -119,21 +134,25 @@ const description =
     </div>
   </section>
 
-  <section id="faq" class="container">
-    <h2>FAQ</h2>
-    <details class="faq">
-      <summary>Combien coûte un site vitrine WordPress ?</summary>
-      <p>
-        Selon le périmètre, entre 1 500€ et 4 000€ en moyenne. Je fournis un
-        devis détaillé.
-      </p>
-    </details>
-    <details class="faq">
-      <summary>Quels délais pour la livraison ?</summary>
-      <p>De 2 à 6 semaines selon le contenu et les fonctionnalités.</p>
-    </details>
+  <!-- FAQ -->
+  <section id="faq" class="section--alt">
+    <div class="container container--narrow">
+      <h2>FAQ</h2>
+      <details class="faq">
+        <summary>Combien coûte un site vitrine WordPress ?</summary>
+        <p>
+          Selon le périmètre, entre 1 500€ et 4 000€ en moyenne. Je fournis un
+          devis détaillé.
+        </p>
+      </details>
+      <details class="faq">
+        <summary>Quels délais pour la livraison ?</summary>
+        <p>De 2 à 6 semaines selon le contenu et les fonctionnalités.</p>
+      </details>
+    </div>
   </section>
 
+  <!-- CTA -->
   <section class="container">
     <article class="card">
       <div class="card__body">
@@ -153,6 +172,7 @@ const description =
     </article>
   </section>
 
+  <!-- JSON-LD (inchangé) -->
   <script
     type="application/ld+json"
     set:html={JSON.stringify({

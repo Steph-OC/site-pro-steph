@@ -1,10 +1,12 @@
 ---
 import IosPointer from "@/components/IosPointer.jsx";
+
 const {
   title = "Stéphanie Quibel — Développeuse WordPress",
   description = "",
 } = Astro.props;
-import "../styles/theme.css"; // <-- nouveau
+
+import "../styles/theme.css";
 ---
 
 <!doctype html>
@@ -15,7 +17,7 @@ import "../styles/theme.css"; // <-- nouveau
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
 
-    <!-- Fonts (si tu préfères garder ici plutôt que via @import) -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@600;700&family=Lato:wght@400;500;700&display=swap"
@@ -24,35 +26,26 @@ import "../styles/theme.css"; // <-- nouveau
     <link rel="icon" href="/favicon.png" type="image/png" />
     <meta name="theme-color" content="#23212E" />
 
-    <!-- Init thème: lit la préférence et n’impose rien si “system” -->
+    <!-- Anti-FOUC : applique la préférence avant paint -->
     <script is:inline>
       (() => {
         try {
-          const pref = localStorage.getItem("theme-pref") || "system";
-          if (pref === "light" || pref === "dark") {
-            document.documentElement.dataset.theme = pref;
-          } else {
-            document.documentElement.removeAttribute("data-theme");
-          }
+          const pref = localStorage.getItem("theme-pref") || "light";
+          document.documentElement.dataset.theme =
+            pref === "dark" ? "dark" : "light";
         } catch {}
       })();
     </script>
-  </head>
 
-  <IosPointer
-    client:idle
-    color="var(--green)"
-    radius={12}
-    pad={6}
-    magnetRadius={90}
-    targets='[data-pointer], .nav a, a[href], button, [role="button"]'
-  />
+    <!-- Script du toggle (fichier public/js/theme-toggle.js) -->
+    <script src="/js/theme-toggle.js" defer></script>
+  </head>
 
   <body>
     <header>
       <div class="container nav">
-        <a class="brand" href="/"
-          ><img
+        <a class="brand" href="/">
+          <img
             class="brand-logo"
             src="/logo.svg"
             alt="Stéphanie Quibel"
@@ -60,6 +53,7 @@ import "../styles/theme.css"; // <-- nouveau
             height="80"
           />
         </a>
+
         <nav aria-label="Navigation principale">
           <ul>
             <li>
@@ -106,14 +100,16 @@ import "../styles/theme.css"; // <-- nouveau
           </ul>
         </nav>
 
-        <!-- Toggle 3 états System → Light → Dark -->
+        <!-- Toggle Light ↔ Dark -->
         <button
-          id="theme-toggle"
-          class="btn btn--ghost"
           type="button"
-          aria-label="Thème : auto"
-          title="Changer le thème">🌓</button
+          class="btn btn--ghost"
+          data-theme-toggle
+          aria-label="Basculer le thème"
+          title="Changer le thème (Clair ↔ Sombre)"
         >
+          <span aria-hidden="true" data-theme-icon>☀️</span>
+        </button>
       </div>
     </header>
 
@@ -130,48 +126,14 @@ import "../styles/theme.css"; // <-- nouveau
       </div>
     </footer>
 
-    <!-- Toggle logic (3 états + persistance + respect système) -->
-    <script is:inline>
-      (function () {
-        const KEY = "theme-pref"; // "system" | "light" | "dark"
-        const order = ["system", "light", "dark"];
-        const btn = document.getElementById("theme-toggle");
-
-        function apply(pref) {
-          if (pref === "light" || pref === "dark") {
-            document.documentElement.dataset.theme = pref;
-          } else {
-            document.documentElement.removeAttribute("data-theme");
-          }
-          try {
-            localStorage.setItem(KEY, pref);
-          } catch {}
-          if (btn)
-            btn.setAttribute(
-              "aria-label",
-              "Thème : " + (pref === "system" ? "auto" : pref)
-            );
-        }
-
-        function next(pref) {
-          return order[(order.indexOf(pref) + 1) % order.length];
-        }
-
-        const saved = localStorage.getItem(KEY) || "system";
-        apply(saved);
-
-        btn?.addEventListener("click", () => {
-          const current = localStorage.getItem(KEY) || "system";
-          apply(next(current));
-        });
-
-        // Si l’utilisateur change la préférence système en live et qu’on est sur “system”
-        const mq = window.matchMedia("(prefers-color-scheme: dark)");
-        mq.addEventListener?.("change", () => {
-          const pref = localStorage.getItem(KEY) || "system";
-          if (pref === "system") apply("system");
-        });
-      })();
-    </script>
+    <!-- Le composant doit être DANS <body> (pas entre </head> et <body>) -->
+    <IosPointer
+      client:idle
+      color="var(--green)"
+      radius={12}
+      pad={6}
+      magnetRadius={90}
+      targets='[data-pointer], .nav a, a[href], button, [role="button"]'
+    />
   </body>
 </html>
