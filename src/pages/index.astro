@@ -34,17 +34,22 @@ const description =
   </Fragment>
 
   <!-- PRINCIPES / Badges -->
-  <section class="container container--xl">
-    <header class="section-head">
-      <h2>Principes clés</h2>
-      <p class="section-sub">Ce qui guide chaque projet.</p>
-    </header>
+  <section
+    class="section--halo"
+    style="--halo-1-x:-8%; --halo-1-y:-26%; --halo-2-x:82%; --halo-2-y:86%;"
+  >
+    <div class="container container--xl">
+      <header class="section-head section-head--aurora">
+        <h2>Principes clés</h2>
+        <p class="section-sub">Ce qui guide chaque projet.</p>
+      </header>
 
-    <BadgesMotion client:visible />
+      <BadgesMotion client:visible />
+    </div>
   </section>
 
   <!-- Services : island React -->
-  <section class="section--stripe">
+  <section class="section--stripe section--halo">
     <div class="container container--xl">
       <Services client:visible />
     </div>
@@ -66,7 +71,7 @@ const description =
   </section>
 
   <!-- Mon approche : island React -->
-  <section class="container container--narrow">
+  <section class="container container--narrow section--halo">
     <ApproachStagger client:visible />
   </section>
 
