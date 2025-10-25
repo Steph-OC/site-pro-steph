@@ -34,119 +34,124 @@ const description =
   </Fragment>
 
   <!-- PRINCIPES / Badges -->
-  <section
-    class="section--halo"
-    style="--halo-1-x:-8%; --halo-1-y:-26%; --halo-2-x:82%; --halo-2-y:86%;"
-  >
-    <div class="container container--xl">
-      <header class="section-head section-head--aurora">
-        <h2>Principes clés</h2>
-        <p class="section-sub">Ce qui guide chaque projet.</p>
-      </header>
+  <main class="halo-desync">
+    <section class="section--halo halo-pulse-gentle">
+      <div class="container container--xl">
+        <header class="section-head section--halo halo-pulse-gentle">
+          <h2>Principes clés</h2>
+          <p class="section-sub">Ce qui guide chaque projet.</p>
+        </header>
 
-      <BadgesMotion client:visible />
-    </div>
-  </section>
-
-  <!-- Services : island React -->
-  <section class="section--stripe section--halo">
-    <div class="container container--xl">
-      <Services client:visible />
-    </div>
-  </section>
-
-  <!-- Étude de cas -->
-  <section id="realisations" class="container section--cut container--narrow">
-    <article class="case">
-      <div class="card__body">
-        <h2>Étude de cas — Site vitrine artisanal</h2>
-        <p>
-          <strong>Problème :</strong> site lent et mal lisible.
-          <strong>Solution :</strong> refonte WordPress + images optimisées.
-          <strong>Résultat :</strong> +42% de demandes de devis, chargement divisé
-          par 3.
-        </p>
+        <BadgesMotion client:visible />
       </div>
-    </article>
-  </section>
+    </section>
 
-  <!-- Mon approche : island React -->
-  <section class="container container--narrow section--halo">
-    <ApproachStagger client:visible />
-  </section>
+    <!-- Services : island React -->
+    <section class="section--halo halo-pulse-gentle">
+      <div class="container container--xl">
+        <Services client:visible />
+      </div>
+    </section>
 
-  <!-- Témoignage / Zones -->
-  <section class="container">
-    <div class="grid">
+    <!-- Étude de cas -->
+    <section
+      id="realisations"
+      class="container section--cut container--narrow section--halo halo-pulse-gentle"
+    >
+      <article class="case">
+        <div class="card__body">
+          <h2>Étude de cas — Site vitrine artisanal</h2>
+          <p>
+            <strong>Problème :</strong> site lent et mal lisible.
+            <strong>Solution :</strong> refonte WordPress + images optimisées.
+            <strong>Résultat :</strong> +42% de demandes de devis, chargement divisé
+            par 3.
+          </p>
+        </div>
+      </article>
+    </section>
+
+    <!-- Mon approche : island React -->
+    <section
+      class="container container--narrow section--halo halo-pulse-gentle"
+    >
+      <ApproachStagger client:visible />
+    </section>
+
+    <!-- Témoignage / Zones -->
+    <section class="container section--halo halo-pulse-gentle">
+      <div class="grid">
+        <article class="card">
+          <div class="card__body">
+            <h2>Témoignage</h2>
+            <p>
+              “Clair, rapide, efficace. On a gagné en visibilité et en
+              contacts.”
+            </p>
+            <p class="muted">— Client satisfait</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card__body local">
+            <h2>Zones desservies</h2>
+            <p class="muted">
+              Béziers, Agde, Pézenas… et à distance partout en France.
+            </p>
+            <iframe
+              title="Plan Béziers"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              src="https://maps.google.com/maps?q=B%C3%A9ziers&t=&z=12&ie=UTF8&iwloc=&output=embed"
+            ></iframe>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="section--alt section--halo halo-pulse-gentle">
+      <div class="container container--narrow">
+        <h2>FAQ</h2>
+        <details class="faq">
+          <summary>Combien coûte un site vitrine WordPress ?</summary>
+          <p>
+            Selon le périmètre, entre 1 500€ et 4 000€ en moyenne. Je fournis un
+            devis détaillé.
+          </p>
+        </details>
+        <details class="faq">
+          <summary>Quels délais pour la livraison ?</summary>
+          <p>De 2 à 6 semaines selon le contenu et les fonctionnalités.</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="container section--halo halo-pulse-gentle">
       <article class="card">
         <div class="card__body">
-          <h2>Témoignage</h2>
-          <p>
-            “Clair, rapide, efficace. On a gagné en visibilité et en contacts.”
-          </p>
-          <p class="muted">— Client satisfait</p>
-        </div>
-      </article>
-      <article class="card">
-        <div class="card__body local">
-          <h2>Zones desservies</h2>
+          <h2>Parlons de votre projet</h2>
           <p class="muted">
-            Béziers, Agde, Pézenas… et à distance partout en France.
+            Réponse sous 24 h. Vos données ne sont jamais revendues.
           </p>
-          <iframe
-            title="Plan Béziers"
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"
-            src="https://maps.google.com/maps?q=B%C3%A9ziers&t=&z=12&ie=UTF8&iwloc=&output=embed"
-          ></iframe>
+          <div class="actions" style="display:flex;gap:.6rem;flex-wrap:wrap;">
+            <a
+              class="btn btn--accent btn--lg cursor-hover-item"
+              href="/contact"
+              data-cursor-text="CONTACT"
+              data-cursor-text-repeat="6">Ouvrir la page Contact</a
+            >
+            <a
+              class="btn btn--ghost cursor-hover-item"
+              href="mailto:contact@stephaniequibel.fr"
+              data-cursor-text="ÉCRIRE UN E-MAIL"
+              data-cursor-text-repeat="5">Écrire un e-mail</a
+            >
+          </div>
         </div>
       </article>
-    </div>
-  </section>
-
-  <!-- FAQ -->
-  <section id="faq" class="section--alt">
-    <div class="container container--narrow">
-      <h2>FAQ</h2>
-      <details class="faq">
-        <summary>Combien coûte un site vitrine WordPress ?</summary>
-        <p>
-          Selon le périmètre, entre 1 500€ et 4 000€ en moyenne. Je fournis un
-          devis détaillé.
-        </p>
-      </details>
-      <details class="faq">
-        <summary>Quels délais pour la livraison ?</summary>
-        <p>De 2 à 6 semaines selon le contenu et les fonctionnalités.</p>
-      </details>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="container">
-    <article class="card">
-      <div class="card__body">
-        <h2>Parlons de votre projet</h2>
-        <p class="muted">
-          Réponse sous 24 h. Vos données ne sont jamais revendues.
-        </p>
-        <div class="actions" style="display:flex;gap:.6rem;flex-wrap:wrap;">
-          <a
-            class="btn btn--accent btn--lg cursor-hover-item"
-            href="/contact"
-            data-cursor-text="CONTACT"
-            data-cursor-text-repeat="6">Ouvrir la page Contact</a
-          >
-          <a
-            class="btn btn--ghost cursor-hover-item"
-            href="mailto:contact@stephaniequibel.fr"
-            data-cursor-text="ÉCRIRE UN E-MAIL"
-            data-cursor-text-repeat="5">Écrire un e-mail</a
-          >
-        </div>
-      </div>
-    </article>
-  </section>
+    </section>
+  </main>
 </SiteLayout>
 <!-- JSON-LD (inchangé) -->
 <script
