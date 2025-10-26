@@ -96,6 +96,11 @@ body {
   font-family: var(--font-text);
   overflow-x: hidden;
 }
+html,
+body {
+  overflow-x: clip;
+}
+
 h1,
 h2,
 h3 {

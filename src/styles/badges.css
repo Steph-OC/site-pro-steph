@@ -2,16 +2,15 @@
 
 /* accessibilité visuelle du texte masqué */
 .sr-only {
-  position: absolute !important;
+  position: absolute;
   width: 1px;
   height: 1px;
-  margin: -1px;
   padding: 0;
-  border: 0;
+  margin: -1px;
   overflow: hidden;
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
+  clip: rect(0, 0, 0, 0);
   white-space: nowrap;
+  border: 0;
 }
 
 /* Conteneur : 1 ligne, taille bornée + air vertical */
@@ -37,7 +36,7 @@
 
   /* un peu moins d’air vertical */
   padding-block: clamp(24px, 4.5vw, 72px);
-  min-height: clamp(180px, 20vw, 300px);
+  min-height: clamp(80px, 10vw, 150px);
 }
 
 /* garde tout sur 1 ligne et resserre aussi l’espace vertical autour de la ligne */

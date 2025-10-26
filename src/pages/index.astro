@@ -1,15 +1,22 @@
 ---
 import SiteLayout from "@/layouts/SiteLayout.astro";
 import Hero from "@/components/Hero.astro";
-import Services from "@/components/Services.tsx";
-import ApproachStagger from "@/components/ApproachStagger";
-import BadgesHex from "@/components/BadgesHex.astro";
+import Services from "@/components/Services";
 import BadgesMotion from "@/components/BadgesMotion";
-import CursorText from "@/components/CursorText";
+import ProjectSlider from "@/components/ProjectSlider";
+import { Reveal, RevealGroup } from "@/components/Scroll";
+
+// WP helpers (slides + card_title/intro + siteUrl)
+import { getDerniersProjetsAvecSlides } from "@/lib/wp";
 
 const title = "Développeuse WordPress freelance — Stéphanie Quibel";
 const description =
   "Sites WordPress rapides, accessibles et bien référencés. Refonte, création, maintenance. Réponse sous 24h.";
+
+// Charge 2 projets depuis WP (ACF Free, champs fixes)
+const data = await getDerniersProjetsAvecSlides(2);
+const p1 = data?.[0];
+const p2 = data?.[1];
 ---
 
 <SiteLayout {title} {description}>
@@ -17,7 +24,7 @@ const description =
     <Hero
       variant="home"
       bg="glass"
-      bleed={true}
+      bleed
       visual="codeReveal"
       kicker="WordPress sur mesure"
       title="Développeuse WordPress — sites rapides & accessibles"
@@ -33,49 +40,108 @@ const description =
     />
   </Fragment>
 
-  <!-- PRINCIPES / Badges -->
-  <main class="halo-desync">
-    <section class="section--halo halo-pulse-gentle">
+  <main id="home" class="halo-desync">
+    <!-- Principes -->
+    <section
+      class="section--halo halo-pulse-gentle"
+      aria-labelledby="principes"
+    >
       <div class="container container--xl">
-        <header class="section-head section--halo halo-pulse-gentle">
-          <h2>Principes clés</h2>
+        <header class="section-head">
+          <h2 id="principes">Principes clés</h2>
           <p class="section-sub">Ce qui guide chaque projet.</p>
         </header>
-
         <BadgesMotion client:visible />
       </div>
     </section>
 
-    <!-- Services : island React -->
-    <section class="section--halo halo-pulse-gentle">
+    <!-- Services (animés via RevealGroup) -->
+    <section
+      class="section--halo halo-pulse-gentle"
+      aria-labelledby="services-title"
+    >
       <div class="container container--xl">
-        <Services client:visible />
+        <header class="section-head">
+          <h2 id="services-title">Mes services</h2>
+          <p class="section-sub">Création, refonte, accompagnement.</p>
+        </header>
+
+        <RevealGroup
+          client:visible
+          as="div"
+          cascade
+          dir="up"
+          amount={0.2}
+          rootMargin="0px 0px -25% 0px"
+        >
+          <Services />
+        </RevealGroup>
       </div>
     </section>
 
-    <!-- Étude de cas -->
+    <!-- Derniers projets -->
     <section
-      id="realisations"
-      class="container section--cut container--narrow section--halo halo-pulse-gentle"
+      class="container section--halo halo-pulse-gentle"
+      aria-labelledby="dern-projets"
     >
-      <article class="case">
-        <div class="card__body">
-          <h2>Étude de cas — Site vitrine artisanal</h2>
-          <p>
-            <strong>Problème :</strong> site lent et mal lisible.
-            <strong>Solution :</strong> refonte WordPress + images optimisées.
-            <strong>Résultat :</strong> +42% de demandes de devis, chargement divisé
-            par 3.
-          </p>
-        </div>
-      </article>
-    </section>
+      <header class="section-head">
+        <h2 id="dern-projets">Derniers projets</h2>
+        <p class="section-sub">
+          Deux sites récents, avec leurs fonctionnalités clés.
+        </p>
+      </header>
 
-    <!-- Mon approche : island React -->
-    <section
-      class="container container--narrow section--halo halo-pulse-gentle"
-    >
-      <ApproachStagger client:visible />
+      <div class="projects-grid">
+        {
+          p1 && (
+            <Reveal client:visible direction="left">
+              <article class="card project-card">
+                <div class="card__body">
+                  <h3 class="h3">{p1.cardTitle ?? "Projet récent #1"}</h3>
+                  <p class="muted">
+                    {p1.cardIntro ??
+                      p1.subtitle ??
+                      "Focus sur les fonctionnalités marquantes."}
+                  </p>
+
+                  <ProjectSlider
+                    client:visible
+                    slides={p1.slides}
+                    accent="#fd7e14"
+                    siteUrl={p1.projet.siteUrl || "#"}
+                    detailsUrl="/realisations/studio-sonore"
+                  />
+                </div>
+              </article>
+            </Reveal>
+          )
+        }
+
+        {
+          p2 && (
+            <Reveal client:visible direction="right" delay={0.08}>
+              <article class="card project-card">
+                <div class="card__body">
+                  <h3 class="h3">{p2.cardTitle ?? "Projet récent #2"}</h3>
+                  <p class="muted">
+                    {p2.cardIntro ??
+                      p2.subtitle ??
+                      "Navigation fluide, mode sombre et galerie optimisée."}
+                  </p>
+
+                  <ProjectSlider
+                    client:visible
+                    slides={p2.slides}
+                    accent="#22b8cf"
+                    siteUrl={p2.projet.siteUrl || "#"}
+                    detailsUrl="/realisations/studio-sonore"
+                  />
+                </div>
+              </article>
+            </Reveal>
+          )
+        }
+      </div>
     </section>
 
     <!-- Témoignage / Zones -->
@@ -91,6 +157,7 @@ const description =
             <p class="muted">— Client satisfait</p>
           </div>
         </article>
+
         <article class="card">
           <div class="card__body local">
             <h2>Zones desservies</h2>
@@ -153,7 +220,8 @@ const description =
     </section>
   </main>
 </SiteLayout>
-<!-- JSON-LD (inchangé) -->
+
+<!-- JSON-LD inchangé -->
 <script
   type="application/ld+json"
   set:html={JSON.stringify({
@@ -205,22 +273,4 @@ const description =
       },
     ],
   })}
-/>
-
-<!-- Curseur texte (island React) — texte + grand et rayon plus large -->
-<!--
-CursorText (curseur texte tournant)
-- largeSize : diamètre de l’anneau/zone au survol
-- smallSize : taille du point central au repos
-- textSize  : taille de police du texte tournant
-- radius    : rayon du cercle de texte (plus grand ⇒ texte plus éloigné du centre)
--->
-<!-- Curseur texte (React côté client) -->
-<CursorText
-  client:only="react"
-  targets=".hex-badges .cursor-hover-item"
-  largeSize={150}
-  smallSize={24}
-  textSize={22}
-  blendMode="normal"
 />
