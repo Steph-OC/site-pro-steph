@@ -972,3 +972,9 @@ section.container {
 .section--cut::before {
   content: none !important;
 }
+html {
+  scroll-behavior: smooth;
+}
+.project-card {
+  scroll-margin-top: 96px;
+} /* ajuste à la hauteur de ton header */

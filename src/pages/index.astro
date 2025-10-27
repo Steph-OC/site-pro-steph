@@ -5,6 +5,7 @@ import Services from "@/components/Services";
 import BadgesMotion from "@/components/BadgesMotion";
 import ProjectSlider from "@/components/ProjectSlider";
 import { Reveal, RevealGroup } from "@/components/Scroll";
+import "@/styles/badges.css";
 
 // WP helpers (slides + card_title/intro + siteUrl)
 import { getDerniersProjetsAvecSlides } from "@/lib/wp";
@@ -109,7 +110,7 @@ const p2 = data?.[1];
                     slides={p1.slides}
                     accent="#fd7e14"
                     siteUrl={p1.projet.siteUrl || "#"}
-                    detailsUrl="/realisations/studio-sonore"
+                    detailsUrl={`/realisations/#${p1.projet.slug}`}
                   />
                 </div>
               </article>
@@ -134,7 +135,7 @@ const p2 = data?.[1];
                     slides={p2.slides}
                     accent="#22b8cf"
                     siteUrl={p2.projet.siteUrl || "#"}
-                    detailsUrl="/realisations/studio-sonore"
+                    detailsUrl={`/realisations/#${p2.projet.slug}`}
                   />
                 </div>
               </article>

@@ -8,17 +8,15 @@ export type Slide = {
   title?: string;
   text?: string;
   meta?: string;
-  cta?: { href: string }; // fallback si pas de siteUrl
+  cta?: { href: string };
 };
 
 export type ProjectSliderProps = {
   slides?: Slide[];
   accent?: string;
   className?: string;
-  /** URL unique du projet (externe) */
-  siteUrl?: string;
-  /** URL interne vers la page réalisation (slug) */
-  detailsUrl?: string;
+  siteUrl?: string; // URL externe
+  detailsUrl?: string; // URL interne "détails"
 };
 
 export default function ProjectSlider({
@@ -30,7 +28,6 @@ export default function ProjectSlider({
 }: ProjectSliderProps): JSX.Element {
   const reduce = useReducedMotion();
 
-  // On garde la longueur et l’ordre, on normalise juste les champs.
   const list: Slide[] = Array.isArray(slides)
     ? slides.map((s) => ({
         img: s?.img ?? "",
@@ -41,7 +38,7 @@ export default function ProjectSlider({
       }))
     : [];
 
-  // ——— Fallback gracieux (aucune slide) ———
+  // Fallback si aucune slide
   if (list.length === 0) {
     return (
       <section
@@ -61,7 +58,6 @@ export default function ProjectSlider({
                 Les slides de ce projet seront ajoutées bientôt.
               </p>
             </div>
-
             {(siteUrl || detailsUrl) && (
               <div className="ps-ctaRow">
                 {siteUrl && (
@@ -70,7 +66,6 @@ export default function ProjectSlider({
                     href={siteUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    data-analytics="cta-projet"
                   >
                     Voir le site
                   </a>
@@ -88,14 +83,14 @@ export default function ProjectSlider({
     );
   }
 
-  // ——— État & helpers ———
+  // État & helpers
   const [index, setIndex] = React.useState(0);
   const len = list.length;
   const safe = (i: number) => ((i % len) + len) % len;
   const go = (dir: 1 | -1) => setIndex((i) => safe(i + dir));
   const set = (i: number) => setIndex(safe(i));
 
-  // Wheel nav (utile si > 1)
+  // Molette
   const wheelRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
     const el = wheelRef.current;
@@ -114,26 +109,60 @@ export default function ProjectSlider({
     return () => el.removeEventListener("wheel", onWheel as any);
   }, [len]);
 
-  // Auto-play doux
+  // Auto-play
   React.useEffect(() => {
     if (reduce || len <= 1) return;
     const id = window.setInterval(() => go(1), 4500);
     return () => window.clearInterval(id);
   }, [reduce, len]);
 
-  // Nav clavier (← / →)
+  // Clavier
   const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "ArrowLeft") go(-1);
     if (e.key === "ArrowRight") go(1);
   };
 
+  // Active: vertical en desktop, horizontal en mobile
+  const [isMobile, setIsMobile] = React.useState(false);
+  React.useEffect(() => {
+    const m = window.matchMedia("(max-width: 768px)");
+    const apply = () => setIsMobile(m.matches);
+    apply();
+    m.addEventListener("change", apply);
+    return () => m.removeEventListener("change", apply);
+  }, []);
+
   const cur = list[index];
-  const href = siteUrl || cur.cta?.href; // priorité au siteUrl
+  const href = siteUrl || cur.cta?.href;
 
   const variants = {
     enter: { opacity: 0, y: 16, scale: 0.98 },
     center: { opacity: 1, y: 0, scale: 1 },
     exit: { opacity: 0, y: -16, scale: 0.98 },
+  };
+
+  // === Dots (inactives gris clair) ===
+  const dotBase: React.CSSProperties = {
+    display: "block",
+    width: 10,
+    height: 10,
+    borderRadius: 999,
+    border: "1px solid rgba(0,0,0,0.18)",
+    background: "#caced8", // ← gris clair
+    opacity: 0.9,
+    padding: 0,
+    margin: 0,
+    transition: "height .25s, width .25s, opacity .2s, background .2s",
+  };
+
+  const dotActive: React.CSSProperties = {
+    ...dotBase,
+    background: "var(--ps-accent)", // prend la CSS var de .ps-card
+    opacity: 1,
+    width: isMobile ? 28 : 10,
+    height: isMobile ? 10 : 28,
+    boxShadow:
+      "0 0 20px color-mix(in oklab, var(--ps-accent) 35%, transparent)",
   };
 
   return (
@@ -180,7 +209,7 @@ export default function ProjectSlider({
           </AnimatePresence>
         </div>
 
-        {/* CONTENT (animé) */}
+        {/* CONTENT */}
         <div className="ps-content">
           <AnimatePresence mode="wait">
             <motion.div
@@ -197,7 +226,28 @@ export default function ProjectSlider({
             </motion.div>
           </AnimatePresence>
 
-          {/* CTA FIXE (non animé, ne saute pas) */}
+          {/* Contrôles */}
+          {len > 1 && (
+            <div className="ps-controls">
+              <button
+                className="ps-arrow"
+                aria-label="Précédent"
+                onClick={() => go(-1)}
+              >
+                ←
+              </button>
+              <div className="ps-track" aria-hidden />
+              <button
+                className="ps-arrow"
+                aria-label="Suivant"
+                onClick={() => go(1)}
+              >
+                →
+              </button>
+            </div>
+          )}
+
+          {/* CTA en bas */}
           {(href || detailsUrl) && (
             <div className="ps-ctaRow">
               {href && (
@@ -207,7 +257,6 @@ export default function ProjectSlider({
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`Voir le site – ${cur.title || "projet"}`}
-                  data-analytics="cta-projet"
                 >
                   Voir le site
                 </a>
@@ -224,40 +273,35 @@ export default function ProjectSlider({
             </div>
           )}
 
-          {/* Contrôles + dots */}
+          {/* DOTS (dans .ps-content) */}
           {len > 1 && (
-            <>
-              <div className="ps-controls">
+            <div
+              className="ps-dots"
+              role="tablist"
+              aria-label="Pagination"
+              style={{
+                position: "absolute",
+                right: 12,
+                bottom: 12,
+                display: "grid",
+                gap: 10,
+                justifyItems: "center",
+                alignContent: "center",
+                zIndex: 5,
+              }}
+            >
+              {list.map((_, i) => (
                 <button
-                  className="ps-arrow"
-                  aria-label="Précédent"
-                  onClick={() => go(-1)}
-                >
-                  ←
-                </button>
-                <div className="ps-track" aria-hidden />
-                <button
-                  className="ps-arrow"
-                  aria-label="Suivant"
-                  onClick={() => go(1)}
-                >
-                  →
-                </button>
-              </div>
-
-              <div className="ps-dots" role="tablist" aria-label="Pagination">
-                {list.map((_, i) => (
-                  <button
-                    key={i}
-                    role="tab"
-                    aria-selected={i === index}
-                    aria-label={`Aller à la diapo ${i + 1}`}
-                    className={`ps-dot ${i === index ? "is-active" : ""}`}
-                    onClick={() => set(i)}
-                  />
-                ))}
-              </div>
-            </>
+                  key={i}
+                  role="tab"
+                  aria-selected={i === index}
+                  aria-label={`Aller à la diapo ${i + 1}`}
+                  className="ps-dot"
+                  style={i === index ? dotActive : dotBase}
+                  onClick={() => set(i)}
+                />
+              ))}
+            </div>
           )}
         </div>
       </div>

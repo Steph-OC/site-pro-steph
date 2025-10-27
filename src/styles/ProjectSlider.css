@@ -1,6 +1,4 @@
-/* =========================
-   ProjectSlider – base
-   ========================= */
+/* ===== ProjectSlider — base ===== */
 .ps-card,
 .ps-card *,
 .ps-card *::before,
@@ -12,19 +10,21 @@
   --ps-accent: var(--orange);
   --ps-bg: var(--card);
   --ps-border: var(--border);
-
+  --pad: clamp(16px, 3vw, 28px);
+  position: relative;
   background: var(--ps-bg);
   border: 1px solid var(--ps-border);
   border-radius: 24px;
-  padding: clamp(16px, 3vw, 28px);
   box-shadow: var(--shadow);
+  overflow: hidden; /* rien ne dépasse */
+  padding: var(--pad);
 }
 
-/* layout interne */
+/* ===== Layout interne ===== */
 .ps-inner {
   display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: clamp(16px, 3vw, 28px);
+  grid-template-columns: 280px 1fr;
+  gap: clamp(14px, 2.4vw, 22px);
   align-items: center;
 }
 @media (max-width: 768px) {
@@ -33,15 +33,20 @@
   }
 }
 
-/* media */
+/* Empêche tout débordement grid */
+.ps-media,
+.ps-content {
+  min-width: 0;
+}
+
+/* ===== Media ===== */
 .ps-media {
   position: relative;
-  width: min(320px, 100%);
-  height: 320px;
+  width: min(280px, 100%);
+  height: 360px;
   border-radius: 20px;
   background: linear-gradient(147deg, #fe8a39 0%, var(--ps-accent) 74%);
   overflow: hidden;
-  /* Glow + halo */
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18),
     0 28px 80px color-mix(in srgb, var(--ps-accent) 28%, transparent),
     0 0 0 1px color-mix(in srgb, #000 6%, transparent) inset;
@@ -78,50 +83,60 @@
   object-fit: cover;
   border-radius: 16px;
 }
-
 @media (max-width: 768px) {
   .ps-media {
-    height: 240px;
+    height: 280px;
   }
 }
 
-/* contenu */
+/* ===== Contenu ===== */
 .ps-content {
-  position: relative;
+  position: relative; /* ancre des dots */
   display: grid;
-  grid-template-rows: auto auto 1fr auto auto; /* meta/titre - texte - CTA - contrôles - dots */
+  grid-template-rows: auto auto 1fr auto auto; /* meta, title, text, controls, cta */
+  grid-template-areas:
+    "meta"
+    "title"
+    "text"
+    "controls"
+    "cta";
   gap: 10px;
-  min-block-size: 240px; /* socle pour stabilité verticale */
+  min-block-size: 320px;
+  padding-inline-end: 56px; /* place réservée aux dots à droite */
+  padding-block-end: 12px; /* petit souffle pour les CTA */
+}
+@media (max-width: 768px) {
+  .ps-content {
+    padding-inline-end: 0;
+  }
 }
 
 .ps-meta {
+  grid-area: meta;
   color: #7b7992;
-  display: block;
   font-weight: 500;
   margin-bottom: 4px;
 }
-
 .ps-title {
+  grid-area: title;
   color: var(--fg);
   font-size: clamp(22px, 3.4vw, 28px);
-  margin: 6px 0 6px;
+  margin: 6px 0;
   letter-spacing: -0.01em;
-  /* clamp titre */
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-
 .ps-text {
+  grid-area: text;
   color: var(--muted);
   line-height: 1.55;
-  /* clamp texte */
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  min-height: 3.2em; /* réserve ≈ 2 lignes même si court */
+  min-height: 3.2em;
 }
 @media (max-width: 768px) {
   .ps-text {
@@ -129,8 +144,15 @@
   }
 }
 
-.ps-cta {
-  margin-top: 6px;
+/* ===== CTA en bas ===== */
+.ps-ctaRow {
+  grid-area: cta;
+  align-self: end;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-start;
+  margin-top: 10px;
+  flex-wrap: nowrap;
 }
 .ps-btn {
   display: inline-flex;
@@ -145,6 +167,7 @@
   font-weight: 600;
   border: 1px solid transparent;
   box-shadow: var(--shadow);
+  white-space: nowrap;
 }
 .ps-btn:hover {
   filter: brightness(1.03);
@@ -153,15 +176,32 @@
   outline: 3px solid color-mix(in srgb, var(--green) 35%, #fff 65%);
   outline-offset: 2px;
 }
+.ps-btn.ps-btn--ghost {
+  background: transparent;
+  color: var(--fg);
+  border: 1px solid var(--border);
+  box-shadow: none;
+}
+.ps-btn.ps-btn--ghost:hover {
+  background: color-mix(in srgb, var(--card) 85%, var(--fg) 15%);
+}
+@media (max-width: 480px) {
+  .ps-ctaRow {
+    flex-wrap: wrap;
+  }
+  .ps-ctaRow .ps-btn {
+    flex: 1 1 auto;
+  }
+}
 
-/* contrôles */
+/* ===== Contrôles ===== */
 .ps-controls {
-  position: relative;
+  grid-area: controls;
   display: flex;
   align-items: center;
   gap: 12px;
   margin-top: clamp(12px, 1.5vw, 18px);
-  min-block-size: 44px; /* réserve l’espace */
+  min-block-size: 44px;
 }
 .ps-track {
   flex: 1;
@@ -180,81 +220,73 @@
   font-weight: 700;
 }
 
-/* dots */
+/* ===== Dots (visibles, actives allongées) ===== */
 .ps-dots {
   position: absolute;
-  inset-inline-end: 12px;
-  inset-block: 0;
+  right: 12px;
+  top: 50%; /* centrées verticalement dans le contenu */
+  transform: translateY(-50%);
   display: grid;
+  gap: 10px;
   justify-items: center;
   align-content: center;
-  gap: 10px;
-  z-index: 3;
-  min-block-size: 28px; /* stabilité */
+  z-index: 3; /* au-dessus du texte/CTA mais dans la card */
+  pointer-events: auto;
 }
-.ps-dot {
+.ps-card .ps-dots .ps-dot {
   width: 10px;
   height: 10px;
   border-radius: 999px;
-  border: none;
-  background: #062744;
-  opacity: 0.25;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: #caced8; /* gris inactives */
+  opacity: 0.8;
+  transition: 0.25s;
+  box-shadow: none;
 }
-.ps-dot.is-active {
+.ps-card .ps-dots .ps-dot.is-active {
   opacity: 1;
   background: var(--ps-accent);
-  box-shadow: 0 0 20px color-mix(in oklab, var(--ps-accent) 30%, transparent);
-  height: 28px;
-  transition: 0.25s;
+  height: 28px; /* allongée (vertical) en desktop */
+  width: 10px;
+  box-shadow: 0 0 20px color-mix(in oklab, var(--ps-accent) 35%, transparent);
 }
 @media (max-width: 768px) {
   .ps-dots {
     position: static;
+    transform: none;
     display: flex;
     gap: 8px;
     margin-top: 12px;
   }
-  .ps-dot.is-active {
+  .ps-card .ps-dots .ps-dot.is-active {
     height: 10px;
     width: 28px;
-  }
+  } /* allongée horizontalement */
 }
 
-/* motion prefs */
-@media (prefers-reduced-motion: reduce) {
-  .ps-card,
-  .ps-media img {
-    animation: none !important;
-    transition: none !important;
-  }
-}
-
-/* =========================
-   Grille projets (2 colonnes fluides, cartes max 730px)
-   ========================= */
-.projects-grid {
+/* ===== Grille “Derniers projets” (HOME) ===== */
+#home .projects-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr)); /* 2 colonnes flex */
-  gap: clamp(24px, 3vw, 44px);
-  align-items: stretch;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(32px, 3.5vw, 48px);
+  align-items: start;
 }
-
-/* Les cartes prennent 100% de leur colonne, mais ne dépassent pas 730px */
-.project-card,
-.project-card .ps-card {
-  width: 100%;
-  max-inline-size: 730px;
-  justify-self: center; /* centrer la carte dans sa colonne */
-}
-
-/* Passer en 1 colonne sur viewport étroit */
 @media (max-width: 980px) {
-  .projects-grid {
+  #home .projects-grid {
     grid-template-columns: 1fr;
   }
 }
 
-/* Hauteur et stabilité */
+#home .project-card,
+#home .project-card .ps-card {
+  max-inline-size: none;
+  justify-self: stretch;
+}
+#home .project-card .ps-card {
+  height: 100%;
+}
+
+/* Stabilité */
 .project-card {
   display: grid;
   position: relative;
@@ -265,11 +297,6 @@
   gap: 10px;
   align-content: start;
 }
-.project-card .ps-card {
-  height: 100%;
-}
-
-/* Hauteur mini commune (ajuste si besoin) */
 .projects-grid .project-card .ps-card {
   min-block-size: 380px;
 }
@@ -278,39 +305,8 @@
     min-block-size: 380px;
   }
 }
-/* CTA fixe sous le texte, independent de l'animation */
-.ps-ctaRow {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  align-items: center;
-  margin-top: 6px;
-}
 
-/* bouton secondaire style "ghost" */
-.ps-btn.ps-btn--ghost {
-  background: transparent;
-  color: var(--fg);
-  border: 1px solid var(--border);
-  box-shadow: none;
-}
-.ps-btn.ps-btn--ghost:hover {
-  background: color-mix(in srgb, var(--card) 85%, var(--fg) 15%);
-}
-/* === Plus de largeur pour le texte === */
-.ps-inner {
-  /* 320px → 280px pour la colonne media */
-  grid-template-columns: 280px 1fr;
-  gap: clamp(14px, 2.4vw, 22px);
-}
-
-.ps-media {
-  width: min(280px, 100%);
-  height: 300px; /* un poil plus compact pour libérer la colonne texte */
-}
-
-@media (max-width: 768px) {
-  .ps-media {
-    height: 240px; /* inchangé côté mobile */
-  }
+/* Halo home un peu contenu */
+#home .project-card::before {
+  inset: -6% -4%;
 }

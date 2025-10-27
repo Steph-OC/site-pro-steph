@@ -1,0 +1,334 @@
+/* =========================
+   ListingCard — base propre
+   ========================= */
+.listingCard,
+.listingCard *,
+.listingCard *::before,
+.listingCard *::after {
+  box-sizing: border-box;
+}
+
+.listingCard {
+  /* Couleurs / thèmes */
+  --accent: var(--orange);
+
+  /* Layout */
+  --col-img: 440px;
+  --img-size: 420px;
+  --img-shift: -80px;
+  --gap: clamp(18px, 3vw, 36px);
+  --pad: clamp(20px, 3.2vw, 32px);
+  --dots-space: 32px;
+
+  /* Footer fixé (desktop) */
+  --footer-h: 48px; /* hauteur mini de la ligne footer (≈ bouton) */
+  --footer-offset: 14px; /* distance du footer depuis le bas */
+
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: var(--pad);
+  box-shadow: var(--shadow);
+  max-inline-size: 1080px;
+  width: 100%;
+  margin-inline: auto;
+}
+
+/* =========================
+   Grille interne (image | contenu)
+   ========================= */
+.listingCard__inner {
+  display: grid;
+  grid-template-columns: var(--col-img) 1fr;
+  gap: var(--gap);
+  align-items: stretch; /* image & colonne texte même hauteur */
+}
+
+/* Anti overflow grid */
+.listingCard__imgWrap,
+.listingCard__content {
+  min-width: 0;
+}
+
+/* =========================
+   Image
+   ========================= */
+.listingCard__imgOverlay {
+  display: none !important;
+}
+
+.listingCard__imgWrap {
+  grid-column: 1;
+  position: relative;
+  width: var(--img-size);
+  height: var(--img-size);
+  transform: translateX(var(--img-shift));
+  border-radius: 20px;
+  overflow: hidden;
+  background: none;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18),
+    0 0 0 1px color-mix(in srgb, #000 6%, transparent) inset;
+}
+.listingCard__imgWrap::after {
+  content: none !important;
+}
+
+.listingCard__img,
+.listingCard__img.ph {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 20px;
+}
+.listingCard__img.ph {
+  background: color-mix(in srgb, var(--fg) 8%, transparent);
+}
+
+/* =========================
+   Contenu (centré verticalement)
+   ========================= */
+.listingCard__content {
+  grid-column: 2;
+  position: relative; /* ancre pour le footer absolu */
+  align-self: stretch; /* même hauteur que l’image */
+  display: grid;
+  grid-auto-rows: max-content; /* pas de 1fr = pas d’espace blanc */
+  align-content: center; /* centrage vertical */
+  row-gap: 12px;
+  padding-inline-end: calc(12px + var(--dots-space));
+  /* réserve la place du footer fixé */
+  padding-block-end: calc(var(--footer-h) + var(--footer-offset));
+  min-block-size: 0;
+}
+
+.listingCard__title {
+  font-size: clamp(22px, 3.4vw, 30px);
+  color: var(--fg);
+  margin: 6px 0 8px;
+  letter-spacing: -0.01em;
+}
+.listingCard__text {
+  color: var(--muted);
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* =========================
+   FOOTER (flèches + piste + CTA) — même ligne
+   ========================= */
+.listingCard__footer {
+  position: absolute; /* fixé en bas de la colonne texte */
+  left: 0;
+  right: calc(12px + var(--dots-space)); /* garde la colonne des dots */
+  bottom: var(--footer-offset);
+
+  display: flex;
+  align-items: center;
+  gap: 12px; /* espace entre bloc flèches et bouton */
+  min-height: var(--footer-h);
+}
+
+/* Bloc FLÈCHES compact */
+.listingCard__controls {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* rapproche les flèches */
+  margin: 0; /* aucune marge parasite */
+}
+.listingCard__arrow {
+  inline-size: 34px;
+  block-size: 34px;
+  border-radius: 12px;
+  border: 0;
+  cursor: pointer;
+  background: color-mix(in srgb, var(--fg) 10%, transparent);
+  color: var(--fg);
+  font-weight: 700;
+}
+.listingCard__arrow:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--green) 35%, #fff 65%);
+  outline-offset: 2px;
+}
+
+/* Piste courte (entre les flèches) */
+.listingCard__track {
+  flex: 0 0 clamp(120px, 22vw, 220px);
+  width: clamp(120px, 22vw, 220px);
+  height: 4px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--border) 60%, transparent);
+}
+
+/* CTA aligné sur la même ligne */
+.listingCard__actions {
+  display: flex;
+  align-items: center;
+  margin: 0;
+}
+.listingCard__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 22px;
+  min-height: 44px;
+  border-radius: 999px;
+  background: var(--orange);
+  color: #23212e;
+  text-decoration: none;
+  font-weight: 600;
+  border: 1px solid transparent;
+  box-shadow: var(--shadow);
+  white-space: nowrap;
+}
+.listingCard__button:hover {
+  filter: brightness(1.03);
+}
+.listingCard__button:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--green) 35%, #fff 65%);
+  outline-offset: 2px;
+}
+
+/* =========================
+   Dots — colonne droite centrée
+   ========================= */
+.listingCard__dots {
+  position: absolute;
+  right: var(--pad);
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  gap: 10px;
+  z-index: 4;
+  pointer-events: auto;
+}
+.dot {
+  inline-size: 10px;
+  block-size: 10px;
+  border-radius: 999px;
+  border: none;
+  appearance: none;
+  background: #caced8;
+  opacity: 0.7;
+  cursor: pointer;
+  transition: block-size 0.25s, inline-size 0.25s, opacity 0.2s,
+    background-color 0.2s;
+}
+.dot.is-active {
+  opacity: 1;
+  background: var(--green);
+  inline-size: 10px;
+  block-size: 28px;
+  box-shadow: 0 0 20px color-mix(in oklab, var(--accent) 30%, transparent);
+}
+.dot:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--green) 35%, #fff 65%);
+  outline-offset: 2px;
+}
+
+/* =========================
+   Halo (option)
+   ========================= */
+.project-card {
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
+}
+.project-card::before {
+  content: "";
+  position: absolute;
+  inset: -12% -8%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    60% 50% at 35% 40%,
+    rgba(255, 229, 59, 0.28) 0%,
+    transparent 70%
+  );
+  filter: saturate(108%) contrast(104%);
+}
+
+/* =========================
+   Grille page Réalisations
+   ========================= */
+.section--halo .container .projects-grid {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  row-gap: clamp(40px, 5vw, 80px) !important;
+  column-gap: 0 !important;
+}
+
+/* =========================
+   Responsive
+   ========================= */
+@media (max-width: 1200px) {
+  .listingCard {
+    --col-img: 400px;
+    --img-size: 400px;
+    --img-shift: -72px;
+  }
+}
+@media (max-width: 1024px) {
+  .listingCard {
+    --col-img: 360px;
+    --img-size: 360px;
+    --img-shift: -64px;
+  }
+}
+@media (max-width: 768px) {
+  .listingCard {
+    --img-size: 300px;
+    --img-shift: 0px;
+  }
+
+  .listingCard__inner {
+    grid-template-columns: 1fr;
+    align-items: start; /* pas de centrage sur mobile */
+  }
+  .listingCard__imgWrap {
+    width: 92%;
+    height: var(--img-size);
+    transform: none;
+    margin: 0 auto;
+  }
+  .listingCard__content {
+    align-self: start;
+    align-content: start; /* texte en haut */
+    padding-inline-end: 0;
+    padding-block-end: 0; /* footer redevient dans le flux */
+  }
+  .listingCard__footer {
+    position: static;
+    margin-top: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .listingCard__track {
+    flex: 1 1 auto;
+    width: auto;
+  }
+
+  .listingCard__dots {
+    position: static;
+    transform: none;
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    justify-content: center;
+    right: auto;
+  }
+  .dot.is-active {
+    block-size: 10px;
+    inline-size: 28px;
+  }
+}
+
+/* =========================
+   Dark mode
+   ========================= */
+:root[data-theme="dark"] .listingCard__imgWrap {
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.28),
+    0 0 0 1px color-mix(in srgb, #fff 10%, transparent) inset;
+}

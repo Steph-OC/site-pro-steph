@@ -1,111 +1,182 @@
 ---
-// src/pages/realisations/index.astro
-import Layout from "@/layouts/SiteLayout.astro";
-import ProjetCard from "@/components/ProjetCard.astro";
-import { getProjets } from "@/lib/wp";
+import SiteLayout from "@/layouts/SiteLayout.astro";
+import ListingProjectCard from "@/components/ListingProjectCard";
+import { Reveal } from "@/components/Scroll";
+import {
+  getProjectsPage,
+  projectSiteUrl,
+  listCardTitle,
+  listCardIntro,
+  listCardAccent,
+  toSlidesForListing,
+} from "@/lib/wp";
 
-let projets = [];
-let wpOK = true;
+export const prerender = true;
 
-try {
-  projets = await getProjets({ per_page: 12 });
-} catch (e) {
-  console.error("[WP] Réalisations:", e);
-  wpOK = false;
+const basePath = "/realisations";
+const title = "Réalisations";
+const description =
+  "Sélection de projets WordPress récents : vitrine, blog, sur-mesure — rapides, accessibles, bien référencés.";
+
+const url = new URL(Astro.request.url);
+const page = Math.max(1, Number(url.searchParams.get("page") ?? "1") || 1);
+const PER_PAGE = 9;
+
+const {
+  items = [],
+  pages = 1,
+  total = 0,
+} = await getProjectsPage({
+  page,
+  perPage: PER_PAGE,
+});
+
+const cards = await Promise.all(
+  items.map(async (p) => ({
+    slug: p.slug,
+    title: listCardTitle(p) ?? (p.title?.rendered || "Projet"),
+    intro: listCardIntro(p) ?? "",
+    accent: listCardAccent(p) ?? "#fd3838",
+    slides: await toSlidesForListing(p, 4),
+    siteUrl: projectSiteUrl(p),
+  }))
+);
+
+/** Halo vars stables par slug (JS pur) */
+function hexToRgbTuple(hex) {
+  const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  if (!m) return null;
+  return [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)];
+}
+function haloVarsFromSlug(slug, accent) {
+  let h = 7;
+  for (const ch of slug) h = (h * 31 + ch.charCodeAt(0)) % 100000;
+
+  const hx = 18 + (h % 64);
+  const hy = 22 + (Math.floor(h / 97) % 58);
+  const sx = 52 + (Math.floor(h / 113) % 18);
+  const sy = 44 + (Math.floor(h / 137) % 14);
+
+  let rgbStr = "";
+  if (accent && accent.startsWith("#")) {
+    const t = hexToRgbTuple(accent);
+    if (t) rgbStr = `${t[0]},${t[1]},${t[2]}`;
+  } else if (accent && accent.startsWith("rgb")) {
+    const m = accent.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
+    if (m) rgbStr = `${m[1]},${m[2]},${m[3]}`;
+  }
+  if (!rgbStr) {
+    const palette = ["255,229,59", "253,56,56", "254,138,57"];
+    rgbStr = palette[h % palette.length];
+  }
+  const alpha = 0.22 + (Math.floor(h / 997) % 16) / 100; // 0.22–0.38
+
+  return {
+    "--halo-x": `${Math.round(hx)}%`,
+    "--halo-y": `${Math.round(hy)}%`,
+    "--halo-sx": `${Math.round(sx)}%`,
+    "--halo-sy": `${Math.round(sy)}%`,
+    "--halo-rgba": `rgba(${rgbStr},${alpha.toFixed(2)})`,
+  };
 }
 ---
 
-<Layout
-  title="Réalisations — sélection de projets"
-  description="Exemples concrets pour pros : ce qui bloquait, ce que nous avons amélioré, et l’impact."
->
-  <section class="hero">
-    <h1>Réalisations</h1>
-    <p class="lead">
-      Exemples de projets pour TPE/PME et indépendants : résumé clair, lien vers
-      le site en ligne.
-    </p>
-  </section>
+<SiteLayout {title} {description}>
+  <main class="halo-desync halo-page realisations-page">
+    <!-- entête visuel -->
+    <section
+      class="section--halo halo-pulse-gentle"
+      aria-labelledby="realisations-title"
+    >
+      <div class="container container--xl">
+        <header class="section-head">
+          <h1 id="realisations-title" class="h2">{title}</h1>
+          <p class="section-sub">{description}</p>
+        </header>
+      </div>
+    </section>
 
-  {
-    !wpOK ? (
-      <p role="status">
-        Les projets sont momentanément indisponibles. Réessayez dans un instant.
-      </p>
-    ) : projets.length === 0 ? (
-      <p>Aucune réalisation publiée pour le moment.</p>
-    ) : (
-      <>
-        <h2 class="visually-hidden">Liste de projets</h2>
-        <ul class="grid works" aria-label="Réalisations">
-          {projets.map((p) => (
-            <li class="item">
-              <ProjetCard p={p} />
-            </li>
-          ))}
-        </ul>
+    <!-- grille des cartes -->
+    <section
+      class="section--halo halo-pulse-gentle"
+      aria-label="Liste des réalisations"
+    >
+      <div class="container container--xl">
+        {
+          cards.length === 0 ? (
+            <p class="muted">Aucune réalisation pour le moment.</p>
+          ) : (
+            <div class="projects-grid">
+              {cards.map((c, idx) => (
+                <Reveal
+                  client:visible
+                  direction={idx % 2 === 0 ? "left" : "right"}
+                  delay={idx * 0.04}
+                >
+                  {/* style = variables de halo seedées par le slug */}
+                  <article
+                    id={c.slug}
+                    class="card project-card"
+                    style={haloVarsFromSlug(c.slug, c.accent)}
+                  >
+                    <div class="card__body">
+                      <h3 class="h3">{c.title}</h3>
+                      {c.intro && <p class="muted">{c.intro}</p>}
+                      <ListingProjectCard
+                        client:visible
+                        slides={c.slides}
+                        title={c.title}
+                        intro={c.intro}
+                        accent={c.accent}
+                        ctaHref={c.siteUrl || `${basePath}/${c.slug}`}
+                        ctaLabel="Voir le site"
+                      />
+                    </div>
+                  </article>
+                </Reveal>
+              ))}
+            </div>
+          )
+        }
 
-        <section class="cta">
-          <h2 class="visually-hidden">Passer à l’action</h2>
-          <a class="btn btn--accent" href="/contact/">
-            Vous voulez un résultat similaire ? Planifier un appel 15&nbsp;min
-          </a>
-        </section>
-      </>
-    )
-  }
-</Layout>
+        <nav
+          class="pagination"
+          aria-label="Pagination"
+          style="margin-top: var(--space-6, 32px);"
+        >
+          <span class="pagination__count"
+            >{total} projets · page {page}/{pages}</span
+          >
+          <div class="pagination__actions">
+            {
+              page > 1 ? (
+                <a href={`${basePath}?page=${page - 1}`} rel="prev">
+                  ← Précédent
+                </a>
+              ) : (
+                <span aria-disabled="true">← Précédent</span>
+              )
+            }
+            {
+              page < pages ? (
+                <a href={`${basePath}?page=${page + 1}`} rel="next">
+                  Suivant →
+                </a>
+              ) : (
+                <span aria-disabled="true">Suivant →</span>
+              )
+            }
+          </div>
+        </nav>
+      </div>
+    </section>
+  </main>
 
-<style>
-  .visually-hidden {
-    position: absolute !important;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-    border: 0;
-  }
-
-  .works {
-    list-style: none;
-    padding: 0;
-    margin: 1rem 0 0;
-    display: grid;
-    gap: 16px;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 300px));
-    justify-content: center;
-    align-items: start;
-  }
-
-  .works .item {
-    max-width: 300px;
-    justify-self: center;
-  }
-
-  /* Bouton / CTA */
-  .cta {
-    display: grid;
-    place-items: center;
-    margin: 1.2rem 0 0;
-  }
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.65rem 0.9rem;
-    border-radius: 12px;
-    text-decoration: none;
-    border: 1px solid var(--border);
-    background: var(--primary);
-    color: #23212e;
-    box-shadow: var(--shadow);
-  }
-  .btn--accent {
-    background: var(--orange);
-    border-color: transparent;
-    color: #23212e;
-  }
-</style>
+  <!-- SEO -->
+  <Fragment slot="head">
+    <link
+      rel="canonical"
+      href={`${Astro.site}${basePath}${page > 1 ? `?page=${page}` : ""}`}
+    />
+  </Fragment>
+</SiteLayout>
