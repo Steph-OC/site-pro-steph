@@ -1,5 +1,6 @@
 ---
 import SiteLayout from "@/layouts/SiteLayout.astro";
+import ApproachStagger from "@/components/ApproachStagger";
 import Hero from "@/components/Hero.astro";
 import Services from "@/components/Services";
 import BadgesMotion from "@/components/BadgesMotion";
@@ -144,7 +145,15 @@ const p2 = data?.[1];
         }
       </div>
     </section>
-
+    <!-- Approche -->
+    <section
+      class="section--halo halo-pulse-gentle"
+      aria-labelledby="approach-title"
+    >
+      <div class="container container--xl">
+        <ApproachStagger client:visible />
+      </div>
+    </section>
     <!-- Témoignage / Zones -->
     <section class="container section--halo halo-pulse-gentle">
       <div class="grid">

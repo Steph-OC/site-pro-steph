@@ -1,10 +1,19 @@
-/* src/components/ApproachStagger.css */
+/* ===== ApproachStagger — compat Vite (sans 'translate:') ===== */
+.approach-stagger {
+  --rail-h: 4px;
+  --stem: 52px;
+  --col-gap: clamp(40px, 7vw, 110px);
+  --card-max: clamp(360px, 28vw, 520px); /* ← cartes plus larges */
+  --delay-step: 0.12s;
+  position: relative;
+  margin-block: clamp(60px, 8vw, 140px);
+  overflow-y: visible;
+}
 
 /* Titre */
 .approach-stagger .approach__title {
   text-align: center;
-  margin: 0 0 clamp(16px, 2vw, 28px);
-  margin-bottom: clamp(38px, 6vw, 82px) !important;
+  margin: 0 0 clamp(38px, 6vw, 82px) !important;
 }
 
 /* Grille + rail */
@@ -12,41 +21,41 @@
   position: relative;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(16px, 2.4vw, 28px);
-  margin: 0;
+  gap: var(--col-gap);
   padding: clamp(20px, 3vw, 36px) 0;
-  overflow: visible; /* évite que les cartes se fassent couper */
+  overflow: visible;
 }
-
 .approach-stagger .stagger__rail {
   position: absolute;
-  left: 0;
-  right: 0;
+  left: clamp(-64px, -10vw, -130px);
+  right: clamp(-64px, -10vw, -130px);
   top: 50%;
-  height: 2px;
+  height: var(--rail-h);
   transform: translateY(-50%);
   background: color-mix(in srgb, var(--border) 80%, var(--gray) 8%);
-  border-radius: 2px;
-  z-index: 0;
+  border-radius: 999px;
   pointer-events: none;
+  z-index: 0;
 }
 
-/* Item */
+/* Items */
 .approach-stagger .stagger__item {
   position: relative;
-  padding-block: clamp(100px, 12vw, 140px); /* + d’air car cartes plus larges */
+  padding-block: clamp(110px, 12vw, 160px);
   opacity: 0;
   transform: translateY(12px) scale(0.98);
-  z-index: 1;
   will-change: transform, opacity;
 }
+.approach-stagger.is-inview .stagger__item {
+  animation: as-rise 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+  animation-delay: calc(var(--i, 0) * var(--delay-step));
+}
 
-/* Dot (anneau coloré + point centré) */
+/* Dot */
 .approach-stagger .stagger__dot {
   position: absolute;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%);
   width: 30px;
   height: 30px;
   border-radius: 999px;
@@ -54,17 +63,23 @@
   border: 4px solid color-mix(in srgb, var(--gray) 35%, var(--border));
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
   z-index: 2;
+  opacity: 0;
+  transform: translate(-50%, -50%); /* ← compat */
 }
 .approach-stagger .stagger__dot::after {
   content: "";
   position: absolute;
-  top: 50%;
   left: 50%;
+  top: 50%;
   width: 10px;
   height: 10px;
   border-radius: 999px;
   transform: translate(-50%, -50%);
   background: color-mix(in srgb, var(--gray) 45%, var(--card));
+}
+.approach-stagger.is-inview .stagger__dot {
+  animation: as-dot 700ms cubic-bezier(0.22, 0.8, 0.2, 1) forwards;
+  animation-delay: calc(var(--i, 0) * var(--delay-step));
 }
 /* couleurs */
 .approach-stagger .c-1 .stagger__dot {
@@ -80,12 +95,11 @@
   border-color: color-mix(in srgb, var(--green) 65%, var(--orange) 35%);
 }
 
-/* Carte + tige */
+/* Cartes + tiges (jonction rail assurée) */
 .approach-stagger .stagger__card {
   position: absolute;
   left: 50%;
-  transform: translateX(-50%);
-  width: clamp(320px, 28vw, 420px) !important; /* élargies + priorité */
+  width: var(--card-max);
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 14px;
@@ -93,34 +107,33 @@
   text-align: center;
   box-shadow: var(--shadow);
   opacity: 0;
-  will-change: transform;
+  z-index: 1;
+  transform: translateX(-50%); /* ← compat */
 }
 .approach-stagger .top .stagger__card {
-  bottom: calc(50% + 22px);
+  bottom: calc(50% + var(--stem) + var(--rail-h) / 2); /* ← touche le rail */
 }
 .approach-stagger .bottom .stagger__card {
-  top: calc(50% + 22px);
+  top: calc(50% + var(--stem) + var(--rail-h) / 2); /* ← touche le rail */
 }
-
 .approach-stagger .top .stagger__card::after,
 .approach-stagger .bottom .stagger__card::after {
   content: "";
   position: absolute;
   left: 50%;
   width: 2px;
-  transform: translateX(-50%);
   background: color-mix(in srgb, var(--border) 80%, var(--gray) 8%);
+  transform: translateX(-50%);
+  height: calc(var(--stem) + var(--rail-h) / 2); /* ← même longueur */
 }
 .approach-stagger .top .stagger__card::after {
   top: 100%;
-  height: 22px;
 }
 .approach-stagger .bottom .stagger__card::after {
   bottom: 100%;
-  height: 22px;
 }
 
-/* Contenu */
+/* Contenu carte */
 .approach-stagger .stagger__icon {
   display: inline-grid;
   place-items: center;
@@ -150,7 +163,6 @@
   color: color-mix(in srgb, var(--green) 75%, #000 25%);
   border-color: color-mix(in srgb, var(--green) 38%, transparent);
 }
-
 .approach-stagger .stagger__title {
   margin: 0 0 4px;
   font: 700 clamp(1rem, 0.92rem + 0.4vw, 1.12rem) var(--font-title);
@@ -162,20 +174,20 @@
   font-size: 0.98rem;
 }
 
-/* Hover (desktop) */
+/* Hover */
 @media (hover: hover) {
   .approach-stagger .stagger__card {
     transition: transform 0.25s ease, box-shadow 0.25s ease,
       border-color 0.25s ease;
   }
   .approach-stagger .stagger__item:hover .stagger__card {
-    transform: translateX(-50%) translateY(-2px);
+    transform: translate(-50%, -2px);
     box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
     border-color: color-mix(in srgb, var(--gray) 18%, var(--border));
   }
 }
 
-/* Breakpoints : 2 colonnes avant mobile */
+/* Breakpoints */
 @media (max-width: 1200px) {
   .approach-stagger .stagger {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -185,6 +197,8 @@
   .approach-stagger .stagger {
     grid-template-columns: 1fr;
     padding-left: 28px;
+    gap: clamp(18px, 4vw, 24px);
+    justify-items: center;
   }
   .approach-stagger .stagger__rail {
     left: 14px;
@@ -208,7 +222,7 @@
     position: relative;
     left: 0;
     transform: none;
-    width: 100% !important;
+    width: 100%;
     margin-left: 18px;
   }
   .approach-stagger .stagger__card::after {
@@ -216,14 +230,14 @@
   }
 }
 
-/* Animations (au scroll seulement) */
-@keyframes approach-stagger-rise {
+/* Animations */
+@keyframes as-rise {
   to {
     opacity: 1;
     transform: none;
   }
 }
-@keyframes popDot {
+@keyframes as-dot {
   0% {
     transform: translate(-50%, -50%) scale(0.85);
     opacity: 0;
@@ -238,45 +252,36 @@
   }
 }
 @keyframes slideUp {
-  0% {
+  from {
     opacity: 0;
-    transform: translate(-50%, 10px) rotate3d(1, 0, 0, 4deg);
+    transform: translate(-50%, 10px);
   }
-  100% {
+  to {
     opacity: 1;
-    transform: translate(-50%, 0) rotate3d(1, 0, 0, 0);
+    transform: translate(-50%, 0);
   }
 }
 @keyframes slideDown {
-  0% {
+  from {
     opacity: 0;
-    transform: translate(-50%, -10px) rotate3d(1, 0, 0, -4deg);
+    transform: translate(-50%, -10px);
   }
-  100% {
+  to {
     opacity: 1;
-    transform: translate(-50%, 0) rotate3d(1, 0, 0, 0);
+    transform: translate(-50%, 0);
   }
 }
 
-.approach-stagger.is-inview .stagger__item {
-  animation: approach-stagger-rise 0.7s cubic-bezier(0.22, 0.61, 0.36, 1)
-    forwards;
-  animation-delay: calc(var(--i, 0) * 0.12s);
-}
-.approach-stagger.is-inview .stagger__item .stagger__dot {
-  animation: popDot 700ms cubic-bezier(0.22, 0.8, 0.2, 1) forwards;
-  animation-delay: calc(var(--i, 0) * 0.12s);
-}
 .approach-stagger.is-inview .stagger__item.top .stagger__card {
   animation: slideUp 680ms cubic-bezier(0.22, 0.8, 0.2, 1) forwards;
-  animation-delay: calc(var(--i, 0) * 0.12s + 0.1s);
+  animation-delay: calc(var(--i, 0) * var(--delay-step) + 0.1s);
 }
 .approach-stagger.is-inview .stagger__item.bottom .stagger__card {
   animation: slideDown 680ms cubic-bezier(0.22, 0.8, 0.2, 1) forwards;
-  animation-delay: calc(var(--i, 0) * 0.12s + 0.1s);
+  animation-delay: calc(var(--i, 0) * var(--delay-step) + 0.1s);
 }
 
-/* Réduction de mouvement */
+/* A11y */
 @media (prefers-reduced-motion: reduce) {
   .approach-stagger .stagger__rail,
   .approach-stagger .stagger__item,
@@ -286,238 +291,4 @@
     opacity: 1;
     transform: none !important;
   }
-}
-/* ===== Scope composant (ajout de variables pour régler tout d’un coup) ===== */
-.approach-stagger {
-  /* épaisseur de la ligne */
-  --rail-h: 4px;
-  /* espace carte ↔ ligne (longueur de la tige) */
-  --stem: 28px;
-  /* écart horizontal entre cartes */
-  --col-gap: clamp(28px, 4.8vw, 64px);
-  /* largeur max des cartes */
-  --card-max: min(460px, 95%);
-}
-
-/* ===== Grille + rail ===== */
-.approach-stagger .stagger {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  /* ⬅️ plus d’espace entre les cartes */
-  gap: var(--col-gap);
-  list-style: none;
-  margin: 0;
-  /* un peu plus d’air autour de la ligne */
-  padding: clamp(20px, 3vw, 36px) 0;
-}
-
-.approach-stagger .stagger__rail {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  /* ⬅️ rail plus épais */
-  height: var(--rail-h);
-  transform: translateY(-50%);
-  background: color-mix(in srgb, var(--border) 80%, var(--gray) 8%);
-  border-radius: 999px;
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* ===== Item ===== */
-.approach-stagger .stagger__item {
-  position: relative;
-  /* ⬅️ on augmente le “coussin” au-dessus et au-dessous de la ligne */
-  padding-block: clamp(110px, 12vw, 160px);
-  opacity: 0;
-  transform: translateY(12px) scale(0.98);
-  animation: approach-stagger-rise 0.7s cubic-bezier(0.22, 0.61, 0.36, 1)
-    forwards;
-  animation-delay: calc(var(--i, 0) * 120ms);
-  will-change: transform, opacity;
-  z-index: 1;
-}
-
-/* ===== Cartes + tiges ===== */
-.approach-stagger .stagger__card {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  /* ⬅️ cartes un peu plus larges */
-  width: var(--card-max);
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 16px 18px;
-  text-align: center;
-  box-shadow: var(--shadow);
-  will-change: transform;
-  z-index: 1;
-}
-
-/* ⬅️ distance carte ↔ ligne (utilise --stem) */
-.approach-stagger .top .stagger__card {
-  bottom: calc(50% + var(--stem));
-}
-.approach-stagger .bottom .stagger__card {
-  top: calc(50% + var(--stem));
-}
-
-/* ⬅️ longueur de la tige (même valeur) */
-.approach-stagger .top .stagger__card::after {
-  top: 100%;
-  height: var(--stem);
-}
-.approach-stagger .bottom .stagger__card::after {
-  bottom: 100%;
-  height: var(--stem);
-}
-
-/* Mobile : on garde les valeurs par défaut */
-@media (max-width: 800px) {
-  .approach-stagger .stagger {
-    grid-template-columns: 1fr;
-    padding-left: 28px;
-    gap: clamp(18px, 4vw, 24px);
-    justify-items: center;
-  }
-  .approach-stagger .stagger__card {
-    width: var(
-      --card-max
-    ) !important; /* ← protège contre tout “min(300px, 92%)” résiduel */
-    max-width: none; /* au cas où */
-    min-width: 0;
-  }
-}
-/* === Réglages d’espacement === */
-.approach-stagger {
-  /* épaisseur déjà réglée plus haut; je laisse telle quelle */
-  --rail-h: 4px;
-
-  /* ↔️ écart horizontal entre cartes (beaucoup plus large) */
-  --col-gap: clamp(40px, 7vw, 110px);
-
-  /* ↕️ distance carte ↔ ligne (longueur de la tige) */
-  --stem: 52px; /* ex : 44–56px si tu veux encore plus d’air */
-
-  /* ➕ le rail “déborde” à gauche/droite pour paraître plus long */
-  --rail-bleed: clamp(64px, 10vw, 130px);
-
-  /* largeur max des cartes (optionnel, un poil plus large) */
-  --card-max: min(380px, 38vw, 560px);
-}
-
-/* grille : utilise l’écart horizontal */
-.approach-stagger .stagger {
-  gap: var(--col-gap);
-}
-
-/* rail : déborde à gauche/droite pour sembler plus long */
-.approach-stagger .stagger__rail {
-  left: calc(-1 * var(--rail-bleed));
-  right: calc(-1 * var(--rail-bleed));
-  height: var(--rail-h);
-  border-radius: 999px;
-}
-
-/* cartes un peu plus larges (optionnel) */
-.approach-stagger .stagger__card {
-  width: var(--card-max);
-}
-
-/* ↕️ applique la nouvelle distance carte ↔ ligne */
-.approach-stagger .top .stagger__card {
-  bottom: calc(50% + var(--stem));
-}
-.approach-stagger .bottom .stagger__card {
-  top: calc(50% + var(--stem));
-}
-
-/* tiges reliées au centre du point avec la même longueur */
-.approach-stagger .top .stagger__card::after {
-  top: 100%;
-  height: var(--stem);
-}
-.approach-stagger .bottom .stagger__card::after {
-  bottom: 100%;
-  height: var(--stem);
-}
-/* === Slow-down (override léger) ========================================= */
-.approach-stagger {
-  /* cadence plus tranquille */
-  --delay-step: 0.82s; /* avant ~.12s */
-  --ease: cubic-bezier(0.22, 0.8, 0.2, 1);
-
-  /* durées principales */
-  --dur-rise: 0.9s; /* apparition du container */
-  --dur-dot: 1.1s; /* pop du gros point */
-  --dur-card: 1s; /* slide des cartes */
-  --dur-ripple: 1.3s; /* halo autour du point */
-}
-
-/* 1) apparition des items (rise) */
-.approach-stagger .stagger__item {
-  animation-duration: var(--dur-rise) !important;
-}
-
-/* 2) dot + ripple plus lents */
-.approach-stagger.is-inview .stagger__item .stagger__dot {
-  animation: popDot var(--dur-dot) var(--ease) forwards !important;
-  animation-delay: calc(var(--i, 0) * var(--delay-step)) !important;
-}
-.approach-stagger.is-inview .stagger__item .stagger__dot::after {
-  animation: ripple var(--dur-ripple) ease-out forwards !important;
-  animation-delay: calc(var(--i, 0) * var(--delay-step) + 0.18s) !important;
-}
-
-/* 3) cartes en montée/descente plus lentes + délai un peu plus long */
-.approach-stagger.is-inview .stagger__item.top .stagger__card {
-  animation: slideUp var(--dur-card) var(--ease) forwards !important;
-  animation-delay: calc(var(--i, 0) * var(--delay-step) + 0.18s) !important;
-}
-.approach-stagger.is-inview .stagger__item.bottom .stagger__card {
-  animation: slideDown var(--dur-card) var(--ease) forwards !important;
-  animation-delay: calc(var(--i, 0) * var(--delay-step) + 0.18s) !important;
-}
-
-/* accessibilité: inchangé */
-@media (prefers-reduced-motion: reduce) {
-  .approach-stagger .stagger__item,
-  .approach-stagger .stagger__dot,
-  .approach-stagger .stagger__card {
-    animation: none !important;
-    opacity: 1;
-    transform: none !important;
-  }
-}
-/* Espace au-dessus et au-dessous de la section */
-.approach-stagger {
-  margin-block: clamp(60px, 8vw, 140px);
-}
-
-/* Fallback vieux navigateurs qui ne gèrent pas margin-block */
-@supports not (margin-block: 1px) {
-  .approach-stagger {
-    margin-top: clamp(60px, 8vw, 140px);
-    margin-bottom: clamp(60px, 8vw, 140px);
-  }
-}
-/* === Espacement de section (sans rien casser) === */
-.approach-stagger {
-  margin-block: clamp(60px, 8vw, 140px);
-}
-
-/* Fallback vieux navigateurs */
-@supports not (margin-block: 1px) {
-  .approach-stagger {
-    margin-top: clamp(60px, 8vw, 140px);
-    margin-bottom: clamp(60px, 8vw, 140px);
-  }
-}
-
-/* Espace sous le titre (prend le dessus sans affecter le reste) */
-.approach-stagger > .approach__title {
-  margin-block-end: clamp(38px, 6vw, 82px) !important;
 }
