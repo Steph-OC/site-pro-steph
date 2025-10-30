@@ -1,0 +1,360 @@
+/* =======================
+   RÉGLAGES DIMENSIONS
+   ======================= */
+
+/* Hauteur mini du viewport des témoignages (0 = auto, sinon fixe) */
+.testim {
+  --tc-min-h: 420px; /* ← mets 0 pour laisser la hauteur suivre le texte */
+  --tc-max-w: 1020px; /* ← largeur max de .wrap */
+  --tc-pad-top: 40px; /* ← padding haut du composant */
+  --tc-pad-bottom: 90px; /* ← padding bas (prévois la place des dots) */
+
+  /* Placement flèches & dots */
+  --tc-arrow-offset: 10px; /* ← distance des flèches au bord gauche/droit */
+  --tc-dots-bottom: 48px; /* ← distance des dots par rapport au bas */
+
+  /* Couleurs & halo */
+  --tc-fg: #eee;
+  --tc-bg: transparent;
+  --tc-accent: #ea830e; /* couleur d’accent (remplissage de la dot active) */
+  --tc-accent-rgb: 234, 131, 14; /* utile si tu veux un halo orangé */
+  --tc-halo-rgb: 255, 255, 255; /* ← HALO BLANC (autour de la dot active) */
+
+  /* Gabarits internes */
+  --tc-avatar: 100px; /* diamètre avatar (image/initiales) */
+  --tc-name-gap: 15px; /* espace sous l’avatar avant le nom */
+  --tc-text-width: 80%; /* largeur du paragraphe */
+  --tc-line-height: 1.6; /* interlignage */
+}
+
+/* =======================
+   STRUCTURE DE BASE
+   ======================= */
+
+.testim {
+  width: 100%;
+  position: relative;
+  color: var(--tc-fg);
+  background: var(--tc-bg);
+  border-radius: 14px;
+  padding: var(--tc-pad-top) 0 var(--tc-pad-bottom);
+  margin-inline: auto;
+}
+
+.testim .wrap {
+  position: relative;
+  width: 100%;
+  max-width: var(--tc-max-w);
+  padding: 0 20px;
+  margin: 0 auto;
+}
+
+/* Viewport des slides : min-height contrôlée par --tc-min-h */
+.testim .cont {
+  position: relative;
+  overflow: hidden;
+  min-height: var(--tc-min-h);
+}
+
+/* Slide */
+.testim .cont > div {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto auto 1fr; /* avatar / nom / texte */
+  align-content: start;
+  justify-items: center;
+  padding-bottom: calc(
+    var(--tc-dots-bottom) + 10px
+  ); /* laisse la place aux dots */
+  width: 100%;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity, transform;
+  text-align: center; /* centrage du contenu */
+}
+.testim .cont > div.active {
+  position: relative;
+  opacity: 1;
+  z-index: 1;
+  pointer-events: auto;
+}
+
+/* Avatar (taille contrôlée) */
+.testim .cont .img img,
+.t-avatar {
+  width: var(--tc-avatar);
+  height: var(--tc-avatar);
+  border-radius: 50%;
+  margin: 0 auto;
+  display: block;
+}
+.t-avatar {
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-weight: 700;
+  font-family: var(--font-title, inherit);
+}
+.t-avatar--initials {
+  font-size: calc(var(--tc-avatar) * 0.2);
+}
+.t-avatar--generic {
+  background: linear-gradient(135deg, #6b7280 0%, #374151 100%);
+}
+
+/* Nom + texte (largeur & line-height contrôlés) */
+.testim .cont h2 {
+  margin: var(--tc-name-gap) 0 0;
+  font-size: 1em;
+  color: var(--tc-accent);
+  font-family: var(--font-title, inherit);
+}
+.testim .cont p {
+  width: min(var(--tc-text-width), 75ch);
+  margin: 10px auto 0;
+  line-height: var(--tc-line-height);
+  text-align: center;
+}
+
+/* =======================
+   FLÈCHES & DOTS (placement)
+   ======================= */
+
+.testim .arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--tc-fg);
+  background: transparent;
+  border: 0;
+  line-height: 1;
+  font-size: 2em;
+  padding: 5px;
+  z-index: 3;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+.testim .arrow.left {
+  left: var(--tc-arrow-offset);
+}
+.testim .arrow.right {
+  right: var(--tc-arrow-offset);
+}
+.testim .arrow:hover {
+  color: var(--tc-accent);
+}
+
+/* Dots centrés horizontalement, hauteur contrôlée */
+.testim .tc-dots {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--tc-dots-bottom);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  z-index: 5; /* au-dessus du contenu pour voir le halo */
+  height: 12px;
+}
+.testim .tc-dots li {
+  list-style: none;
+}
+
+.testim .tc-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid var(--tc-fg);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative; /* pour le halo/ombre */
+}
+
+/* Dot active : remplissage accent + HALO BLANC (box-shadow) */
+.testim .tc-dot.active {
+  background: var(--tc-accent);
+  border-color: var(--tc-accent);
+  box-shadow: 0 0 0 6px rgba(var(--tc-halo-rgb), 0.28),
+    /* anneau doux blanc */ 0 0 14px 4px rgba(var(--tc-halo-rgb), 0.38); /* glow blanc */
+  animation: tc-dot-pulse 1.2s ease-out;
+}
+
+/* Petite pulsation à l’activation */
+@keyframes tc-dot-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--tc-halo-rgb), 0.55),
+      0 0 0 0 rgba(var(--tc-halo-rgb), 0.3);
+  }
+  60% {
+    box-shadow: 0 0 0 10px rgba(var(--tc-halo-rgb), 0),
+      0 0 18px 10px rgba(var(--tc-halo-rgb), 0.25);
+  }
+  100% {
+    box-shadow: 0 0 0 14px rgba(var(--tc-halo-rgb), 0),
+      0 0 0 14px rgba(var(--tc-halo-rgb), 0);
+  }
+}
+
+/* accessibilité : pas d’animations si l’utilisateur les réduit */
+@media (prefers-reduced-motion: reduce) {
+  .testim .tc-dot.active {
+    animation: none;
+  }
+}
+
+/* =======================
+   EFFETS DE TRANSITION ENTRE AVIS
+   ======================= */
+
+.testim .cont > div {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+.testim .cont > div.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* keyframes internes (avatar/nom/texte) */
+.testim .cont > div.active .img img {
+  animation: testim-show 0.5s ease-in-out forwards;
+}
+.testim .cont > div.active h2 {
+  animation: testim-content-in 0.4s ease-in-out forwards;
+}
+.testim .cont > div.active p {
+  animation: testim-content-in 0.5s ease-in-out forwards;
+}
+.testim .cont > div.inactive .img img {
+  animation: testim-hide 0.5s ease-in-out forwards;
+}
+.testim .cont > div.inactive h2 {
+  animation: testim-content-out0.4s ease-in-out forwards;
+}
+.testim .cont > div.inactive p {
+  animation: testim-content-out0.5s ease-in-out forwards;
+}
+
+@keyframes testim-content-in {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes testim-content-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+}
+@keyframes testim-show {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes testim-hide {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0);
+  }
+}
+
+/* =======================
+   VARIANTE : CONTAINER “GLASS”
+   ======================= */
+/* Ajoute simplement la classe "testim--glass" à la section :
+   <section class="testim testim--glass"> … */
+.testim--glass {
+  background: rgba(
+    255,
+    255,
+    255,
+    0.06
+  ); /* fond non totalement transparent pour activer le blur */
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
+  backdrop-filter: blur(14px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+}
+
+/* =======================
+   RESPONSIVE
+   ======================= */
+@media (max-width: 600px) {
+  .testim {
+    --tc-min-h: 360px; /* ↓ un peu moins haut sur mobile */
+    --tc-dots-bottom: 64px; /* ↑ remonte un peu les dots si besoin */
+    --tc-text-width: 90%;
+  }
+}
+/* === Halo BLANC sur la dot active === */
+.testim .tc-dots {
+  z-index: 5;
+} /* s'assure que le halo passe devant */
+.testim .tc-dot.active {
+  background: var(--tc-accent, #ea830e);
+  border-color: var(--tc-accent, #ea830e);
+  /* halo/pulse 100% blanc */
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.22),
+    0 0 14px 6px rgba(255, 255, 255, 0.38);
+  animation: tc-dot-pulse-white 1.2s ease-out;
+}
+@keyframes tc-dot-pulse-white {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.55),
+      0 0 0 0 rgba(255, 255, 255, 0.35);
+  }
+  60% {
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0),
+      0 0 22px 10px rgba(255, 255, 255, 0.35);
+  }
+  100% {
+    box-shadow: 0 0 0 14px rgba(255, 255, 255, 0),
+      0 0 0 14px rgba(255, 255, 255, 0);
+  }
+}
+
+/* === Effet GLASS sur le container de slide actif ===
+   (appliqué si on ajoute la classe .testim--glass au composant) */
+.testim.testim--glass .cont > div.active {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: clamp(16px, 2vw, 28px); /* ajoute du confort autour du contenu */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* optionnel : un léger “lift” à l’apparition */
+.testim.testim--glass .cont > div.active {
+  transform: translateY(0);
+}

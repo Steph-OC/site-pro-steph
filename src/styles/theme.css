@@ -46,7 +46,7 @@
   );
 
   /* Rythme vertical */
-  --section-gap: clamp(36px, 6.5vw, 88px);
+  --section-gap: clamp(66px, 8vw, 120px);
   --section-gap-lg: clamp(56px, 8.5vw, 132px);
 
   /* Typo */
@@ -978,3 +978,35 @@ html {
 .project-card {
   scroll-margin-top: 96px;
 } /* ajuste à la hauteur de ton header */
+/* 1) Un seul rythme d'écart externe pour TOUTES les sections du <main> */
+:root {
+  --section-rhythm: clamp(
+    100px,
+    10vw,
+    200px
+  ); /* ajuste ici si tu veux + ou - d'air */
+}
+
+/* 2) Applique ce rythme uniquement en marge externe, pas en padding */
+main#home > section {
+  margin-block: var(--section-rhythm); /* ← au lieu de var(--section-gap-lg) */
+}
+
+/* 3) La section Services rajoutait son propre margin : on le neutralise */
+.services {
+  margin-block: 0; /* ← avant : var(--section-gap-lg) */
+  /* on laisse son padding interne si tu le souhaites */
+}
+
+/* 4) Harmonise le padding interne des variantes visuelles (même valeur) 
+      -> l'aspect reste, mais l'espace perçu aux bords est cohérent */
+.section--alt,
+.section--stripe,
+.section--cut {
+  padding-block: clamp(20px, 3.5vw, 32px);
+}
+
+/* (facultatif mais conseillé) éviter un cas spécial d’écart supplémentaire */
+.hero + .container {
+  margin-top: 0;
+}

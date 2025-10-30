@@ -1,6 +1,6 @@
 // src/lib/wp.ts
 // ———————————————————————————————————————————
-// Helpers WordPress REST + ACF (CPT: "projets")
+// Helpers WordPress REST + ACF (CPT: "projets" + "temoignage(s)")
 // ———————————————————————————————————————————
 
 type WPImage = {
@@ -44,12 +44,14 @@ export type SliderSlide = {
   // plus de CTA par slide (un seul bouton / projet)
 };
 
+// ——— Base WP (unique pour tout le fichier) ———
 const WP = (import.meta.env.WP_URL || "").replace(/\/+$/, "");
 if (!WP) console.warn("[wp.ts] WP_URL manquant dans .env");
+const WP_API = `${WP}/wp-json/wp/v2`;
 
 async function wpFetch<T = any>(path: string): Promise<T> {
   if (!WP) throw new Error("WP_URL manquant dans .env");
-  const url = `${WP}/wp-json/wp/v2${path}`;
+  const url = `${WP_API}${path}`;
   const res = await fetch(url, { headers: { Accept: "application/json" } });
   if (!res.ok) throw new Error(`WP ${res.status}: ${url}`);
   return res.json() as Promise<T>;
@@ -105,7 +107,7 @@ export function normalizeProjet(item: WPItem): NormalizedProjet {
 }
 
 // ———————————————————————————————————————————
-// LISTES
+// LISTES (projets & posts)
 // ———————————————————————————————————————————
 
 export async function getProjets({ per_page = 12, page = 1 } = {}) {
@@ -137,7 +139,7 @@ export async function getPostBySlug(slug: string) {
 }
 
 // ———————————————————————————————————————————
-// ACF helpers (slides fixes)
+// ACF helpers (slides fixes) pour Projets
 // ———————————————————————————————————————————
 
 /** util: vrai si valeur ressemble à un ID numérique (ex "76") */
@@ -196,7 +198,7 @@ export async function toSlidesFixed(
 }
 
 // ———————————————————————————————————————————
-/** 2 projets pour “Derniers projets” + champs ACF utiles */
+// 2 projets pour “Derniers projets” + champs ACF utiles
 // ———————————————————————————————————————————
 export async function getDerniersProjetsAvecSlides(limit = 2) {
   const fields = [
@@ -204,8 +206,8 @@ export async function getDerniersProjetsAvecSlides(limit = 2) {
     "slug",
     "title",
     "excerpt",
-    "acf.card_title",   // 👈 ajouté
-    "acf.card_intro",   // 👈 ajouté
+    "acf.card_title",
+    "acf.card_intro",
     "acf.project_subtitle",
     "acf.subtitle",
     "acf.subtitle_1",
@@ -228,8 +230,8 @@ export async function getDerniersProjetsAvecSlides(limit = 2) {
       projet: normalizeProjet(it),
       subtitle: projectSubtitle(it),
       slides: await toSlidesFixed(it),
-      cardTitle: projectCardTitle(it), // 👈 renvoyé pour la page
-      cardIntro: projectCardIntro(it), // 👈 renvoyé pour la page
+      cardTitle: projectCardTitle(it),
+      cardIntro: projectCardIntro(it),
     }))
   );
 
@@ -243,8 +245,8 @@ export async function getProjetBySlugWithACF(slug: string) {
     "slug",
     "title",
     "content",
-    "acf.card_title",   // 👈 ajouté
-    "acf.card_intro",   // 👈 ajouté
+    "acf.card_title",
+    "acf.card_intro",
     "acf.project_subtitle",
     "acf.subtitle",
     "acf.subtitle_1",
@@ -269,10 +271,11 @@ export async function getProjetBySlugWithACF(slug: string) {
     subtitle: projectSubtitle(item),
     slides: await toSlidesFixed(item, 8),
     cardTitle: projectCardTitle(item),
-    cardIntro: projectCardIntro(item), 
+    cardIntro: projectCardIntro(item),
   };
 }
-// -- Helpers LISTING --
+
+// ——— Helpers LISTING (réalisations) ———
 export function listCardTitle(item?: WPItem) {
   const v = item?.acf?.list_card_title;
   return typeof v === "string" && v.trim() ? v.trim() : undefined;
@@ -318,10 +321,17 @@ export async function toSlidesForListing(item?: WPItem, maxSlides = 4) {
 
   return slides;
 }
-// --- Listing avec pagination & champs utiles pour /realisations ---
-export async function getProjectsPage({ page = 1, perPage = 9 }: { page?: number; perPage?: number }) {
+
+/** Listing avec pagination & champs utiles pour /realisations */
+export async function getProjectsPage({
+  page = 1,
+  perPage = 9,
+}: {
+  page?: number;
+  perPage?: number;
+}) {
   if (!WP) throw new Error("WP_URL manquant dans .env");
-  const url = new URL(`${WP}/wp-json/wp/v2/projets`);
+  const url = new URL(`${WP_API}/projets`);
 
   const fields = [
     "id,slug,title,excerpt",
@@ -356,4 +366,162 @@ export async function getProjectsPage({ page = 1, perPage = 9 }: { page?: number
   const items = (await res.json()) as WPItem[];
 
   return { items, total, pages };
+}
+
+// ———————————————————————————————————————————
+// Témoignages (CPT temoignage / temoignages) + DEBUG
+// ———————————————————————————————————————————
+
+export type Testimonial = {
+  id: number;
+  quote: string;
+  /** ACF: full_name ; on duplique aussi dans author pour compat */
+  full_name?: string;
+  author?: string;
+  date?: string;
+  source?: "google" | "linkedin";
+  sourceUrl?: string;
+};
+
+export type TestimonialsResult = {
+  items: Testimonial[];
+  _debug: {
+    tried: string[];   // URLs testées
+    hit?: string;      // URL qui a marché
+    rows?: number;     // nb d'objets bruts
+    mapped?: number;   // nb après mapping (quote + nom)
+    note?: string;     // commentaire
+  };
+};
+
+function stripTagsPreserveNewlines(html = "") {
+  return html.replace(/<\/?[^>]+(>|$)/g, "").replace(/\r\n/g, "\n").trim();
+}
+
+async function fetchMaybe(url: URL) {
+  const res = await fetch(url.toString(), {
+    cache: "no-store",
+    headers: { Accept: "application/json" },
+  });
+  if (!res.ok) return null;
+  const json = await res.json();
+  return Array.isArray(json) ? json : null;
+}
+
+function toSource(v: unknown): "google" | "linkedin" | undefined {
+  if (typeof v !== "string") return undefined;
+  const s = v.toLowerCase().trim();
+  return s === "google" || s === "linkedin" ? s : undefined;
+}
+
+/** Mapping permissif: supporte ACF (quote, full_name) + fallback excerpt/title */
+function mapRowsLoose(rows: any[] = []): Testimonial[] {
+  return rows
+    .map((r) => {
+      const a = r.acf || r.acf_fields || {};
+      const quote = stripTagsPreserveNewlines(
+        a.quote || r.excerpt?.rendered || r.content?.rendered || ""
+      );
+      const fullname = (a.full_name || r.title?.rendered || "").trim();
+
+      return {
+        id: r.id,
+        quote,
+        full_name: fullname,  // pour le composant
+        author: fullname,     // compat si un autre composant lit "author"
+        date: a.date || undefined,
+        source: toSource(a.source),
+        sourceUrl: a.source_url || undefined,
+      } as Testimonial;
+    })
+    .filter((t) => t.quote && (t.full_name || t.author));
+}
+
+/**
+ * Essaie plusieurs variantes :
+ * - rest_base : "temoignage" puis "temoignages"
+ * - _fields : jeu complet pour conserver les fallbacks (title/excerpt/content)
+ * - status : publish → sans filtre
+ * - lang (Polylang) : par défaut "fr"
+ * - tri : date DESC
+ */
+export async function getTemoignages(
+  limit = 3,
+  lang = "fr"
+): Promise<TestimonialsResult> {
+  const WP = (import.meta.env.WP_URL || "").replace(/\/+$/, "");
+  if (!WP) throw new Error("WP_URL manquant dans .env");
+  const WP_API = `${WP}/wp-json/wp/v2`;
+
+  const bases = ["temoignage", "temoignages"];
+  // IMPORTANT : inclure title/excerpt/content pour nos fallbacks
+  const fieldSets = [
+    "id,acf,title,excerpt,content",
+    "id,acf_fields,title,excerpt,content",
+    "" // no _fields
+  ];
+  const statuses = ["publish", "" /* no status */];
+
+  const tried: string[] = [];
+
+  for (const base of bases) {
+    for (const fields of fieldSets) {
+      for (const status of statuses) {
+        const url = new URL(`${WP_API}/${base}`);
+        url.searchParams.set("per_page", String(limit));
+        url.searchParams.set("orderby", "date");
+        url.searchParams.set("order", "desc");
+        if (status) url.searchParams.set("status", status);
+        if (fields) url.searchParams.set("_fields", fields);
+        if (lang) url.searchParams.set("lang", lang);
+
+        tried.push(url.toString());
+
+        const rows = await fetchMaybe(url);
+        if (!rows) continue;
+
+        const mapped = mapRowsLoose(rows);
+        if (mapped.length) {
+          return {
+            items: mapped,
+            _debug: {
+              tried,
+              hit: url.toString(),
+              rows: rows.length,
+              mapped: mapped.length,
+              note: !fields
+                ? "ACF récupéré sans _fields (serveur/extension filtrant la sortie)"
+                : undefined,
+            },
+          };
+        }
+
+        // Données trouvées mais champs attendus manquants
+        if (rows.length > 0) {
+          return {
+            items: [],
+            _debug: {
+              tried,
+              hit: url.toString(),
+              rows: rows.length,
+              mapped: 0,
+              note:
+                "Objets trouvés mais champs ACF (quote/full_name) absents : vérifie l’emplacement du groupe ACF (post type ‘temoignage’) et ‘Afficher dans l’API REST’.",
+            },
+          };
+        }
+      }
+    }
+  }
+
+  return {
+    items: [],
+    _debug: {
+      tried,
+      rows: 0,
+      mapped: 0,
+      note:
+        "Aucun endpoint REST n’a répondu. Vérifie le REST base du CPT (singulier/pluriel) et réenregistre les permaliens.",
+    },
+  };
 }

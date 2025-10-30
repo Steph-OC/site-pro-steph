@@ -80,10 +80,11 @@ export default function ApproachStagger() {
       aria-labelledby="approach-title"
     >
       <div className="container container--xl approach-stagger__inner">
-        <h2 id="approach-title" className="approach__title">
-          Mon approche
-        </h2>
-
+        <header className="section-head">
+          <h2 id="approach-title" className="approach__title">
+            Mon approche
+          </h2>
+        </header>
         <div className="stagger">
           <div className="stagger__rail" aria-hidden="true" />
           {steps.map(({ Icon, title, text }, i) => (

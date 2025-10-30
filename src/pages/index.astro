@@ -6,19 +6,30 @@ import Services from "@/components/Services";
 import BadgesMotion from "@/components/BadgesMotion";
 import ProjectSlider from "@/components/ProjectSlider";
 import { Reveal, RevealGroup } from "@/components/Scroll";
+import TestimonialsCodepen from "@/components/TestimonialsCodepen";
+import "@/styles/testimonials-codepen.css";
 import "@/styles/badges.css";
 
-// WP helpers (slides + card_title/intro + siteUrl)
-import { getDerniersProjetsAvecSlides } from "@/lib/wp";
+// WP helpers (slides + card_title/intro + siteUrl + temoignages)
+import { getDerniersProjetsAvecSlides, getTemoignages } from "@/lib/wp";
 
 const title = "Développeuse WordPress freelance — Stéphanie Quibel";
 const description =
   "Sites WordPress rapides, accessibles et bien référencés. Refonte, création, maintenance. Réponse sous 24h.";
 
-// Charge 2 projets depuis WP (ACF Free, champs fixes)
+// Projets (ACF Free, champs fixes)
 const data = await getDerniersProjetsAvecSlides(2);
 const p1 = data?.[0];
 const p2 = data?.[1];
+
+// Témoignages
+const { items: temoins } = await getTemoignages(10);
+
+// Normalisation : s’assurer que full_name est toujours présent
+const safeTemoins = (temoins ?? []).map((t) => ({
+  ...t,
+  full_name: (t.full_name ?? t.author ?? "").trim(),
+}));
 ---
 
 <SiteLayout {title} {description}>
@@ -57,7 +68,7 @@ const p2 = data?.[1];
       </div>
     </section>
 
-    <!-- Services (animés via RevealGroup) -->
+    <!-- Services -->
     <section
       class="section--halo halo-pulse-gentle"
       aria-labelledby="services-title"
@@ -87,7 +98,7 @@ const p2 = data?.[1];
       aria-labelledby="dern-projets"
     >
       <header class="section-head">
-        <h2 id="dern-projets">Derniers projets</h2>
+        <h2 id="dern-projets">Mes derniers projets</h2>
         <p class="section-sub">
           Deux sites récents, avec leurs fonctionnalités clés.
         </p>
@@ -105,7 +116,6 @@ const p2 = data?.[1];
                       p1.subtitle ??
                       "Focus sur les fonctionnalités marquantes."}
                   </p>
-
                   <ProjectSlider
                     client:visible
                     slides={p1.slides}
@@ -130,7 +140,6 @@ const p2 = data?.[1];
                       p2.subtitle ??
                       "Navigation fluide, mode sombre et galerie optimisée."}
                   </p>
-
                   <ProjectSlider
                     client:visible
                     slides={p2.slides}
@@ -145,6 +154,7 @@ const p2 = data?.[1];
         }
       </div>
     </section>
+
     <!-- Approche -->
     <section
       class="section--halo halo-pulse-gentle"
@@ -154,35 +164,51 @@ const p2 = data?.[1];
         <ApproachStagger client:visible />
       </div>
     </section>
-    <!-- Témoignage / Zones -->
-    <section class="container section--halo halo-pulse-gentle">
-      <div class="grid">
-        <article class="card">
-          <div class="card__body">
-            <h2>Témoignage</h2>
-            <p>
-              “Clair, rapide, efficace. On a gagné en visibilité et en
-              contacts.”
-            </p>
-            <p class="muted">— Client satisfait</p>
-          </div>
-        </article>
 
-        <article class="card">
-          <div class="card__body local">
-            <h2>Zones desservies</h2>
-            <p class="muted">
-              Béziers, Agde, Pézenas… et à distance partout en France.
+    <!-- Témoignages -->
+    <section
+      class="section--halo halo-pulse-gentle"
+      aria-labelledby="temoin-title"
+    >
+      <div class="container container--xl">
+        <header class="section-head">
+          <h2 id="temoin-title">Collaborations</h2>
+          <p class="section-sub">Quelques retours de clients.</p>
+        </header>
+
+        {
+          safeTemoins.length > 0 ? (
+            <TestimonialsCodepen
+              items={safeTemoins}
+              speedMs={4500}
+              avatarMode="initials"
+              client:visible
+            />
+          ) : (
+            <p class="muted" style="text-align:center">
+              Aucun témoignage…
             </p>
-            <iframe
-              title="Plan Béziers"
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-              src="https://maps.google.com/maps?q=B%C3%A9ziers&t=&z=12&ie=UTF8&iwloc=&output=embed"
-            ></iframe>
-          </div>
-        </article>
+          )
+        }
       </div>
+    </section>
+
+    <!-- Zones desservies -->
+    <section class="container section--halo halo-pulse-gentle">
+      <article class="card">
+        <div class="card__body local">
+          <h2>Zones desservies</h2>
+          <p class="muted">
+            Béziers, Agde, Pézenas… et à distance partout en France.
+          </p>
+          <iframe
+            title="Plan Béziers"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            src="https://maps.google.com/maps?q=B%C3%A9ziers&t=&z=12&ie=UTF8&iwloc=&output=embed"
+          ></iframe>
+        </div>
+      </article>
     </section>
 
     <!-- FAQ -->
