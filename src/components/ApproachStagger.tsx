@@ -1,4 +1,3 @@
-// src/components/ApproachStagger.tsx
 import { Users, Gauge, Heart, ShieldCheck } from "lucide-react";
 import { useEffect, useRef } from "react";
 import "./ApproachStagger.css";
@@ -33,7 +32,7 @@ export default function ApproachStagger() {
     const el = rootRef.current;
     if (!el) return;
 
-    let armed = true; // évite double déclenchement
+    let armed = true;
 
     const io = new IntersectionObserver(
       (entries) => {
@@ -41,7 +40,6 @@ export default function ApproachStagger() {
         if (!entry) return;
 
         if (entry.isIntersecting && armed) {
-          // On déclenche UNE SEULE FOIS puis on arrête d'observer
           el.classList.add("is-inview");
           armed = false;
           io.unobserve(el);
@@ -49,16 +47,13 @@ export default function ApproachStagger() {
         }
       },
       {
-        // déclenche dès que ~10% du bloc est visible
         threshold: 0.1,
-        // tolérance en bas pour ne pas rater le trigger sur grands écrans
         rootMargin: "0px 0px -10% 0px",
       }
     );
 
     io.observe(el);
 
-    // Fallback: si l’IO ne déclenche pas (cas rare), on force après 800ms
     const t = window.setTimeout(() => {
       if (armed) {
         el.classList.add("is-inview");
@@ -85,6 +80,7 @@ export default function ApproachStagger() {
             Mon approche
           </h2>
         </header>
+
         <div className="stagger">
           <div className="stagger__rail" aria-hidden="true" />
           {steps.map(({ Icon, title, text }, i) => (

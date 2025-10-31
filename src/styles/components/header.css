@@ -1,0 +1,61 @@
+@layer components {
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    -webkit-backdrop-filter: saturate(180%) blur(6px);
+    backdrop-filter: saturate(180%) blur(6px);
+    background: color-mix(in srgb, var(--bg) 85%, transparent 15%);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 1rem;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--fg);
+  }
+  nav ul {
+    display: flex;
+    gap: 0.9rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  nav a {
+    text-decoration: none;
+    padding: 0.5rem 0.65rem;
+    border-radius: 10px;
+  }
+  nav a[aria-current="page"] {
+    background: var(--card);
+    border: 1px solid var(--border);
+  }
+  header nav li {
+    display: flex;
+  }
+  header .nav a,
+  header .nav .btn,
+  #theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+    padding-block: 0.5rem;
+  }
+  #theme-toggle {
+    gap: 0.25rem;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    html.use-ios-pointer body {
+      cursor: none;
+    }
+  }
+}

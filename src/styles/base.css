@@ -1,0 +1,138 @@
+@layer base {
+  :root {
+    --white: #ffffff;
+    --offwhite: #f8f8f4;
+    --gray: #3c394c;
+    --green: #799a79;
+    --orange: #d98a4d;
+
+    --bg: var(--offwhite);
+    --fg: #1d1b26;
+    --muted: #5c596e;
+    --card: #ffffff;
+    --border: #e8e6ef;
+    --link: var(--gray);
+
+    --btn-bg: var(--green);
+    --btn-fg: #ffffff;
+    --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    --page-pad: clamp(16px, 5vw, 50px);
+
+    /* HERO */
+    --hero-max: 1280px;
+    --hero-grid-left: 0.9fr;
+    --hero-grid-right: 1.1fr;
+
+    /* Visuel PC */
+    --pc-max: 1000px;
+    --pc-scale: 1.6;
+    --pc-tilt-y: -18deg;
+    --pc-tilt-x: 5deg;
+
+    /* Surfaces (clair) */
+    --pc-surface: var(--card);
+    --pc-surface-2: color-mix(in srgb, var(--card) 85%, var(--bg) 15%);
+    --pc-chrome: color-mix(in srgb, var(--gray) 15%, var(--card) 85%);
+    --pc-border-strong: color-mix(in srgb, var(--gray) 42%, var(--border) 58%);
+    --pc-code-dim: color-mix(in srgb, var(--gray) 46%, transparent 54%);
+    --pc-shadow: color-mix(in srgb, #000 28%, transparent 72%);
+    --pc-contour: color-mix(in srgb, var(--gray) 45%, transparent 55%);
+    --pc-shine-color: color-mix(
+      in srgb,
+      var(--offwhite) 38%,
+      var(--offwhite) 62%
+    );
+
+    /* Rythme vertical (token unique) */
+    --section-gap: clamp(66px, 8vw, 120px);
+    --section-gap-lg: clamp(56px, 8.5vw, 132px);
+    --section-rhythm: clamp(100px, 10vw, 200px);
+
+    /* Typo */
+    --font-title: "Josefin Sans", system-ui, sans-serif;
+    --font-text: "Lato", system-ui, sans-serif;
+
+    /* Curseur (lib iOS pointer) */
+    --cursor-color: #1d1b26;
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #23212e;
+    --fg: #f4f4f1;
+    --muted: #c6c6c1;
+    --card: #2a2738;
+    --border: #3b3950;
+    --link: var(--fg);
+    --btn-bg: var(--green);
+    --btn-fg: #ffffff;
+    --shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+
+    --pc-surface: color-mix(in srgb, var(--bg) 86%, #fff 14%);
+    --pc-surface-2: color-mix(in srgb, var(--bg) 82%, #fff 18%);
+    --pc-chrome: color-mix(in srgb, var(--bg) 80%, #fff 20%);
+    --pc-code-dim: color-mix(in srgb, var(--fg) 55%, transparent 45%);
+    --pc-shadow: color-mix(in srgb, #000 45%, transparent 55%);
+    --pc-contour: color-mix(in srgb, #a9a6c4 44%, transparent 56%);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+    }
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      color-scheme: light;
+    }
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+  html,
+  body {
+    overflow-x: clip;
+  }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-text);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-title);
+    letter-spacing: -0.01em;
+  }
+
+  a {
+    color: var(--link);
+    text-decoration-color: color-mix(in srgb, var(--link) 42%, transparent 58%);
+  }
+  a:hover {
+    color: color-mix(in srgb, var(--link) 88%, #000 12%);
+    text-decoration-thickness: 0.12em;
+  }
+  a:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--green) 35%, #fff 65%);
+    outline-offset: 2px;
+  }
+
+  .container {
+    width: 100%;
+    padding-inline: var(--page-pad);
+  }
+
+  /* Icônes du bouton thème */
+  .theme-icon {
+    display: none;
+  }
+  :root[data-theme="light"] .theme-icon--sun {
+    display: inline;
+  }
+  :root[data-theme="dark"] .theme-icon--moon {
+    display: inline;
+  }
+}

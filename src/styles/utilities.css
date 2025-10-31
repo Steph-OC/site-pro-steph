@@ -1,0 +1,27 @@
+@layer utilities {
+  .visually-hidden {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .muted {
+    color: var(--muted);
+  }
+  .actions {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+  .grid {
+    display: grid;
+    gap: clamp(16px, 2.2vw, 24px);
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+}

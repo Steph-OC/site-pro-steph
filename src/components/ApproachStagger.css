@@ -1,3 +1,14 @@
+/* Ajoute simplement ce bloc (garde le reste de tes règles existantes) */
+@layer components {
+  /* Titre local au composant */
+  :where(.approach__title) {
+    text-align: center;
+    margin: 0 0 clamp(16px, 2vw, 28px);
+  }
+}
+
+/* …tes styles actuels d’ApproachStagger restent ici, inchangés */
+
 /* ===== ApproachStagger — compat Vite (sans 'translate:') ===== */
 .approach-stagger {
   --rail-h: 4px;

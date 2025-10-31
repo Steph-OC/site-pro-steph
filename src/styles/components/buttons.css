@@ -1,0 +1,26 @@
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.62rem 0.9rem;
+    border-radius: 12px;
+    text-decoration: none;
+    border: 1px solid var(--border);
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+  }
+  .btn:hover {
+    filter: brightness(1.03);
+    box-shadow: var(--shadow);
+  }
+  .btn--ghost {
+    background: transparent;
+    color: var(--fg);
+  }
+  .btn--accent {
+    background: var(--orange);
+    border-color: transparent;
+    color: #23212e;
+  }
+}

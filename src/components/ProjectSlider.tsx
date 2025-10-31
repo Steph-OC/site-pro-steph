@@ -1,7 +1,7 @@
 // src/components/ProjectSlider.tsx
 import React from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import "@/styles/ProjectSlider.css";
+import "./ProjectSlider.css";
 
 export type Slide = {
   img?: string;

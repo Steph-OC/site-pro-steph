@@ -1,6 +1,6 @@
 import React from "react";
 import { Settings, BadgeCheck, MessageSquareText } from "lucide-react";
-
+import "@/styles/components/services.css";
 export default function Services() {
   return (
     <ul className="services__grid" role="list">

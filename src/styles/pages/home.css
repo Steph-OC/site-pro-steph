@@ -1,0 +1,297 @@
+@layer components {
+  .hero {
+    position: relative;
+    border-bottom: 0;
+    overflow: visible;
+    padding-block: clamp(44px, 8vw, 120px) clamp(24px, 4vw, 48px);
+  }
+  .hero__inner {
+    max-width: var(--hero-max);
+    margin: 0 auto;
+    padding-inline: clamp(12px, 2vw, 24px);
+    position: relative;
+    z-index: 1;
+  }
+  .hero__bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+  .hero > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Aurora large qui déborde généreusement */
+  .hero .hero__bg::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100dvw;
+    pointer-events: none;
+    z-index: 0;
+    top: -16vh;
+    bottom: -45vh;
+    --a1: color-mix(in srgb, var(--green) 70%, #7dd3fc 30%);
+    --a2: color-mix(in srgb, var(--orange) 75%, #e879f9 25%);
+    --a3: color-mix(in srgb, #7c3aed 65%, #22d3ee 35%);
+    background: radial-gradient(
+        800px 420px at 10% 10%,
+        color-mix(in srgb, var(--a2) 52%, transparent) 0%,
+        transparent 70%
+      ),
+      radial-gradient(
+        700px 380px at 85% 8%,
+        color-mix(in srgb, var(--a1) 48%, transparent) 0%,
+        transparent 72%
+      ),
+      conic-gradient(
+        from 200deg at 55% 35%,
+        color-mix(in srgb, var(--a3) 22%, transparent) 0 20%,
+        transparent 35% 55%,
+        color-mix(in srgb, var(--a1) 18%, transparent) 70%,
+        transparent 100%
+      ),
+      radial-gradient(
+        160% 90% at 50% -10%,
+        color-mix(in srgb, var(--card) 80%, transparent) 0%,
+        transparent 60%
+      ),
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--bg) 85%, var(--card) 15%) 0%,
+        color-mix(in srgb, var(--bg) 100%, var(--card) 0%) 60%
+      );
+    -webkit-mask-image: linear-gradient(
+      #000,
+      #000 calc(100% - 16vh),
+      transparent
+    );
+    mask-image: linear-gradient(#000, #000 calc(100% - 16vh), transparent);
+    filter: saturate(110%) contrast(102%);
+  }
+  :root[data-theme="dark"] .hero .hero__bg::before {
+    --a1: color-mix(in srgb, var(--green) 55%, #60a5fa 45%);
+    --a2: color-mix(in srgb, var(--orange) 55%, #f472b6 45%);
+    --a3: color-mix(in srgb, #8b5cf6 60%, #06b6d4 40%);
+    filter: saturate(100%) brightness(95%);
+  }
+
+  .hero__grid {
+    display: grid;
+    gap: clamp(16px, 3vw, 32px);
+    align-items: center;
+  }
+  .hero__grid.has-visual {
+    grid-template-columns: var(--hero-grid-left) var(--hero-grid-right);
+  }
+  @media (max-width: 900px) {
+    .hero__grid.has-visual {
+      grid-template-columns: 1fr;
+    }
+  }
+  .hero__visual {
+    min-height: 280px;
+    display: grid;
+    place-items: center;
+  }
+  .hero h1 {
+    margin: 0 0 0.5rem;
+  }
+  .hero p {
+    margin: 0.2rem 0 1rem;
+    color: var(--muted);
+    max-width: 70ch;
+  }
+
+  /* --- Visuel PC : animations & tilt --- */
+  .pc {
+    width: 100%;
+    max-width: var(--pc-max);
+    height: auto;
+  }
+  .pc-tilt {
+    position: relative;
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    transform: scale(var(--pc-scale)) rotateY(var(--pc-tilt-y))
+      rotateX(var(--pc-tilt-x));
+    transform-origin: 50% 50%;
+    transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1),
+      filter 0.35s ease;
+    filter: drop-shadow(
+      0 24px 40px color-mix(in srgb, var(--gray) 22%, transparent 78%)
+    );
+    will-change: transform, filter;
+    overflow: visible;
+  }
+  .pc [data-role="chassis"],
+  .pc [data-role="screen"] {
+    stroke: var(--pc-contour);
+    stroke-width: 1px;
+    vector-effect: non-scaling-stroke;
+  }
+  .pc-gloss {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: 20px;
+    background: linear-gradient(
+      120deg,
+      color-mix(in srgb, var(--white) 14%, transparent 86%) 10%,
+      transparent 35%,
+      transparent 65%,
+      color-mix(in srgb, var(--white) 10%, transparent 90%) 90%
+    );
+    mix-blend-mode: screen;
+    opacity: 0.35;
+    transform: translateZ(1px);
+    mask-image: radial-gradient(100% 100% at 0 0, #000 0, transparent 70%);
+  }
+  html[data-theme="dark"] .pc-gloss {
+    display: none;
+  }
+  html[data-theme="dark"] .pc-tilt {
+    filter: none;
+  }
+
+  /* Animations hero */
+  .hero__visual .code-run {
+    animation: codeScroll var(--t) linear infinite both;
+    will-change: transform;
+  }
+  .hero__visual .code-fade {
+    animation: codeFade var(--t) linear infinite both;
+    will-change: opacity;
+  }
+  .hero__visual #siteLayer {
+    animation: siteFade var(--t) linear infinite both;
+    will-change: opacity;
+  }
+
+  @keyframes codeScroll {
+    0% {
+      transform: translateY(0);
+    }
+    70.98% {
+      transform: translateY(calc(-1 * var(--chunk)));
+    }
+    100% {
+      transform: translateY(calc(-1 * var(--chunk)));
+    }
+  }
+  @keyframes codeFade {
+    0%,
+    70.98% {
+      opacity: 1;
+    }
+    73.67%,
+    97.34% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  @keyframes siteFade {
+    0%,
+    70.98% {
+      opacity: 0;
+    }
+    73.67%,
+    97.34% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @media (hover: hover) {
+    .hero__visual .pc-tilt {
+      cursor: pointer;
+      transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1),
+        filter 0.35s ease;
+    }
+    .hero__visual .pc-tilt:hover {
+      transform: scale(calc(var(--pc-scale) * 1.02))
+        rotateY(calc(var(--pc-tilt-y) + 6deg))
+        rotateX(calc(var(--pc-tilt-x) + 2deg)) translateY(-2px);
+      filter: drop-shadow(
+        0 28px 46px color-mix(in srgb, var(--gray) 28%, transparent 72%)
+      );
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero__visual .code-run,
+    .hero__visual .code-fade,
+    .hero__visual #siteLayer {
+      animation: none !important;
+    }
+    .hero__visual .pc-tilt {
+      transition: none !important;
+    }
+    .hero__visual .pc-gloss {
+      animation: none !important;
+      opacity: 0 !important;
+    }
+  }
+
+  /* Halo balayage */
+  .pc-tilt::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: 20px;
+    transform: translateX(-20%) skewX(-14deg);
+    opacity: 0;
+    will-change: transform, opacity;
+    mix-blend-mode: screen;
+    background: linear-gradient(
+      100deg,
+      transparent 0%,
+      color-mix(in srgb, var(--white) 30%, transparent) 48%,
+      transparent 62%
+    );
+  }
+  :root:not([data-theme="dark"]) .pc-tilt::after {
+    background: linear-gradient(
+      100deg,
+      transparent 0%,
+      color-mix(in srgb, var(--pc-shine-color) 100%, transparent) 48%,
+      transparent 62%
+    );
+  }
+  :root:not([data-theme="dark"]) .hero__visual:hover .pc-tilt::after {
+    opacity: 0.52;
+  }
+  html[data-theme="dark"] .pc-tilt::after {
+    background: linear-gradient(
+      100deg,
+      transparent 0%,
+      color-mix(in srgb, var(--white) 22%, transparent) 48%,
+      transparent 62%
+    );
+  }
+  .hero__visual:hover .pc-tilt::after {
+    animation: pcShineSlow 1400ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+  }
+  @keyframes pcShineSlow {
+    0% {
+      transform: translateX(-20%) skewX(-14deg);
+      opacity: 0;
+    }
+    10% {
+      opacity: 0.45;
+    }
+    70% {
+      opacity: 0.4;
+    }
+    100% {
+      transform: translateX(120%) skewX(-14deg);
+      opacity: 0;
+    }
+  }
+}

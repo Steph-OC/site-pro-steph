@@ -7,8 +7,7 @@ import BadgesMotion from "@/components/BadgesMotion";
 import ProjectSlider from "@/components/ProjectSlider";
 import { Reveal, RevealGroup } from "@/components/Scroll";
 import TestimonialsCodepen from "@/components/TestimonialsCodepen";
-import "@/styles/testimonials-codepen.css";
-import "@/styles/badges.css";
+import "@/styles/pages/home.css";
 
 // WP helpers (slides + card_title/intro + siteUrl + temoignages)
 import { getDerniersProjetsAvecSlides, getTemoignages } from "@/lib/wp";
@@ -182,6 +181,7 @@ const safeTemoins = (temoins ?? []).map((t) => ({
               items={safeTemoins}
               speedMs={4500}
               avatarMode="initials"
+              announceLive={false}
               client:visible
             />
           ) : (

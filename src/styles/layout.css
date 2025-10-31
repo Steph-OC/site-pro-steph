@@ -1,0 +1,38 @@
+@layer layout {
+  html {
+    scroll-behavior: smooth;
+  }
+  .project-card {
+    scroll-margin-top: 96px;
+  } /* hauteur header */
+
+  /* Rythme vertical unique */
+  section.container {
+    padding-block: 0;
+  } /* pas de double padding */
+  main#home > section {
+    margin-block: var(--section-rhythm);
+  }
+
+  /* Variantes de section : neutralisées (tu les conserves visuellement pour l’espacement) */
+  .section--alt,
+  .section--stripe,
+  .section--cut,
+  .section--aurora-corners {
+    background: transparent !important;
+    border: 0 !important;
+  }
+  .section--stripe::before,
+  .section--cut::before,
+  .section--aurora-corners::before,
+  .section--aurora-corners::after {
+    content: none !important;
+  }
+  .section--alt,
+  .section--stripe,
+  .section--cut {
+    padding-block: clamp(20px, 3.5vw, 32px);
+  }
+
+  /* Header global occupe le layout sticky, le reste est en component/header.css */
+}
