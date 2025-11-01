@@ -375,3 +375,57 @@
     opacity: 1 !important;
   }
 }
+/* Assure la visibilité des halos derrière le contenu de la section */
+.section--halo {
+  position: relative;
+  isolation: isolate; /* tu l'as déjà */
+  z-index: 0; /* <-- ajoute ceci */
+}
+
+/* Si un wrapper interne met overflow:hidden, ne coupe pas les halos */
+.section--halo > .container,
+.section--halo > .container.container--xl,
+.section--halo > .container.container--narrow {
+  overflow: visible;
+}
+
+/* Option : un peu plus de variété d’emplacements par section */
+main#home.halo-desync > section.section--halo:nth-of-type(1) {
+  --halo-1-x: -18%;
+  --halo-1-y: -12%;
+  --halo-2-x: 72%;
+  --halo-2-y: 82%;
+  --sec-halo-phase: 0.1s;
+}
+main#home.halo-desync > section.section--halo:nth-of-type(2) {
+  --halo-1-x: 80%;
+  --halo-1-y: -14%;
+  --halo-2-x: -10%;
+  --halo-2-y: 86%;
+  --sec-halo-phase: 0.6s;
+}
+main#home.halo-desync > section.section--halo:nth-of-type(3) {
+  --halo-1-x: -6%;
+  --halo-1-y: 78%;
+  --halo-2-x: 68%;
+  --halo-2-y: 70%;
+  --sec-halo-phase: 0.25s;
+}
+main#home.halo-desync > section.section--halo:nth-of-type(4) {
+  --halo-1-x: 82%;
+  --halo-1-y: -8%;
+  --halo-2-x: -16%;
+  --halo-2-y: 76%;
+  --sec-halo-phase: 0.9s;
+}
+/* Exemple : section Témoignages un peu plus violette/cyan */
+#temoin-title:where(*) {
+  /* hook via le header si tu veux */
+}
+main#home > section.section--halo:nth-of-type(5) {
+  --halo-a: color-mix(in srgb, #8b5cf6 26%, transparent);
+  --halo-b: color-mix(in srgb, #22d3ee 20%, transparent);
+}
+.section--halo {
+  z-index: 0;
+} /* le contenu ≠ positif */

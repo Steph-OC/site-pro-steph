@@ -449,10 +449,7 @@ export async function getTemoignages(
   limit = 3,
   lang = "fr"
 ): Promise<TestimonialsResult> {
-  const WP = (import.meta.env.WP_URL || "").replace(/\/+$/, "");
   if (!WP) throw new Error("WP_URL manquant dans .env");
-  const WP_API = `${WP}/wp-json/wp/v2`;
-
   const bases = ["temoignage", "temoignages"];
   // IMPORTANT : inclure title/excerpt/content pour nos fallbacks
   const fieldSets = [
@@ -524,4 +521,16 @@ export async function getTemoignages(
         "Aucun endpoint REST n’a répondu. Vérifie le REST base du CPT (singulier/pluriel) et réenregistre les permaliens.",
     },
   };
+}
+
+// ———————————————————————————————————————————
+// Page “Services” (ACF sur page slug=services)
+// ———————————————————————————————————————————
+
+export async function getServicesPage() {
+  // version unique, basée sur WP_API + env
+  const arr = await wpFetch<any[]>(
+    `/pages?slug=services&_fields=id,slug,acf&acf_format=standard`
+  );
+  return arr?.[0] ?? null;
 }

@@ -1,0 +1,188 @@
+@layer components {
+  .services-hero {
+    text-align: center;
+    padding-block: clamp(32px, 6vw, 72px);
+  }
+  .services-hero .kicker {
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin: 0 0 0.4rem;
+  }
+  .services-hero h1 {
+    margin: 0 0 0.5rem;
+    font-size: clamp(1.8rem, 1.2rem + 2.2vw, 2.6rem);
+  }
+  .services-hero .lead {
+    margin: 0 auto 1rem;
+    max-width: 72ch;
+    color: var(--muted);
+  }
+  .services-hero .actions {
+    display: flex;
+    gap: 0.6rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  /* Cartes service : sans CTA */
+  .service-card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Avant, on utilisait margin-top:auto pour pousser le CTA.
+   Sans CTA, on remet un spacing normal sous le titre. */
+  .service-card__desc {
+    margin-top: 0.25rem; /* était: auto */
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  /* Option: donner un léger accent si --accent est défini */
+  .service-card[style*="--accent"] {
+    border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent)
+        inset,
+      var(--shadow);
+  }
+  .service-card[style*="--accent"] .service-card__icon svg {
+    stroke: var(--accent);
+  }
+
+  /* Tiers (offres) */
+  .tiers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: clamp(14px, 2.4vw, 22px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .tier {
+    display: flex;
+    flex-direction: column;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: clamp(14px, 2.2vw, 20px);
+    box-shadow: var(--shadow);
+  }
+  .tier--accent {
+    outline: 2px solid color-mix(in srgb, var(--orange) 30%, transparent);
+  }
+  .tier__head h3 {
+    margin: 0.2rem 0 0.2rem;
+    font-size: clamp(1.1rem, 1rem + 0.6vw, 1.4rem);
+  }
+  .pill {
+    display: inline-block;
+    padding: 0.18rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    background: color-mix(in srgb, var(--card) 85%, transparent);
+  }
+  .pill--accent {
+    border-color: color-mix(in srgb, var(--orange) 40%, var(--border));
+    color: var(--fg);
+  }
+  .features {
+    margin: 0.6rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.4rem;
+  }
+  .features li {
+    padding-left: 1.2em;
+    text-indent: -1.2em;
+  }
+  .features li::before {
+    content: "• ";
+    color: var(--orange);
+    font-weight: 700;
+  }
+  .tier__foot {
+    margin-top: auto;
+    display: grid;
+    gap: 0.6rem;
+  }
+  .tier .price {
+    margin: 0.4rem 0;
+  }
+
+  /* Modules à la carte */
+  .addons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: clamp(12px, 2vw, 18px);
+  }
+  .addon {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--card);
+    padding: clamp(12px, 2vw, 16px);
+    box-shadow: var(--shadow);
+  }
+  .addon h3 {
+    margin: 0 0 0.2rem;
+    font-size: 1rem;
+  }
+
+  /* Process */
+  .steps {
+    counter-reset: s;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: clamp(10px, 1.8vw, 16px);
+  }
+
+  .steps li {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--card);
+    padding: clamp(12px, 2vw, 16px);
+    box-shadow: var(--shadow);
+  }
+  .steps li h3 {
+    margin: 0 0 0.2rem;
+    font-size: 1rem;
+  }
+  .steps li h3::before {
+    counter-increment: s;
+    content: counter(s) ". ";
+    color: var(--orange);
+    font-weight: 700;
+  }
+
+  /* FAQ (hérite de tes styles globaux si présents) */
+  .faq {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--card);
+    padding: 0.6rem 0.8rem;
+    margin: 0.6rem 0;
+  }
+
+  /* CTA final */
+  .cta {
+    text-align: center;
+    padding-block: clamp(18px, 4vw, 36px);
+  }
+  .cta .actions {
+    display: flex;
+    gap: 0.6rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* Rythme vertical unifié entre sections */
+  main#home ~ .services-page,
+  .section--halo {
+    scroll-margin-top: 12vh;
+  }
+}

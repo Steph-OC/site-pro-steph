@@ -2,29 +2,44 @@
    RÉGLAGES DIMENSIONS
    ======================= */
 
-/* Hauteur mini du viewport des témoignages (0 = auto, sinon fixe) */
 .testim {
-  --tc-min-h: 420px; /* ← mets 0 pour laisser la hauteur suivre le texte */
-  --tc-max-w: 1020px; /* ← largeur max de .wrap */
-  --tc-pad-top: 40px; /* ← padding haut du composant */
-  --tc-pad-bottom: 90px; /* ← padding bas (prévois la place des dots) */
+  /* Layout */
+  --tc-min-h: 420px; /* 0 = auto, sinon hauteur mini du viewport */
+  --tc-max-w: 1020px; /* largeur max interne (.wrap) */
+  --tc-pad-top: 40px;
+  --tc-pad-bottom: 90px; /* laisser la place aux dots */
 
   /* Placement flèches & dots */
-  --tc-arrow-offset: 10px; /* ← distance des flèches au bord gauche/droit */
-  --tc-dots-bottom: 48px; /* ← distance des dots par rapport au bas */
+  --tc-arrow-offset: 10px;
+  --tc-dots-bottom: 48px;
 
-  /* Couleurs & halo */
-  --tc-fg: #eee;
-  --tc-bg: transparent;
-  --tc-accent: #ea830e; /* couleur d’accent (remplissage de la dot active) */
-  --tc-accent-rgb: 234, 131, 14; /* utile si tu veux un halo orangé */
-  --tc-halo-rgb: 255, 255, 255; /* ← HALO BLANC (autour de la dot active) */
+  /* Couleurs par défaut (seront surchargées par light/dark) */
+  --tc-fg: #111; /* texte */
+  --tc-bg: transparent; /* fond du composant */
+  --tc-accent: #ea830e; /* couleur d’accent (dot active) */
+  --tc-halo-rgb: 255, 255, 255; /* halo blanc autour de la dot active */
 
   /* Gabarits internes */
-  --tc-avatar: 100px; /* diamètre avatar (image/initiales) */
-  --tc-name-gap: 15px; /* espace sous l’avatar avant le nom */
-  --tc-text-width: 80%; /* largeur du paragraphe */
-  --tc-line-height: 1.6; /* interlignage */
+  --tc-avatar: 100px;
+  --tc-name-gap: 15px;
+  --tc-text-width: 80%;
+  --tc-line-height: 1.6;
+}
+
+/* =======================
+   PALETTES LIGHT / DARK
+   ======================= */
+
+/* LIGHT (par défaut) */
+:root:not([data-theme="dark"]) .testim {
+  --tc-fg: #1a1a1a;
+  --tc-bg: transparent;
+}
+
+/* DARK */
+:root[data-theme="dark"] .testim {
+  --tc-fg: #e7e7ea;
+  --tc-bg: transparent;
 }
 
 /* =======================
@@ -49,7 +64,7 @@
   margin: 0 auto;
 }
 
-/* Viewport des slides : min-height contrôlée par --tc-min-h */
+/* Viewport des slides */
 .testim .cont {
   position: relative;
   overflow: hidden;
@@ -64,23 +79,24 @@
   grid-template-rows: auto auto 1fr; /* avatar / nom / texte */
   align-content: start;
   justify-items: center;
-  padding-bottom: calc(
-    var(--tc-dots-bottom) + 10px
-  ); /* laisse la place aux dots */
+  padding-bottom: calc(var(--tc-dots-bottom) + 10px); /* place pour les dots */
   width: 100%;
   opacity: 0;
   pointer-events: none;
   will-change: opacity, transform;
-  text-align: center; /* centrage du contenu */
+  text-align: center;
+  transform: translateY(10px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
 }
 .testim .cont > div.active {
   position: relative;
   opacity: 1;
   z-index: 1;
   pointer-events: auto;
+  transform: translateY(0);
 }
 
-/* Avatar (taille contrôlée) */
+/* Avatar */
 .testim .cont .img img,
 .t-avatar {
   width: var(--tc-avatar);
@@ -92,8 +108,8 @@
 .t-avatar {
   display: grid;
   place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff;
+  border: 1px solid color-mix(in srgb, var(--tc-fg) 20%, transparent);
+  color: var(--tc-fg);
   font-weight: 700;
   font-family: var(--font-title, inherit);
 }
@@ -104,7 +120,7 @@
   background: linear-gradient(135deg, #6b7280 0%, #374151 100%);
 }
 
-/* Nom + texte (largeur & line-height contrôlés) */
+/* Nom + texte */
 .testim .cont h2 {
   margin: var(--tc-name-gap) 0 0;
   font-size: 1em;
@@ -116,10 +132,11 @@
   margin: 10px auto 0;
   line-height: var(--tc-line-height);
   text-align: center;
+  color: color-mix(in srgb, var(--tc-fg) 70%, transparent);
 }
 
 /* =======================
-   FLÈCHES & DOTS (placement)
+   FLÈCHES & DOTS
    ======================= */
 
 .testim .arrow {
@@ -146,7 +163,7 @@
   color: var(--tc-accent);
 }
 
-/* Dots centrés horizontalement, hauteur contrôlée */
+/* Dots */
 .testim .tc-dots {
   position: absolute;
   left: 0;
@@ -159,7 +176,7 @@
   list-style: none;
   padding: 0;
   margin: 0;
-  z-index: 5; /* au-dessus du contenu pour voir le halo */
+  z-index: 5; /* s’assure que le halo passe devant */
   height: 12px;
 }
 .testim .tc-dots li {
@@ -174,35 +191,34 @@
   background: transparent;
   cursor: pointer;
   transition: all 0.3s;
-  position: relative; /* pour le halo/ombre */
+  position: relative; /* pour le halo */
 }
 
-/* Dot active : remplissage accent + HALO BLANC (box-shadow) */
+/* Dot active : accent + halo blanc */
 .testim .tc-dot.active {
   background: var(--tc-accent);
   border-color: var(--tc-accent);
-  box-shadow: 0 0 0 6px rgba(var(--tc-halo-rgb), 0.28),
-    /* anneau doux blanc */ 0 0 14px 4px rgba(var(--tc-halo-rgb), 0.38); /* glow blanc */
-  animation: tc-dot-pulse 1.2s ease-out;
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.22),
+    0 0 14px 6px rgba(255, 255, 255, 0.38);
+  animation: tc-dot-pulse-white 1.2s ease-out;
 }
 
-/* Petite pulsation à l’activation */
-@keyframes tc-dot-pulse {
+@keyframes tc-dot-pulse-white {
   0% {
-    box-shadow: 0 0 0 0 rgba(var(--tc-halo-rgb), 0.55),
-      0 0 0 0 rgba(var(--tc-halo-rgb), 0.3);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.55),
+      0 0 0 0 rgba(255, 255, 255, 0.35);
   }
   60% {
-    box-shadow: 0 0 0 10px rgba(var(--tc-halo-rgb), 0),
-      0 0 18px 10px rgba(var(--tc-halo-rgb), 0.25);
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0),
+      0 0 22px 10px rgba(255, 255, 255, 0.35);
   }
   100% {
-    box-shadow: 0 0 0 14px rgba(var(--tc-halo-rgb), 0),
-      0 0 0 14px rgba(var(--tc-halo-rgb), 0);
+    box-shadow: 0 0 0 14px rgba(255, 255, 255, 0),
+      0 0 0 14px rgba(255, 255, 255, 0);
   }
 }
 
-/* accessibilité : pas d’animations si l’utilisateur les réduit */
+/* Accessibilité : animations réduites */
 @media (prefers-reduced-motion: reduce) {
   .testim .tc-dot.active {
     animation: none;
@@ -210,18 +226,8 @@
 }
 
 /* =======================
-   EFFETS DE TRANSITION ENTRE AVIS
+   EFFETS DE TRANSITION (détails)
    ======================= */
-
-.testim .cont > div {
-  opacity: 0;
-  transform: translateY(10px);
-  transition: opacity 0.45s ease, transform 0.45s ease;
-}
-.testim .cont > div.active {
-  opacity: 1;
-  transform: translateY(0);
-}
 
 /* keyframes internes (avatar/nom/texte) */
 .testim .cont > div.active .img img {
@@ -233,15 +239,16 @@
 .testim .cont > div.active p {
   animation: testim-content-in 0.5s ease-in-out forwards;
 }
+
 .testim .cont > div.inactive .img img {
   animation: testim-hide 0.5s ease-in-out forwards;
 }
 .testim .cont > div.inactive h2 {
-  animation: testim-content-out0.4s ease-in-out forwards;
-}
+  animation: testim-content-out 0.4s ease-in-out forwards;
+} /* ← FIX */
 .testim .cont > div.inactive p {
-  animation: testim-content-out0.5s ease-in-out forwards;
-}
+  animation: testim-content-out 0.5s ease-in-out forwards;
+} /* ← FIX */
 
 @keyframes testim-content-in {
   from {
@@ -287,15 +294,9 @@
 /* =======================
    VARIANTE : CONTAINER “GLASS”
    ======================= */
-/* Ajoute simplement la classe "testim--glass" à la section :
-   <section class="testim testim--glass"> … */
+/* Ajoute .testim--glass sur la section si tu veux cet effet */
 .testim--glass {
-  background: rgba(
-    255,
-    255,
-    255,
-    0.06
-  ); /* fond non totalement transparent pour activer le blur */
+  background: rgba(255, 255, 255, 0.06);
   -webkit-backdrop-filter: blur(14px) saturate(120%);
   backdrop-filter: blur(14px) saturate(120%);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -304,57 +305,56 @@
   border-radius: 14px;
 }
 
-/* =======================
-   RESPONSIVE
-   ======================= */
-@media (max-width: 600px) {
-  .testim {
-    --tc-min-h: 360px; /* ↓ un peu moins haut sur mobile */
-    --tc-dots-bottom: 64px; /* ↑ remonte un peu les dots si besoin */
-    --tc-text-width: 90%;
-  }
-}
-/* === Halo BLANC sur la dot active === */
-.testim .tc-dots {
-  z-index: 5;
-} /* s'assure que le halo passe devant */
-.testim .tc-dot.active {
-  background: var(--tc-accent, #ea830e);
-  border-color: var(--tc-accent, #ea830e);
-  /* halo/pulse 100% blanc */
-  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.22),
-    0 0 14px 6px rgba(255, 255, 255, 0.38);
-  animation: tc-dot-pulse-white 1.2s ease-out;
-}
-@keyframes tc-dot-pulse-white {
-  0% {
-    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.55),
-      0 0 0 0 rgba(255, 255, 255, 0.35);
-  }
-  60% {
-    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0),
-      0 0 22px 10px rgba(255, 255, 255, 0.35);
-  }
-  100% {
-    box-shadow: 0 0 0 14px rgba(255, 255, 255, 0),
-      0 0 0 14px rgba(255, 255, 255, 0);
-  }
-}
-
-/* === Effet GLASS sur le container de slide actif ===
-   (appliqué si on ajoute la classe .testim--glass au composant) */
+/* Effet glass sur le slide actif (optionnel) */
 .testim.testim--glass .cont > div.active {
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 16px;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  padding: clamp(16px, 2vw, 28px); /* ajoute du confort autour du contenu */
+  padding: clamp(16px, 2vw, 28px);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
-/* optionnel : un léger “lift” à l’apparition */
-.testim.testim--glass .cont > div.active {
-  transform: translateY(0);
+/* =======================
+   RESPONSIVE
+   ======================= */
+@media (max-width: 600px) {
+  .testim {
+    --tc-min-h: 360px;
+    --tc-dots-bottom: 64px;
+    --tc-text-width: 90%;
+  }
+}
+/* Vars: accent RGB used for the soft penumbra in light mode */
+.testim {
+  --tc-accent-rgb: 234, 131, 14; /* match your --tc-accent (#ea830e) */
+}
+
+/* LIGHT: stronger white halo behind the active dot (plus a subtle accent glow) */
+:root:not([data-theme="dark"]) .testim .tc-dot.active {
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.35),
+    0 0 22px 6px rgba(255, 255, 255, 0.55),
+    0 0 28px 10px rgba(var(--tc-accent-rgb), 0.18);
+  animation: tc-dot-pulse-white-light 1.2s ease-out;
+}
+
+/* Light pulse so it reads on white */
+@keyframes tc-dot-pulse-white-light {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.65),
+      0 0 0 0 rgba(255, 255, 255, 0.45),
+      0 0 0 0 rgba(var(--tc-accent-rgb), 0.25);
+  }
+  60% {
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0),
+      0 0 26px 10px rgba(255, 255, 255, 0.45),
+      0 0 34px 14px rgba(var(--tc-accent-rgb), 0.18);
+  }
+  100% {
+    box-shadow: 0 0 0 14px rgba(255, 255, 255, 0),
+      0 0 0 14px rgba(255, 255, 255, 0),
+      0 0 0 14px rgba(var(--tc-accent-rgb), 0);
+  }
 }

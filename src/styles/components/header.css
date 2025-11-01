@@ -1,20 +1,52 @@
 @layer components {
-  header {
+  :root {
+    --header-h: clamp(56px, 6vw, 72px);
+  }
+
+  /* Les ancres et auto-scroll ne passent pas sous la barre */
+  html {
+    scroll-padding-top: var(--header-h);
+  }
+  :where(h1, h2, h3, [id]) {
+    scroll-margin-top: calc(var(--header-h) + 12px);
+  }
+
+  /* ✅ Header du site UNIQUEMENT */
+  header.site-header {
     position: sticky;
     top: 0;
-    z-index: 50;
-    -webkit-backdrop-filter: saturate(180%) blur(6px);
-    backdrop-filter: saturate(180%) blur(6px);
-    background: color-mix(in srgb, var(--bg) 85%, transparent 15%);
+    z-index: 1000; /* au-dessus du contenu */
+    isolation: isolate;
+    min-height: var(--header-h);
+    background: var(--bg); /* fallback opaque */
     border-bottom: 1px solid var(--border);
+    will-change: transform;
   }
-  .nav {
+
+  /* Effet “glass” si dispo (sinon on garde le fond opaque) */
+  @supports (
+    (backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))
+  ) {
+    header.site-header {
+      -webkit-backdrop-filter: saturate(180%) blur(6px);
+      backdrop-filter: saturate(180%) blur(6px);
+      background: color-mix(
+        in srgb,
+        var(--bg) 92%,
+        transparent 8%
+      ); /* plus opaque pour éviter la “traversée” visuelle */
+    }
+  }
+
+  /* Nav interne au header */
+  header.site-header .nav {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    padding-block: 1rem;
+    padding-block: 0.8rem;
   }
+
   .brand {
     display: flex;
     align-items: center;
@@ -23,36 +55,64 @@
     text-decoration: none;
     color: var(--fg);
   }
-  nav ul {
+
+  header.site-header nav ul {
     display: flex;
     gap: 0.9rem;
     list-style: none;
     padding: 0;
     margin: 0;
   }
-  nav a {
-    text-decoration: none;
-    padding: 0.5rem 0.65rem;
-    border-radius: 10px;
-  }
-  nav a[aria-current="page"] {
-    background: var(--card);
-    border: 1px solid var(--border);
-  }
-  header nav li {
+
+  header.site-header nav li {
     display: flex;
   }
-  header .nav a,
-  header .nav .btn,
+
+  header.site-header nav a,
+  header.site-header .nav .btn,
   #theme-toggle {
     display: inline-flex;
     align-items: center;
     line-height: 1;
-    padding-block: 0.5rem;
+    padding: 0.5rem 0.65rem;
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--fg);
+  }
+
+  /* Actif + focus visibles */
+  header.site-header nav a[aria-current="page"] {
+    background: var(--card);
+    border: 1px solid var(--border);
+  }
+  header.site-header nav a:focus-visible,
+  #theme-toggle:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--orange) 70%, transparent);
+    outline-offset: 2px;
   }
   #theme-toggle {
     gap: 0.25rem;
   }
+
+  /* 🧹 Reset : tous les autres <header> (ex: headers de section) ne sont pas sticky */
+  header:not(.site-header),
+  .section-head {
+    position: static;
+    top: auto;
+    z-index: auto;
+    background: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border: 0;
+  }
+
+  /* Sécurité : les blocs de section restent dans le plan normal */
+  .section--halo,
+  .section-head {
+    position: relative;
+    z-index: 0;
+  }
+
   @media (hover: hover) and (pointer: fine) {
     html.use-ios-pointer body {
       cursor: none;

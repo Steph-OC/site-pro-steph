@@ -3,6 +3,7 @@
     margin-block: 0;
     padding-block: clamp(18px, 4.5vw, 40px);
   }
+
   .services__title {
     text-align: center;
     font-family: var(--font-title);
@@ -10,6 +11,7 @@
     font-size: clamp(1.25rem, 1.2rem + 1.2vw, 1.8rem);
     margin: 0 0 clamp(16px, 3vw, 28px);
   }
+
   .services__grid {
     list-style: none;
     margin: 0;
@@ -34,10 +36,12 @@
     padding: clamp(12px, 2vw, 18px);
     text-align: center;
     box-shadow: var(--shadow);
-    transition: transform 0.25s ease, box-shadow 0.25s ease,
-      border-color 0.25s ease;
+    /* IMPORTANT : on ne transitionne PAS transform ici
+       pour éviter le conflit avec Framer Motion */
+    transition: box-shadow 0.25s ease, border-color 0.25s ease;
     will-change: transform;
   }
+
   .service-card__icon {
     display: grid;
     place-items: center;
@@ -68,7 +72,7 @@
 
   @media (hover: hover) {
     .service-card:hover {
-      transform: translateY(-4px);
+      /* Le lift (y:-4) est géré par Framer → on ne touche pas transform */
       box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
       border-color: color-mix(in srgb, var(--gray) 20%, var(--border) 80%);
     }

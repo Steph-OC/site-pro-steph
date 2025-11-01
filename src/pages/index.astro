@@ -5,26 +5,22 @@ import Hero from "@/components/Hero.astro";
 import Services from "@/components/Services";
 import BadgesMotion from "@/components/BadgesMotion";
 import ProjectSlider from "@/components/ProjectSlider";
-import { Reveal, RevealGroup } from "@/components/Scroll";
+import { Reveal } from "@/components/Scroll";
 import TestimonialsCodepen from "@/components/TestimonialsCodepen";
 import "@/styles/pages/home.css";
 
-// WP helpers (slides + card_title/intro + siteUrl + temoignages)
 import { getDerniersProjetsAvecSlides, getTemoignages } from "@/lib/wp";
 
 const title = "Développeuse WordPress freelance — Stéphanie Quibel";
 const description =
   "Sites WordPress rapides, accessibles et bien référencés. Refonte, création, maintenance. Réponse sous 24h.";
 
-// Projets (ACF Free, champs fixes)
 const data = await getDerniersProjetsAvecSlides(2);
 const p1 = data?.[0];
 const p2 = data?.[1];
 
-// Témoignages
 const { items: temoins } = await getTemoignages(10);
 
-// Normalisation : s’assurer que full_name est toujours présent
 const safeTemoins = (temoins ?? []).map((t) => ({
   ...t,
   full_name: (t.full_name ?? t.author ?? "").trim(),
@@ -77,17 +73,7 @@ const safeTemoins = (temoins ?? []).map((t) => ({
           <h2 id="services-title">Mes services</h2>
           <p class="section-sub">Création, refonte, accompagnement.</p>
         </header>
-
-        <RevealGroup
-          client:visible
-          as="div"
-          cascade
-          dir="up"
-          amount={0.2}
-          rootMargin="0px 0px -25% 0px"
-        >
-          <Services />
-        </RevealGroup>
+        <Services client:visible />
       </div>
     </section>
 

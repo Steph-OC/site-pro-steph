@@ -1,21 +1,171 @@
 ---
-import Layout from "../layouts/SiteLayout.astro";
-import Hero from "../components/Hero.astro";
+import SiteLayout from "@/layouts/SiteLayout.astro";
+import { getServicesPage } from "@/lib/wp";
+import { normalizeServices } from "@/lib/services";
+import "@/styles/pages/services.css";
+
+const wp = await getServicesPage();
+const acf = wp?.acf ?? {};
+const data = normalizeServices(acf);
+
+const title = "Services — Stéphanie Quibel";
+const description = "Création, refonte, optimisation WordPress.";
 ---
 
-<Layout
-  title="Services"
-  description="Création, refonte et accompagnement WordPress."
->
-  <Hero
-    slot="hero"
-    variant="services"
-    kicker="Offres"
-    title="Création, refonte & optimisation"
-    lead="Trois offres claires et adaptées à vos besoins : sites sur mesure, refonte/optimisation, et accompagnement durable."
-    actions={[
-      { href: "/#contact", label: "Demander un devis", kind: "accent" },
-    ]}
-  />
-  <!-- contenu services… -->
-</Layout>
+<SiteLayout {title} {description}>
+  <main id="services">
+    {/* Intro (si rempli) */}
+    {
+      data.intro.title || data.intro.text ? (
+        <section class="container section--halo halo-pulse-gentle">
+          <header class="section-head">
+            {data.intro.title && <h1>{data.intro.title}</h1>}
+            {data.intro.text && (
+              <div class="section-sub prose" set:html={data.intro.text} />
+            )}
+          </header>
+        </section>
+      ) : null
+    }
+
+    {/* Grille de services */}
+    {
+      data.services.length > 0 ? (
+        <section
+          class="container section--halo halo-pulse-gentle"
+          aria-labelledby="srv-title"
+        >
+          <h2 id="srv-title" class="visually-hidden">
+            Liste des services
+          </h2>
+          <ul class="services__grid" role="list">
+            {data.services.map(({ title, desc, accent, Icon }) => (
+              <li
+                class="service-card"
+                style={accent ? `--accent:${accent}` : undefined}
+              >
+                <div class="service-card__icon" aria-hidden="true">
+                  {Icon ? (
+                    <Icon width={44} height={44} strokeWidth={1.8} />
+                  ) : null}
+                </div>
+                {title && <h3 class="service-card__title">{title}</h3>}
+                {desc && <p class="service-card__desc">{desc}</p>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null
+    }
+
+    {/* Étapes */}
+    {
+      data.steps.length > 0 ? (
+        <section
+          class="container section--halo halo-pulse-gentle"
+          aria-labelledby="steps-title"
+        >
+          <header class="section-head">
+            <h2 id="steps-title">Comment ça se passe</h2>
+          </header>
+          <ol class="steps">
+            {data.steps.map((s) => (
+              <li>{s}</li>
+            ))}
+          </ol>
+        </section>
+      ) : null
+    }
+
+    {/* Points clés (tips) */}
+    {
+      data.tips.cwv || data.tips.access || data.tips.seo ? (
+        <section class="container section--halo halo-pulse-gentle">
+          <header class="section-head">
+            <h2>Points clés</h2>
+          </header>
+          <ul class="tips" role="list">
+            {data.tips.cwv && (
+              <li>
+                <strong>Core Web Vitals</strong>
+                {acf?.tip_cwv && (
+                  <sup class="tip" title={acf.tip_cwv} aria-label={acf.tip_cwv}>
+                    *
+                  </sup>
+                )}
+                — {data.tips.cwv}
+              </li>
+            )}
+            {data.tips.access && (
+              <li>
+                <strong>Accessibilité</strong> — {data.tips.access}
+              </li>
+            )}
+            {data.tips.seo && (
+              <li>
+                <strong>SEO</strong> — {data.tips.seo}
+              </li>
+            )}
+          </ul>
+        </section>
+      ) : null
+    }
+
+    {/* FAQ */}
+    {
+      data.faqs.length > 0 ? (
+        <section
+          class="container section--halo halo-pulse-gentle"
+          aria-labelledby="faq-title"
+        >
+          <header class="section-head">
+            <h2 id="faq-title">FAQ</h2>
+          </header>
+          {data.faqs.map(({ q, a }) => (
+            <details class="faq">
+              {q && <summary>{q}</summary>}
+              {a && <div class="prose" set:html={a} />}
+            </details>
+          ))}
+        </section>
+      ) : null
+    }
+
+    {/* CTA */}
+    {
+      data.cta.title || data.cta.text || data.cta.btnLabel ? (
+        <section class="container section--halo halo-pulse-gentle">
+          <article class="card">
+            <div class="card__body">
+              {data.cta.title && <h2>{data.cta.title}</h2>}
+              {data.cta.text && <p class="muted">{data.cta.text}</p>}
+              <div class="actions">
+                {data.cta.btnLabel && (
+                  <a
+                    class={`btn btn--${data.cta.style}`}
+                    href={data.cta.btnUrl || "/contact"}
+                  >
+                    {data.cta.btnLabel}
+                  </a>
+                )}
+              </div>
+            </div>
+          </article>
+        </section>
+      ) : null
+    }
+  </main>
+</SiteLayout>
+
+<!-- JSON-LD -->
+<script
+  type="application/ld+json"
+  set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    name: "Services WordPress — Stéphanie Quibel",
+    areaServed: "France",
+    serviceType: ["Création site vitrine", "Refonte", "Maintenance"],
+    provider: { "@type": "Person", name: "Stéphanie Quibel" },
+  })}
+/>
