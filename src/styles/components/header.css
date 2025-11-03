@@ -119,3 +119,9 @@
     }
   }
 }
+/* header.css */
+header.site-header.scrolling {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  background: color-mix(in srgb, var(--bg) 96%, transparent 4%) !important;
+}

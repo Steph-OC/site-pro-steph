@@ -4,17 +4,38 @@
   }
   .project-card {
     scroll-margin-top: 96px;
-  } /* hauteur header */
-
-  /* Rythme vertical unique */
-  section.container {
-    padding-block: 0;
-  } /* pas de double padding */
-  main#home > section {
-    margin-block: var(--section-rhythm);
   }
 
-  /* Variantes de section : neutralisées (tu les conserves visuellement pour l’espacement) */
+  :root {
+    --section-gap: clamp(96px, 9vw, 160px);
+    --section-pad: clamp(20px, 3vw, 36px);
+  }
+
+  /* s'applique aux sections directes ET aux sections dans un wrapper direct */
+  main > section,
+  main > * > section {
+    margin: 0;
+    padding-block: var(--section-pad);
+    border-top: 0.1px solid transparent;
+  }
+
+  main > section + section,
+  main > * > section + section {
+    margin-top: var(--section-gap);
+  }
+
+  /* espace entre wrappers frères éventuels */
+  main > * + * {
+    margin-top: var(--section-gap);
+  }
+
+  /* home: wrapper #home ou main#home selon la page */
+  main#home,
+  #home {
+    --section-gap: clamp(126px, 12vw, 200px);
+    --section-pad: clamp(66px, 10vw, 108px);
+  }
+
   .section--alt,
   .section--stripe,
   .section--cut,
@@ -28,11 +49,4 @@
   .section--aurora-corners::after {
     content: none !important;
   }
-  .section--alt,
-  .section--stripe,
-  .section--cut {
-    padding-block: clamp(20px, 3.5vw, 32px);
-  }
-
-  /* Header global occupe le layout sticky, le reste est en component/header.css */
 }

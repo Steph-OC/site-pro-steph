@@ -7,8 +7,8 @@ const {
 import "@/styles/base.css";
 import "@/styles/layout.css";
 import "@/styles/components/header.css";
-// optionnel si tes boutons sont utilisés site-wide :
 import "@/styles/components/buttons.css";
+import "@/styles/components/pointer.css";
 ---
 
 <!doctype html>
@@ -40,16 +40,17 @@ import "@/styles/components/buttons.css";
     </script>
   </head>
 
-  <IosPointer
-    client:idle
-    color="var(--green)"
-    radius={12}
-    pad={6}
-    magnetRadius={90}
-    targets='[data-pointer], .nav a, a[href], button, [role="button"]'
-  />
-
   <body>
+    <!-- Pointer performant, seulement sur desktop précis -->
+    <IosPointer
+      client:media="(hover: hover) and (pointer: fine)"
+      color="var(--green)"
+      radius={2}
+      pad={8}
+      magnetRadius={56}
+      targets='[data-pointer], .nav a, a[href], button, [role="button"]'
+    />
+
     <header class="site-header">
       <div class="container nav">
         <a class="brand" href="/">
@@ -166,6 +167,41 @@ import "@/styles/components/buttons.css";
         <span><a href="/mentions-legales">Mentions légales</a></span>
       </div>
     </footer>
+
+    <!-- Tweaks perf & accessibilité -->
+    <script is:inline>
+      (function () {
+        // 1) Scroll: couper le blur du header pendant le scroll (perf)
+        let t;
+        const header = document.querySelector("header.site-header");
+        const onScroll = () => {
+          if (!header) return;
+          clearTimeout(t);
+          header.classList.add("scrolling");
+          t = setTimeout(() => header.classList.remove("scrolling"), 140);
+        };
+        addEventListener("scroll", onScroll, { passive: true });
+
+        // 2) CSS var --header-h d'après la hauteur réelle (ancrages/scroll-padding)
+        const setHeaderH = () => {
+          if (!header) return;
+          document.documentElement.style.setProperty(
+            "--header-h",
+            header.offsetHeight + "px"
+          );
+        };
+        setHeaderH();
+        addEventListener("resize", setHeaderH);
+
+        // 3) Mode “éco” auto si RDM ou petit viewport (pause de certaines anims via CSS)
+        if (
+          matchMedia("(prefers-reduced-motion: reduce)").matches ||
+          innerWidth < 900
+        ) {
+          document.documentElement.classList.add("reduce-motion");
+        }
+      })();
+    </script>
 
     <!-- Toggle logic (light ↔ dark) -->
     <script is:inline>

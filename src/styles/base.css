@@ -1,11 +1,13 @@
 @layer base {
   :root {
+    /* Palette */
     --white: #ffffff;
     --offwhite: #f8f8f4;
     --gray: #3c394c;
     --green: #799a79;
     --orange: #d98a4d;
 
+    /* Thème clair (défaut) */
     --bg: var(--offwhite);
     --fg: #1d1b26;
     --muted: #5c596e;
@@ -16,6 +18,8 @@
     --btn-bg: var(--green);
     --btn-fg: #ffffff;
     --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+
+    /* Mise en page */
     --page-pad: clamp(16px, 5vw, 50px);
 
     /* HERO */
@@ -43,16 +47,24 @@
       var(--offwhite) 62%
     );
 
-    /* Rythme vertical (token unique) */
-    --section-gap: clamp(66px, 8vw, 120px);
+    /* Rythme vertical (tokens) */
+    --section-gap: clamp(48px, 7vw, 120px);
     --section-gap-lg: clamp(56px, 8.5vw, 132px);
-    --section-rhythm: clamp(100px, 10vw, 200px);
 
     /* Typo */
     --font-title: "Josefin Sans", system-ui, sans-serif;
     --font-text: "Lato", system-ui, sans-serif;
 
-    /* Curseur (lib iOS pointer) */
+    /* Titrage unifié (h1–h6) */
+    --font-headings: var(--font-title, "Josefin Sans", system-ui, sans-serif);
+    --h1-max: 3rem;
+    --h2-max: 2.6rem;
+    --h3-max: 1.9rem;
+    --h4-max: 1.35rem;
+    --h5-max: 1.15rem;
+    --h6-max: 1rem;
+
+    /* Curseur (iOS pointer) */
     --cursor-color: #1d1b26;
   }
 
@@ -86,25 +98,63 @@
     }
   }
 
-  * {
+  /* Base */
+  *,
+  *::before,
+  *::after {
     box-sizing: border-box;
   }
+
   html,
   body {
     overflow-x: clip;
   }
+
   body {
     margin: 0;
     background: var(--bg);
     color: var(--fg);
     font-family: var(--font-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
+  /* Titres unifiés */
   h1,
   h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-headings);
+    font-weight: 700;
+    letter-spacing: -0.012em;
+    line-height: 1.15;
+    margin: 0 0 0.5em;
+    color: var(--fg);
+  }
+  h1 {
+    font-size: clamp(2rem, 1.2rem + 3vw, var(--h1-max));
+  }
+  h2 {
+    font-size: clamp(1.6rem, 1.1rem + 2.4vw, var(--h2-max));
+  }
   h3 {
-    font-family: var(--font-title);
-    letter-spacing: -0.01em;
+    font-size: clamp(1.3rem, 1rem + 1.6vw, var(--h3-max));
+  }
+  h4 {
+    font-size: clamp(1.15rem, 1rem + 0.8vw, var(--h4-max));
+  }
+  h5 {
+    font-size: clamp(1.05rem, 0.95rem + 0.4vw, var(--h5-max));
+  }
+  h6 {
+    font-size: var(--h6-max);
+    letter-spacing: -0.005em;
+  }
+
+  p {
+    margin: 0 0 0.75em;
   }
 
   a {
@@ -125,7 +175,7 @@
     padding-inline: var(--page-pad);
   }
 
-  /* Icônes du bouton thème */
+  /* Icônes bouton thème */
   .theme-icon {
     display: none;
   }
@@ -134,5 +184,12 @@
   }
   :root[data-theme="dark"] .theme-icon--moon {
     display: inline;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation: none !important;
+      transition: none !important;
+    }
   }
 }

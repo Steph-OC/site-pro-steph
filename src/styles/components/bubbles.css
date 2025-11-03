@@ -1,0 +1,149 @@
+/* Bubble layer — loaded AFTER services.css */
+.bubble-cloud {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: auto; /* the UL receives the pointer */
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  z-index: 2; /* over the SVG */
+}
+
+/* Children must NOT intercept events, so the UL keeps pointermove */
+.bubble-cloud > li {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+
+  /* JS drives --dx/--dy each frame */
+  --dx: 0px;
+  --dy: 0px;
+  transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy)))
+    scale(var(--s, 1));
+  will-change: transform;
+  z-index: 2;
+
+  /* Kill any CSS animation/transition that can fight with JS */
+  animation: none !important;
+  transition: none !important;
+
+  /* Don’t eat events */
+  pointer-events: none;
+}
+
+/* Disc + highlight (purely visual) */
+.bubble-cloud > li::before,
+.bubble-cloud > li::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.bubble-cloud > li::before {
+  z-index: -2;
+  width: var(--b, 120px);
+  height: var(--b, 120px);
+  background: radial-gradient(
+      circle at 50% 50%,
+      color-mix(in srgb, var(--c) 55%, transparent) 0%,
+      color-mix(in srgb, var(--c) 48%, transparent) 58%,
+      color-mix(in srgb, var(--c) 76%, transparent) 78%,
+      color-mix(in srgb, var(--c) 14%, transparent) 92%,
+      transparent 100%
+    ),
+    radial-gradient(
+      circle at 46% 42%,
+      rgba(255, 255, 255, 0.06) 0%,
+      rgba(255, 255, 255, 0) 65%
+    );
+  border: 1px solid color-mix(in srgb, var(--c) 48%, var(--border));
+  box-shadow: 0 14px 32px color-mix(in srgb, var(--c) 34%, transparent),
+    inset 0 0 18px rgba(255, 255, 255, 0.04);
+  mix-blend-mode: screen;
+  filter: saturate(135%) brightness(1.06);
+  opacity: 0.95;
+}
+:root:not([data-theme="dark"]) .bubble-cloud > li::before {
+  mix-blend-mode: multiply;
+  filter: saturate(120%) brightness(1.02);
+}
+
+.bubble-cloud > li::after {
+  z-index: -1;
+  width: calc(var(--b, 120px) * 0.33);
+  height: calc(var(--b, 120px) * 0.33);
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(255, 255, 255, 0.22) 0%,
+    rgba(255, 255, 255, 0.1) 40%,
+    rgba(255, 255, 255, 0) 70%
+  );
+  transform: translate(-58%, -60%) rotate(10deg);
+  opacity: 0.65;
+}
+
+/* Label (visible, but not interactive) */
+.bubble-cloud > li span {
+  position: relative;
+  z-index: 3;
+  font-size: clamp(12px, 0.65rem + 0.2vw, 14px);
+  line-height: 1;
+  color: color-mix(in srgb, var(--fg) 96%, transparent);
+  text-shadow: 0 1px 6px color-mix(in srgb, #000 28%, transparent);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* Fallback palette if --c not provided inline */
+.bubble-cloud > li:nth-child(6n + 1) {
+  --c: #6aa8ff;
+}
+.bubble-cloud > li:nth-child(6n + 2) {
+  --c: #ef9355;
+}
+.bubble-cloud > li:nth-child(6n + 3) {
+  --c: #5cc7a0;
+}
+.bubble-cloud > li:nth-child(6n + 4) {
+  --c: #b984f6;
+}
+.bubble-cloud > li:nth-child(6n + 5) {
+  --c: #ff79b0;
+}
+.bubble-cloud > li:nth-child(6n + 6) {
+  --c: #ffd166;
+}
+
+/* Make sure the column confines the cloud */
+.services-hero__illu {
+  position: relative;
+}
+/* place ça dans styles/components/bubbles.css (ou dans pages/services.css) */
+.bubble-cloud {
+  position: absolute;
+  inset: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  pointer-events: auto;
+}
+.bubble-cloud li {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  --dx: 0px;
+  --dy: 0px;
+  transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy)))
+    scale(var(--s, 1));
+  will-change: transform;
+  animation: none !important; /* ⛔ */
+  transition: none; /* ⛔ */
+}
+/* disques + labels, comme tu avais déjà */

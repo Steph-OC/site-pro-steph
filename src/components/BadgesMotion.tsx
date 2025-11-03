@@ -4,6 +4,7 @@ import {
   useInView,
   useReducedMotion,
   type Variants,
+  type TargetAndTransition, // 👈 ajoute ce type
 } from "framer-motion";
 import {
   Accessibility,
@@ -27,12 +28,8 @@ const DEFAULTS: Item[] = [
   { label: "Performance" },
 ];
 
-// clé CSS (minuscules sans accents)
 const key = (s: string) =>
-  s
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
+  s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
 function getIcon(label: string) {
   switch (key(label)) {
@@ -67,12 +64,10 @@ export default function BadgesMotion({ items = DEFAULTS }: Props) {
   const prefersReduced = useReducedMotion();
   const inView = useInView(ref, { margin: "-10% 0px -10% 0px", once: true });
 
-  // Timings
-  const STAGGER = prefersReduced ? 0 : 0.08; // cascade gauche→droite
-  const CIRCLE_DUR = prefersReduced ? 0.2 : 0.95; // anim d'arrivée du cercle
-  const LABEL_OFFSET = prefersReduced ? 0 : 0.35; // label après rebond
+  const STAGGER = prefersReduced ? 0 : 0.08;
+  const CIRCLE_DUR = prefersReduced ? 0.2 : 0.95;
+  const LABEL_OFFSET = prefersReduced ? 0 : 0.35;
 
-  // Stagger des badges
   const listVariants: Variants = {
     hidden: {},
     show: {
@@ -80,7 +75,6 @@ export default function BadgesMotion({ items = DEFAULTS }: Props) {
     },
   };
 
-  // Arrivée du cercle (avec rebonds)
   const circleVariants: Variants = prefersReduced
     ? {
         hidden: { opacity: 0, x: 0, y: 0 },
@@ -102,8 +96,8 @@ export default function BadgesMotion({ items = DEFAULTS }: Props) {
         },
       };
 
-  // Rebond "balle" AU SURVOL — uniquement sur le cercle
-  const hoverBounce = prefersReduced
+  // 👇 Typé explicitement pour matcher whileHover
+  const hoverBounce: TargetAndTransition = prefersReduced
     ? {
         y: [-4, 0],
         scale: [1.0, 1.0],
@@ -111,7 +105,7 @@ export default function BadgesMotion({ items = DEFAULTS }: Props) {
       }
     : {
         y: [-10, 0, -6, 0, -3, 0],
-        scale: [1.0, 1.0, 1.02, 1.0, 1.01, 1.0], // légère compression aux impacts
+        scale: [1.0, 1.0, 1.02, 1.0, 1.01, 1.0],
         transition: {
           duration: 0.6,
           times: [0, 0.35, 0.55, 0.75, 0.9, 1],
@@ -119,7 +113,6 @@ export default function BadgesMotion({ items = DEFAULTS }: Props) {
         },
       };
 
-  // Label : apparaît APRÈS le cercle (rebond terminé)
   const labelVariants: Variants = prefersReduced
     ? {
         hidden: { opacity: 0, y: 0 },
@@ -171,18 +164,16 @@ export default function BadgesMotion({ items = DEFAULTS }: Props) {
               data-cursor-text-repeat="6"
               data-cursor-color={color}
             >
-              {/* Cercle animé + rebond au survol */}
               <motion.div
                 className="circle"
                 aria-hidden="true"
                 variants={circleVariants}
-                whileHover={hoverBounce}
+                whileHover={hoverBounce}   {/* ✅ plus de soulignement */}
                 whileTap={{ scale: prefersReduced ? 0.99 : 0.98 }}
               >
                 <Icon strokeWidth={2} />
               </motion.div>
 
-              {/* Label (après le rebond) */}
               <motion.span
                 className="badge__label"
                 variants={labelVariants}

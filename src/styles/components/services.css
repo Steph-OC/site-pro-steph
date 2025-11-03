@@ -55,7 +55,7 @@
     stroke: var(--orange);
   }
   .service-card__icon--dark svg {
-    stroke: var(--gray);
+    stroke: var(--green);
   }
 
   .service-card__title {

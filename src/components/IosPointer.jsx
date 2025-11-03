@@ -3,207 +3,171 @@ import { motion, useMotionValue, useSpring } from "framer-motion";
 
 export default function IosPointer({
   force = false,
-  size = 14,
-  pad = 10,
-  radius = 12,
+  size = 14,                 // côté de la boîte de base (non-scalée)
+  pad = 10,                  // marge autour de la cible
+  radius = 12,               // coins arrondis
   color = "var(--brand)",
-  zIndex = 2147483647, // ++ au-dessus de tout
+  zIndex = 2147483647,
   magnetRadius = 80,
   targets = "[data-pointer], .nav a, a[href], button, [role='button']",
 }) {
   const [enabled, setEnabled] = useState(false);
   const selector = useMemo(() => targets, [targets]);
 
-  // frame (coin haut-gauche)
-  const mx = useMotionValue(0);
-  const my = useMotionValue(0);
-  const mw = useMotionValue(size);
-  const mh = useMotionValue(size);
-  const mr = useMotionValue(size / 2);
+  // transforms (GPU)
+  const mvX  = useMotionValue(0);
+  const mvY  = useMotionValue(0);
+  const mvSX = useMotionValue(1);
+  const mvSY = useMotionValue(1);
 
-  const x = useSpring(mx, { stiffness: 480, damping: 40, mass: 0.6 });
-  const y = useSpring(my, { stiffness: 480, damping: 40, mass: 0.6 });
-  const w = useSpring(mw, { stiffness: 360, damping: 34, mass: 0.6 });
-  const h = useSpring(mh, { stiffness: 360, damping: 34, mass: 0.6 });
-  const r = useSpring(mr, { stiffness: 360, damping: 34, mass: 0.6 });
+  // opacité (discret au repos, net sur cible)
+  const mvO = useMotionValue(0.35);
+  const o   = useSpring(mvO, { stiffness: 420, damping: 32, mass: 0.6 });
+
+  // follow iOS pour x/y
+  const x = useSpring(mvX, { stiffness: 480, damping: 40, mass: 0.6 });
+  const y = useSpring(mvY, { stiffness: 480, damping: 40, mass: 0.6 });
 
   const rafRef = useRef(0);
   const moRef  = useRef(null);
   const lastMouseRef = useRef({ x: 0, y: 0, seen: false });
-  const activeElRef = useRef(null);
+  const activeElRef  = useRef(null);
+  const cachedRectRef = useRef(null);
+  const wasActiveRef  = useRef(false);
 
-  // activer selon device / prefers-reduced-motion
+  // activer selon device / RDM
   useEffect(() => {
     const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
     const prefersReduced = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
     if (force || (!isTouch && !prefersReduced)) setEnabled(true);
   }, [force]);
 
-  // suivre la souris (+ poser un schedule)
+  // pointermove + rAF
   useEffect(() => {
     if (!enabled) return;
-
     const onMove = (e) => {
       lastMouseRef.current = { x: e.clientX, y: e.clientY, seen: true };
-
-      // première position : on place le point directement
-      if (mw.get() === size && mh.get() === size) {
-        mx.set(e.clientX - size / 2);
-        my.set(e.clientY - size / 2);
-      }
-      schedule();
+      if (!rafRef.current) rafRef.current = requestAnimationFrame(step);
     };
-
-    window.addEventListener("mousemove", onMove, { passive: true });
-
-    // déclenche une première passe au cas où la souris est déjà dans la page
-    schedule();
-
-    return () => {
-      window.removeEventListener("mousemove", onMove);
-    };
-  }, [enabled, mx, my, mw, mh, size]);
-
-  // scroll / resize
-  useEffect(() => {
-    if (!enabled) return;
-    const onScrollOrResize = () => schedule();
-    window.addEventListener("scroll", onScrollOrResize, { passive: true });
-    window.addEventListener("resize", onScrollOrResize);
-    return () => {
-      window.removeEventListener("scroll", onScrollOrResize);
-      window.removeEventListener("resize", onScrollOrResize);
-    };
+    window.addEventListener("pointermove", onMove, { passive: true });
+    return () => window.removeEventListener("pointermove", onMove);
   }, [enabled]);
 
-  // classe root pour masquer le curseur natif
+  // scroll/resize + mutations → relance une frame
   useEffect(() => {
     if (!enabled) return;
-    const root = document.documentElement;
-    root.classList.add("use-ios-pointer");
-    return () => root.classList.remove("use-ios-pointer");
-  }, [enabled]);
-
-  // observer le DOM (SPA / hydratations) pour réévaluer les cibles
-  useEffect(() => {
-    if (!enabled) return;
-    const obs = new MutationObserver(() => schedule());
-    obs.observe(document.body, { childList: true, subtree: true, attributes: false });
+    const kick = () => { if (!rafRef.current) rafRef.current = requestAnimationFrame(step); };
+    window.addEventListener("scroll", kick, { passive: true });
+    window.addEventListener("resize", kick);
+    const obs = new MutationObserver(kick);
+    obs.observe(document.body, { childList: true, subtree: true });
     moRef.current = obs;
-    return () => obs.disconnect();
+    return () => {
+      window.removeEventListener("scroll", kick);
+      window.removeEventListener("resize", kick);
+      obs.disconnect();
+    };
   }, [enabled]);
 
-  const cancelFrame = () => {
-    if (rafRef.current) {
-      cancelAnimationFrame(rafRef.current);
-      rafRef.current = 0;
-    }
-  };
+  useEffect(() => () => {
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    moRef.current?.disconnect?.();
+  }, []);
 
-  const schedule = () => {
-    if (rafRef.current) return;
-    rafRef.current = requestAnimationFrame(step);
+  const clearActive = () => {
+    const prev = activeElRef.current;
+    if (prev) {
+      prev.classList.remove("magnet-on");
+      prev.style.removeProperty("--magnet-scale");
+      prev.style.removeProperty("--magnet-rotX");
+      prev.style.removeProperty("--magnet-rotY");
+      prev.style.removeProperty("--magnet-rotZ");
+      prev.style.removeProperty("--magnet-tx");
+      prev.style.removeProperty("--magnet-ty");
+    }
+    activeElRef.current = null;
+    cachedRectRef.current = null;
+    mvSX.set(1); mvSY.set(1);
   };
 
   const step = () => {
     rafRef.current = 0;
+    const { x: mx, y: my, seen } = lastMouseRef.current;
+    if (!seen) return;
 
-    const clearActive = () => {
-      const prev = activeElRef.current;
-      if (prev) {
-        prev.classList.remove("magnet-on");
-        prev.style.removeProperty("--magnet-scale");
-        prev.style.removeProperty("--magnet-rotX");
-        prev.style.removeProperty("--magnet-rotY");
-        prev.style.removeProperty("--magnet-rotZ");
-        prev.style.removeProperty("--magnet-tx");
-        prev.style.removeProperty("--magnet-ty");
-        activeElRef.current = null;
-      }
-    };
+    const el = document.elementFromPoint(mx, my);
+    const target = el?.closest?.(selector) || null;
 
-    const { x: mxView, y: myView, seen } = lastMouseRef.current;
-
-    // si on n’a jamais vu la souris, garder le pointeur discret
-    if (!seen) {
-      mw.set(size); mh.set(size); mr.set(size / 2);
-      return;
-    }
-
-    // ignorer si hors viewport
-    if (mxView < 0 || myView < 0 || mxView > window.innerWidth || myView > window.innerHeight) {
-      mw.set(size); mh.set(size); mr.set(size / 2);
+    if (!target) {
+      // petit point centré + opacité faible
+      mvX.set(mx - size / 2);
+      mvY.set(my - size / 2);
+      if (wasActiveRef.current) { mvO.set(0.35); wasActiveRef.current = false; }
       clearActive();
       return;
     }
 
-    // pointer doit être neutre pour elementFromPoint : pointer-events:none (cf. JSX)
-    const el = document.elementFromPoint(mxView, myView);
-    const target = el?.closest?.(selector);
-
-    if (target) {
-      const rect = target.getBoundingClientRect();
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
-      const dx = mxView - cx;
-      const dy = myView - cy;
-      const dist = Math.hypot(dx, dy);
-
-      if (dist <= magnetRadius) {
-        // cadre autour de la cible (+ pad)
-        const ww = rect.width + pad * 2;
-        const hh = rect.height + pad * 2;
-        const xx = rect.left - pad;
-        const yy = rect.top - pad;
-
-        mw.set(ww); mh.set(hh); mr.set(radius); mx.set(xx); my.set(yy);
-
-        if (activeElRef.current !== target) clearActive();
-        activeElRef.current = target;
-        target.classList.add("magnet-on");
-
-        // Tilt 3D doux
-        const maxDeg = 2;
-        const rotX = Math.max(-maxDeg, Math.min(maxDeg, (-dy / (hh / 2)) * maxDeg));
-        const rotY = Math.max(-maxDeg, Math.min(maxDeg, ( dx / (ww / 2)) * maxDeg));
-        target.style.setProperty("--magnet-rotX", `${rotX.toFixed(2)}deg`);
-        target.style.setProperty("--magnet-rotY", `${rotY.toFixed(2)}deg`);
-
-        // Follow (décalage léger vers la souris) + rotZ + scale
-        const maxShift = 6; // px
-        const tx = (dx / (rect.width  / 2)) * maxShift;
-        const ty = (dy / (rect.height / 2)) * maxShift;
-        target.style.setProperty("--magnet-tx", `${tx.toFixed(2)}px`);
-        target.style.setProperty("--magnet-ty", `${ty.toFixed(2)}px`);
-
-        const maxZ = 1.2; // degrés
-        const rotZ = Math.max(-maxZ, Math.min(maxZ,
-          (dx / (rect.width/2)) * 0.8 + (-dy / (rect.height/2)) * 0.4
-        ));
-        target.style.setProperty("--magnet-rotZ", `${rotZ.toFixed(2)}deg`);
-        target.style.setProperty("--magnet-scale", "1.03");
-        return;
-      }
+    // distance pour activer l’aimant
+    let rect = cachedRectRef.current;
+    if (!rect || activeElRef.current !== target) {
+      rect = target.getBoundingClientRect();
+      cachedRectRef.current = rect;
     }
 
-    // pas de cible → petit point
-    mw.set(size); mh.set(size); mr.set(size / 2);
-    mx.set(mxView - size / 2);
-    my.set(myView - size / 2);
-    clearActive();
-  };
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top  + rect.height / 2;
+    const dx = mx - cx, dy = my - cy;
+    const dist = Math.hypot(dx, dy);
 
-  useEffect(() => {
-    return () => {
-      cancelFrame();
-      moRef.current?.disconnect?.();
-    };
-  }, []);
+    if (dist > magnetRadius) {
+      mvX.set(mx - size / 2);
+      mvY.set(my - size / 2);
+      if (wasActiveRef.current) { mvO.set(0.35); wasActiveRef.current = false; }
+      clearActive();
+      return;
+    }
+
+    // entoure la cible : coin haut-gauche + scale
+    const ww = rect.width  + pad * 2;
+    const hh = rect.height + pad * 2;
+    const xx = rect.left - pad;
+    const yy = rect.top  - pad;
+
+    mvX.set(xx);
+    mvY.set(yy);
+    mvSX.set(Math.max(1, ww / size));
+    mvSY.set(Math.max(1, hh / size));
+
+    if (activeElRef.current !== target) {
+      clearActive();
+      activeElRef.current = target;
+      target.classList.add("magnet-on");
+    }
+
+    // opacité forte en mode “entoure”
+    if (!wasActiveRef.current) { mvO.set(0.92); wasActiveRef.current = true; }
+
+    // tilt/follow léger
+    const maxDeg = 2, maxShift = 6, maxZ = 1.2;
+    const rotX = Math.max(-maxDeg, Math.min(maxDeg, (-dy / (rect.height / 2)) * maxDeg));
+    const rotY = Math.max(-maxDeg, Math.min(maxDeg, ( dx / (rect.width  / 2)) * maxDeg));
+    const tx   = (dx / (rect.width  / 2)) * maxShift;
+    const ty   = (dy / (rect.height / 2)) * maxShift;
+    const rotZ = Math.max(-maxZ, Math.min(maxZ,
+                 (dx / (rect.width/2)) * 0.8 + (-dy / (rect.height/2)) * 0.4));
+    target.style.setProperty("--magnet-rotX", `${rotX.toFixed(2)}deg`);
+    target.style.setProperty("--magnet-rotY", `${rotY.toFixed(2)}deg`);
+    target.style.setProperty("--magnet-rotZ", `${rotZ.toFixed(2)}deg`);
+    target.style.setProperty("--magnet-tx",  `${tx.toFixed(2)}px`);
+    target.style.setProperty("--magnet-ty",  `${ty.toFixed(2)}px`);
+    target.style.setProperty("--magnet-scale", "1.03");
+  };
 
   if (!enabled) return null;
 
+  // SVG avec trait non scalable + coins arrondis
   return (
-    <motion.div
+    <motion.svg
       aria-hidden="true"
       className="ios-pointer"
       style={{
@@ -211,19 +175,33 @@ export default function IosPointer({
         left: 0,
         top: 0,
         x, y,
-        width: w, height: h,
-        borderRadius: r,
+        scaleX: mvSX,
+        scaleY: mvSY,
+        width: size,
+        height: size,
+        transformOrigin: "0 0",
         zIndex,
         pointerEvents: "none",
-        willChange: "transform, width, height, border-radius, opacity",
-        boxSizing: "border-box",
-        outline: `2px solid ${color}`,
-        outlineOffset: 0,
-        background:
-          "radial-gradient(closest-side, color-mix(in srgb, var(--brand) 18%, transparent), transparent)",
-        boxShadow: "0 0 36px color-mix(in srgb, var(--brand) 40%, transparent)",
-        opacity: 1
+        willChange: "transform, opacity",
+        opacity: o,
       }}
-    />
+      viewBox={`0 0 ${size} ${size}`}
+    >
+      <rect
+        x="0.5"
+        y="0.5"
+        width={size - 1}
+        height={size - 1}
+        rx={radius}
+        ry={radius}
+        fill="none"
+        stroke={color}
+        strokeWidth={0.25}              // finesse du trait
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        vectorEffect="non-scaling-stroke"
+        shapeRendering="geometricPrecision"
+      />
+    </motion.svg>
   );
 }

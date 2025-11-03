@@ -1,8 +1,72 @@
 @layer components {
+  /* =========================
+     HERO Services (nettoyé)
+     ========================= */
+
   .services-hero {
-    text-align: center;
-    padding-block: clamp(32px, 6vw, 72px);
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    padding-block: clamp(14px, 2vw, 96px);
+    scroll-margin-top: var(--header-h, 72px);
+    background: radial-gradient(
+        120% 120% at 50% -10%,
+        color-mix(in srgb, var(--green) 10%, transparent) 0%,
+        transparent 60%
+      ),
+      radial-gradient(
+        90% 100% at 110% 20%,
+        color-mix(in srgb, var(--orange) 12%, transparent) 0%,
+        transparent 70%
+      );
   }
+
+  /* Légère saturation si supportée (syntax correctement groupée) */
+  @supports (
+    (backdrop-filter: saturate(105%)) or
+      (-webkit-backdrop-filter: saturate(105%))
+  ) {
+    .services-hero {
+      backdrop-filter: saturate(105%);
+      -webkit-backdrop-filter: saturate(105%);
+    }
+  }
+
+  /* Conteneur + gouttières intérieures */
+  .services-hero .container {
+    width: min(1200px, 92vw);
+    margin-inline: auto;
+    padding-inline: clamp(16px, 4vw, 40px);
+  }
+
+  /* Grille : illu/bulles à gauche, texte à droite */
+  .services-hero__grid {
+    display: grid;
+    grid-template-columns: 0.95fr 1.05fr;
+    grid-template-areas: "illu text";
+    align-items: center;
+    column-gap: clamp(24px, 5vw, 56px);
+  }
+  .services-hero__illu {
+    grid-area: illu;
+  }
+  .services-hero__col {
+    grid-area: text;
+  }
+
+  /* Colonne texte – wrapping garanti */
+  .services-hero__col,
+  .services-hero__col * {
+    white-space: normal !important;
+  }
+  .services-hero__col {
+    max-width: 62ch;
+    overflow-wrap: anywhere;
+    word-break: normal;
+    justify-self: end;
+    z-index: 2;
+  }
+
   .services-hero .kicker {
     text-transform: uppercase;
     letter-spacing: 0.12em;
@@ -12,34 +76,171 @@
   }
   .services-hero h1 {
     margin: 0 0 0.5rem;
-    font-size: clamp(1.8rem, 1.2rem + 2.2vw, 2.6rem);
   }
   .services-hero .lead {
-    margin: 0 auto 1rem;
-    max-width: 72ch;
+    margin: 0 0 clamp(14px, 2.6vw, 22px);
+    max-width: 60ch;
     color: var(--muted);
   }
   .services-hero .actions {
     display: flex;
     gap: 0.6rem;
-    justify-content: center;
     flex-wrap: wrap;
   }
-  /* Cartes service : sans CTA */
+
+  /* Illustration + bulles (colonne gauche) */
+  .services-hero__illu {
+    position: relative;
+    min-height: clamp(280px, 38vh, 480px);
+    display: grid;
+    place-items: center;
+    overflow: visible;
+    z-index: 0;
+  }
+  .services-hero__illu svg {
+    width: 100%;
+    height: auto;
+    max-width: 560px;
+    display: block;
+    overflow: visible;
+    z-index: 1;
+    pointer-events: none; /* le décor ne capte pas */
+  }
+
+  /* Nuage de bulles – zone élargie (débord contrôlé) */
+  .services-hero__illu .bubble-cloud {
+    position: absolute;
+    inset: -6% -10% -8% -6%;
+    pointer-events: auto;
+    z-index: 2;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    touch-action: none; /* drag/touch sans scroll parasite */
+  }
+  /* pilotage JS (pas d’anim CSS concurrente) */
+  .services-hero__illu .bubble-cloud li {
+    --dx: 0px;
+    --dy: 0px;
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy)))
+      scale(var(--s, 1));
+    transition: transform 160ms linear;
+    will-change: transform;
+    animation: none !important;
+    pointer-events: auto;
+  }
+
+  /* Halos de fond doux */
+  .services-hero__bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+  .services-hero__bg::before,
+  .services-hero__bg::after {
+    content: "";
+    position: absolute;
+    inset: -10%;
+    filter: blur(22px) saturate(110%);
+    opacity: 0.9;
+  }
+  .services-hero__bg::before {
+    background: radial-gradient(
+        42% 42% at 18% 25%,
+        color-mix(in srgb, var(--green) 18%, transparent),
+        transparent 60%
+      ),
+      radial-gradient(
+        40% 40% at 82% 75%,
+        color-mix(in srgb, var(--orange) 16%, transparent),
+        transparent 62%
+      );
+    animation: srvHaloDriftA 16s ease-in-out infinite;
+  }
+  .services-hero__bg::after {
+    background: radial-gradient(
+        38% 38% at 78% 18%,
+        color-mix(in srgb, #60a5fa 14%, transparent),
+        transparent 62%
+      ),
+      radial-gradient(
+        36% 36% at 22% 82%,
+        color-mix(in srgb, #e879f9 12%, transparent),
+        transparent 64%
+      );
+    animation: srvHaloDriftB 18s ease-in-out infinite;
+  }
+  @keyframes srvHaloDriftA {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(1.8vh);
+    }
+  }
+  @keyframes srvHaloDriftB {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-2.2vh);
+    }
+  }
+  :root[data-theme="dark"] .services-hero__bg::before,
+  :root[data-theme="dark"] .services-hero__bg::after {
+    filter: blur(20px) saturate(105%);
+    opacity: 0.78;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .services-hero__bg::before,
+    .services-hero__bg::after {
+      animation: none !important;
+    }
+  }
+
+  /* Mobile : pile propre, texte au-dessus */
+  @media (max-width: 860px) {
+    .services-hero__grid {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "text"
+        "illu";
+      row-gap: clamp(16px, 5vw, 28px);
+      text-align: center;
+    }
+    .services-hero__col {
+      margin-inline: auto;
+    }
+    .services-hero__illu .bubble-cloud {
+      inset: -4% -8% -6% -8%;
+    }
+  }
+
+  /* ---------- Ancrage correct sous header sticky ---------- */
+  #services h1,
+  #services h2,
+  .section--halo,
+  #srv-title,
+  #steps-title,
+  #tips-title,
+  #faq-title {
+    scroll-margin-top: var(--header-h, 72px);
+  }
+
+  /* ---------- Cartes / Grilles / Divers ---------- */
   .service-card {
     display: flex;
     flex-direction: column;
   }
-
-  /* Avant, on utilisait margin-top:auto pour pousser le CTA.
-   Sans CTA, on remet un spacing normal sous le titre. */
   .service-card__desc {
-    margin-top: 0.25rem; /* était: auto */
+    margin-top: 0.25rem;
     color: var(--muted);
     line-height: 1.55;
   }
-
-  /* Option: donner un léger accent si --accent est défini */
   .service-card[style*="--accent"] {
     border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
     box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent)
@@ -50,7 +251,6 @@
     stroke: var(--accent);
   }
 
-  /* Tiers (offres) */
   .tiers {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -88,6 +288,7 @@
     border-color: color-mix(in srgb, var(--orange) 40%, var(--border));
     color: var(--fg);
   }
+
   .features {
     margin: 0.6rem 0 0;
     padding: 0;
@@ -104,6 +305,7 @@
     color: var(--orange);
     font-weight: 700;
   }
+
   .tier__foot {
     margin-top: auto;
     display: grid;
@@ -113,7 +315,6 @@
     margin: 0.4rem 0;
   }
 
-  /* Modules à la carte */
   .addons {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -131,7 +332,6 @@
     font-size: 1rem;
   }
 
-  /* Process */
   .steps {
     counter-reset: s;
     list-style: none;
@@ -139,8 +339,9 @@
     padding: 0;
     display: grid;
     gap: clamp(10px, 1.8vw, 16px);
+    content-visibility: auto;
+    contain-intrinsic-size: 360px;
   }
-
   .steps li {
     border: 1px solid var(--border);
     border-radius: 12px;
@@ -159,16 +360,16 @@
     font-weight: 700;
   }
 
-  /* FAQ (hérite de tes styles globaux si présents) */
   .faq {
     border: 1px solid var(--border);
     border-radius: 12px;
     background: var(--card);
     padding: 0.6rem 0.8rem;
     margin: 0.6rem 0;
+    content-visibility: auto;
+    contain-intrinsic-size: 140px;
   }
 
-  /* CTA final */
   .cta {
     text-align: center;
     padding-block: clamp(18px, 4vw, 36px);
@@ -180,9 +381,249 @@
     flex-wrap: wrap;
   }
 
-  /* Rythme vertical unifié entre sections */
-  main#home ~ .services-page,
-  .section--halo {
-    scroll-margin-top: 12vh;
+  .tips abbr[title] {
+    text-decoration: underline dotted;
+    cursor: help;
   }
+
+  .section--halo {
+    content-visibility: auto;
+    contain-intrinsic-size: 480px;
+  }
+  .services__grid {
+    content-visibility: auto;
+    contain-intrinsic-size: 380px;
+  }
+  .tips {
+    content-visibility: auto;
+    contain-intrinsic-size: 220px;
+  }
+  .card {
+    content-visibility: auto;
+    contain-intrinsic-size: 260px;
+  }
+
+  /* Respect des préférences de mouvement */
+  @media (prefers-reduced-motion: reduce) {
+    .svc3-card,
+    .svc3-card * {
+      transition: none !important;
+      animation: none !important;
+    }
+  }
+
+  /* ===== 3-cards — styles scopés (aucun global override) ===== */
+  .svc3-cards {
+    --gap: clamp(16px, 2.5vw, 24px);
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (max-width: 1024px) {
+    .svc3-cards {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 680px) {
+    .svc3-cards {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .svc3-card {
+    --accent: var(--orange, #ffb86b);
+    --card-bg: var(--card, #232333);
+    --card-bd: var(--border, #31314a);
+    --fg: var(--fg, #f5f6fb);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: clamp(14px, 2.2vw, 18px);
+    border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--card-bd));
+    border-radius: 14px;
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--accent) 4%, var(--card-bg)) 0%,
+      var(--card-bg) 100%
+    );
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+    overflow: hidden;
+    isolation: isolate;
+    transition: transform 0.24s cubic-bezier(0.2, 0.65, 0.3, 1),
+      box-shadow 0.24s;
+  }
+  .svc3-card::before {
+    content: "";
+    position: absolute;
+    inset: -28% -8% auto -8%;
+    height: 58%;
+    background: radial-gradient(
+        60% 60% at 50% 50%,
+        color-mix(in srgb, var(--accent) 26%, transparent),
+        transparent 70%
+      ),
+      conic-gradient(
+        from 0deg,
+        color-mix(in srgb, var(--accent) 42%, transparent),
+        transparent 60%
+      );
+    filter: blur(20px) saturate(115%);
+    opacity: 0.35;
+    z-index: -1;
+    transition: opacity 0.25s ease;
+  }
+  .svc3-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22);
+  }
+  .svc3-card:hover::before {
+    opacity: 0.55;
+  }
+
+  .svc3-card__icon {
+    --size: 64px;
+    width: var(--size);
+    height: var(--size);
+    display: grid;
+    place-items: center;
+    border-radius: 14px;
+    color: var(--fg);
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+    outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 0%, var(--card-bg)),
+      0 0 0 6px color-mix(in srgb, var(--accent) 45%, transparent);
+    transition: background 0.25s ease, transform 0.25s ease;
+  }
+  .svc3-card:hover .svc3-card__icon {
+    background: var(--accent);
+    color: #111;
+    transform: translateY(-1px);
+  }
+
+  .svc3-card__title {
+    margin: 0.25rem 0 0;
+    font-size: clamp(1.1rem, 1rem + 0.45vw, 1.35rem);
+    letter-spacing: -0.005em;
+  }
+  .svc3-card__desc {
+    margin: 0;
+    color: var(--muted, #cfd0e6);
+    line-height: 1.55;
+    max-width: 60ch;
+  }
+
+  .svc3-card__cta {
+    margin-top: auto;
+  }
+  .svc3-card .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 42px;
+    padding: 0 14px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    background: var(--accent);
+    color: #111;
+    border: 2px solid var(--accent);
+    transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.2s;
+  }
+  .svc3-card .btn:hover {
+    background: transparent;
+    color: var(--fg);
+    transform: translateY(-1px);
+  }
+  .svc3-card .btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px #000, 0 0 0 5px var(--accent);
+  }
+
+  :root[data-theme="dark"] .svc3-card {
+    --card-bg: #1b1b28;
+    --card-bd: #2c2c3f;
+  }
+
+  /* === LISTE DANS LA CARTE (PUCE = COULEUR D’ACCENT) === */
+  .svc3-card__list {
+    margin: 0.4rem 0 0;
+    padding-left: 1.25rem;
+    display: grid;
+    gap: 0.25rem;
+    color: var(--muted);
+    list-style: disc;
+  }
+  .svc3-card__list li::marker {
+    color: var(--accent);
+  }
+
+  /* Fallback vieux moteurs sans ::marker (syntax @supports correcte) */
+  @supports not (selector(li::marker)) {
+    .svc3-card__list {
+      list-style: none;
+      padding-left: 0;
+    }
+    .svc3-card__list li {
+      position: relative;
+      padding-left: 0.9rem;
+    }
+    .svc3-card__list li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      top: 0;
+      line-height: 1;
+      color: var(--accent);
+      font-weight: 700;
+    }
+  }
+
+  /* Section "Mes services" */
+  .svc3 {
+    padding-block: clamp(32px, 6vw, 72px);
+  }
+  .svc3 .section-head {
+    text-align: center;
+    margin-bottom: clamp(16px, 3vw, 28px);
+  }
+  .svc3 .section-head h2 {
+    margin: 0 0 8px;
+  }
+  .svc3 .section-head .muted {
+    margin: 0 auto;
+    max-width: 60ch;
+    color: var(--muted);
+  }
+
+  /* Centrage générique des headers de section de la page services */
+  #services .section-head {
+    text-align: center;
+    margin-bottom: 80px;
+  }
+  #services .section-head h2 {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  #services .section-head .muted {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 60ch;
+  }
+}
+/* Reset des <pre><code> injectés par WP dans le hero */
+.services-hero__col pre,
+.services-hero__col code {
+  font-family: var(--font-text);
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  white-space: normal;
 }

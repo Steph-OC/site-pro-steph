@@ -1,16 +1,15 @@
+/* ===========================
+   HOME — components (no spacing)
+   =========================== */
 @layer components {
-  /* =========================
-     HERO — structure & sécurité
-     ========================= */
+  /* ---------- HERO : structure ---------- */
   .hero {
     position: relative;
-    border-bottom: 0;
-    /* évite les scrollbars dues aux décors latéraux */
-    overflow-x: clip;
-    /* laisse passer les halos/auroras vers le bas */
-    overflow-y: visible;
+    isolation: isolate;
+    overflow-x: clip; /* évite scrollbars latérales des décors */
+    overflow-y: visible; /* laisse passer les halos vers le bas   */
     padding-block: clamp(44px, 8vw, 120px) clamp(24px, 4vw, 48px);
-    isolation: isolate; /* nouveau stacking context */
+    border-bottom: 0;
   }
   .hero__inner {
     max-width: var(--hero-max);
@@ -23,7 +22,7 @@
     position: absolute;
     inset: 0;
     z-index: 0;
-    pointer-events: none; /* décor seulement */
+    pointer-events: none;
     overflow: visible;
   }
   .hero > * {
@@ -31,9 +30,7 @@
     z-index: 1;
   }
 
-  /* =========================
-     HERO — aurora (grand décor)
-     ========================= */
+  /* ---------- HERO : aurora décor ---------- */
   .hero .hero__bg::before {
     content: "";
     position: absolute;
@@ -44,7 +41,7 @@
     bottom: -45vh;
     z-index: 0;
 
-    /* teintes (clair) */
+    /* teintes par défaut (clair) */
     --a1: color-mix(in srgb, var(--green) 70%, #7dd3fc 30%);
     --a2: color-mix(in srgb, var(--orange) 75%, #e879f9 25%);
     --a3: color-mix(in srgb, #7c3aed 65%, #22d3ee 35%);
@@ -77,16 +74,13 @@
         color-mix(in srgb, var(--bg) 100%, var(--card) 0%) 60%
       );
 
-    /* fondu bas propre */
     -webkit-mask-image: linear-gradient(
       #000,
       #000 calc(100% - 16vh),
       transparent
     );
     mask-image: linear-gradient(#000, #000 calc(100% - 16vh), transparent);
-
     filter: saturate(110%) contrast(102%);
-    will-change: transform, opacity;
   }
   :root[data-theme="dark"] .hero .hero__bg::before {
     --a1: color-mix(in srgb, var(--green) 55%, #60a5fa 45%);
@@ -95,9 +89,7 @@
     filter: saturate(100%) brightness(95%);
   }
 
-  /* =========================
-     HERO — contenu
-     ========================= */
+  /* ---------- HERO : contenu ---------- */
   .hero__grid {
     display: grid;
     gap: clamp(16px, 3vw, 32px);
@@ -125,9 +117,7 @@
     max-width: 70ch;
   }
 
-  /* =========================
-     Visuel PC — tilt & reflets
-     ========================= */
+  /* ---------- Visuel PC : tilt & reflets ---------- */
   .pc {
     width: 100%;
     max-width: var(--pc-max);
@@ -178,7 +168,7 @@
     filter: none;
   }
 
-  /* Animations internes du visuel (si présentes) */
+  /* anim internes optionnelles */
   .hero__visual .code-run {
     animation: codeScroll var(--t) linear infinite both;
     will-change: transform;
@@ -196,37 +186,31 @@
     0% {
       transform: translateY(0);
     }
-    70.98% {
-      transform: translateY(calc(-1 * var(--chunk)));
-    }
+    70.98%,
     100% {
       transform: translateY(calc(-1 * var(--chunk)));
     }
   }
   @keyframes codeFade {
     0%,
-    70.98% {
+    70.98%,
+    100% {
       opacity: 1;
     }
     73.67%,
     97.34% {
       opacity: 0;
-    }
-    100% {
-      opacity: 1;
     }
   }
   @keyframes siteFade {
     0%,
-    70.98% {
+    70.98%,
+    100% {
       opacity: 0;
     }
     73.67%,
     97.34% {
       opacity: 1;
-    }
-    100% {
-      opacity: 0;
     }
   }
 
@@ -253,12 +237,11 @@
       transition: none !important;
     }
     .hero__visual .pc-gloss {
-      animation: none !important;
       opacity: 0 !important;
     }
   }
 
-  /* Reflet balayage au survol */
+  /* balayage reflet */
   .pc-tilt::after {
     content: "";
     position: absolute;
@@ -295,7 +278,7 @@
     );
   }
   .hero__visual:hover .pc-tilt::after {
-    animation: pcShineSlow 1400ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+    animation: pcShineSlow 1.4s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
   }
   @keyframes pcShineSlow {
     0% {
@@ -314,13 +297,10 @@
     }
   }
 
-  /* =========================
-     SECTIONS — halos animés
-     (variantes par section via nth-of-type)
-     ========================= */
+  /* ---------- Sections : halo animé (visuel uniquement) ---------- */
   .section--halo {
     position: relative;
-    isolation: isolate; /* halos derrière le contenu de la section */
+    isolation: isolate;
     overflow: visible;
     z-index: 0;
   }
@@ -329,19 +309,17 @@
     z-index: 1;
   }
 
-  /* halo de section (fond animé) */
   .section--halo::before {
     content: "";
     position: absolute;
     z-index: 0;
     pointer-events: none;
-
-    /* variables par défaut (surclassées plus bas) */
+    /* valeurs par défaut (surclassées via nth-of-type) */
     --halo-w: min(1100px, 92vw);
     --halo-h: 420px;
     --halo-x: 0px;
     --halo-y: 0px;
-    --halo-overlap: 140px; /* chevauchement vers le haut */
+    --halo-overlap: 140px;
     --halo-rotate: 0deg;
     --halo-scale: 1;
     --halo-delay: 0s;
@@ -357,7 +335,6 @@
 
     --halo-a: color-mix(in srgb, var(--green) 20%, transparent);
     --halo-b: color-mix(in srgb, var(--orange) 18%, transparent);
-
     background: radial-gradient(
         60% 55% at 30% 40%,
         var(--halo-a),
@@ -371,13 +348,12 @@
         infinite,
       haloDrift 18s ease-in-out calc(var(--halo-delay) * 0.5) infinite alternate;
   }
-
   @keyframes haloBreath {
     0%,
     100% {
       opacity: 0.78;
       transform: translate(calc(-50% + var(--halo-x)), var(--halo-y))
-        rotate(var(--halo-rotate)) scale(calc(var(--halo-scale) * 1));
+        rotate(var(--halo-rotate)) scale(var(--halo-scale));
     }
     50% {
       opacity: 1;
@@ -409,7 +385,7 @@
     opacity: 0.88;
   }
 
-  /* Variations par section (ordre réel de la home) */
+  /* variations légères par position (home) */
   main#home > section.section--halo:nth-of-type(1)::before {
     --halo-h: 360px;
     --halo-overlap: 120px;
@@ -422,7 +398,6 @@
     --halo-w: min(1250px, 95vw);
     --halo-h: 440px;
     --halo-overlap: 160px;
-    --halo-x: 0px;
     --halo-rotate: 2deg;
     --halo-delay: 0.6s;
     --halo-duration: 7s;
@@ -458,8 +433,6 @@
   main#home > section.section--halo:nth-of-type(6)::before {
     --halo-h: 320px;
     --halo-overlap: 100px;
-    --halo-x: 0px;
-    --halo-rotate: 0deg;
     --halo-delay: 0.5s;
     --halo-duration: 6.4s;
   }
@@ -482,7 +455,7 @@
     --halo-duration: 7.6s;
   }
 
-  /* Helpers optionnels */
+  /* helpers */
   .section--halo.halo-left::before {
     --halo-x: -60px;
     --halo-rotate: -5deg;
@@ -495,4 +468,18 @@
     --halo-h: 500px;
     --halo-overlap: 180px;
   }
+}
+
+/* -------------------------------
+   (optionnel) Titres centrés home
+   ------------------------------- */
+main#home .section-head {
+  text-align: center;
+  margin: 0 0 clamp(12px, 2.5vw, 24px);
+}
+main#home .section-head h2 {
+  margin: 0 0 0.25rem;
+}
+main#home .section-head .muted {
+  margin: 0;
 }
