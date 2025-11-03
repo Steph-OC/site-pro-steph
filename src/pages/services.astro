@@ -3,8 +3,15 @@ import SiteLayout from "@/layouts/SiteLayout.astro";
 import { getServicesPage } from "@/lib/wp";
 import { normalizeServices } from "@/lib/services";
 import { linesToItems } from "@/helpers/text";
-import "@/styles/pages/services.css";
-import "@/styles/components/bubbles.css";
+// page shell
+import "@/styles/pages/services/index.css";
+
+// components used on this page
+import "@/styles/components/hero-services.css";
+import "@/styles/components/svc3-cards.css";
+import "@/styles/components/flow-steps.css"; // “Comment ça se passe”
+import "@/styles/components/faq.css"; // (optional) if you keep the FAQ block
+import "@/styles/components/bubbles.css"; // déjà existant
 
 const wp = await getServicesPage();
 const acf = wp?.acf ?? {};
@@ -262,17 +269,80 @@ const cardIcons = [
     {/* Étapes */}
     {
       data.steps.length > 0 && (
-        <section
-          class="container section--halo halo-pulse-gentle"
-          aria-labelledby="steps-title"
-        >
+        <section class="section--halo" aria-labelledby="flow-title">
           <header class="section-head">
-            <h2 id="steps-title">Comment ça se passe</h2>
+            <h2 id="flow-title">De l'idée au site en ligne</h2>
+            <p class="muted">
+              Un parcours en 6 étapes, transparent et efficace.
+            </p>
           </header>
-          <ol class="steps">
-            {data.steps.map((s) => (
-              <li>{s}</li>
-            ))}
+
+          <ol class="flow-steps" role="list">
+            <li class="flow-step">
+              <div class="flow-step__badge" aria-hidden="true">
+                1
+              </div>
+              <article class="flow-step__card">
+                <h3>Échange & objectifs</h3>
+                <p>
+                  On clarifie vos besoins, votre audience et les
+                  fonctionnalitées.
+                </p>
+              </article>
+            </li>
+
+            <li class="flow-step">
+              <div class="flow-step__badge" aria-hidden="true">
+                2
+              </div>
+              <article class="flow-step__card">
+                <h3>Cadrage & planning</h3>
+                <p>On se met d’accord sur la suite et le budget</p>
+              </article>
+            </li>
+
+            <li class="flow-step">
+              <div class="flow-step__badge" aria-hidden="true">
+                3
+              </div>
+              <article class="flow-step__card">
+                <h3>Design</h3>
+                <p>UI propre, accessible, fidèle à votre identité.</p>
+              </article>
+            </li>
+
+            <li class="flow-step">
+              <div class="flow-step__badge" aria-hidden="true">
+                4
+              </div>
+              <article class="flow-step__card">
+                <h3>Intégration WordPress</h3>
+                <p>Blocs modulaires, performance et SEO technique.</p>
+              </article>
+            </li>
+
+            <li class="flow-step">
+              <div class="flow-step__badge" aria-hidden="true">
+                5
+              </div>
+              <article class="flow-step__card">
+                <h3>Recette</h3>
+                <p>
+                  On vérifie, on corrige, on s’assure que tout est accessible et
+                  rapide
+                </p>
+              </article>
+            </li>
+
+            <li class="flow-step">
+              <div class="flow-step__badge" aria-hidden="true">
+                6
+              </div>
+              <article class="flow-step__card">
+                <h3>Mise en ligne & suivi</h3>
+                <p>Déploiement, sauvegardes, sécurité et accompagnement.</p>
+              </article>
+            </li>
           </ol>
         </section>
       )

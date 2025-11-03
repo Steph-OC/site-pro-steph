@@ -4,7 +4,8 @@ import {
   useInView,
   useReducedMotion,
   type Variants,
-  type TargetAndTransition, // 👈 ajoute ce type
+  type TargetAndTransition, // type pour whileHover/whileTap
+  // type MotionProps, // <- voir fallback plus bas si besoin
 } from "framer-motion";
 import {
   Accessibility,
@@ -29,7 +30,10 @@ const DEFAULTS: Item[] = [
 ];
 
 const key = (s: string) =>
-  s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  s
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
 
 function getIcon(label: string) {
   switch (key(label)) {
@@ -96,7 +100,7 @@ export default function BadgesMotion({ items = DEFAULTS }: Props) {
         },
       };
 
-  // 👇 Typé explicitement pour matcher whileHover
+  // Animation de survol du cercle (typage explicite)
   const hoverBounce: TargetAndTransition = prefersReduced
     ? {
         y: [-4, 0],
@@ -164,11 +168,12 @@ export default function BadgesMotion({ items = DEFAULTS }: Props) {
               data-cursor-text-repeat="6"
               data-cursor-color={color}
             >
+              {/* le commentaire est ici, pas entre les props */}
               <motion.div
                 className="circle"
                 aria-hidden="true"
                 variants={circleVariants}
-                whileHover={hoverBounce}   {/* ✅ plus de soulignement */}
+                whileHover={hoverBounce}
                 whileTap={{ scale: prefersReduced ? 0.99 : 0.98 }}
               >
                 <Icon strokeWidth={2} />

@@ -1,0 +1,103 @@
+@layer components {
+  .flow-steps {
+    --rail: 2px;
+    --gap: clamp(16px, 3vw, 28px);
+    --card-w: min(460px, 100%);
+    --badge: 36px; /* Ø de la pastille */
+    --rail-offset: calc(var(--badge) / 2); /* centre de la pastille */
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--gap) clamp(18px, 3vw, 26px);
+    margin: 0;
+    padding: clamp(12px, 2vw, 16px) 0;
+    list-style: none;
+  }
+
+  /* RAIL HAUT + RAIL BAS */
+  .flow-steps::before,
+  .flow-steps::after {
+    content: "";
+    position: absolute;
+    left: 0; /* ajuste si tu veux une marge: ex. clamp(8px,3vw,24px) */
+    right: 0;
+    height: var(--rail);
+    background: color-mix(in srgb, var(--border) 80%, var(--gray) 8%);
+    border-radius: 999px;
+    pointer-events: none;
+    z-index: 0;
+  }
+  /* Aligne les pastilles de la 1ère rangée */
+  .flow-steps::before {
+    top: var(--rail-offset);
+  }
+  /* Aligne les pastilles de la 2ème rangée (milieu de la grille + centre pastille) */
+  .flow-steps::after {
+    top: calc(50% + var(--rail-offset));
+  }
+
+  .flow-step {
+    position: relative;
+    padding-top: 44px;
+    display: grid;
+    justify-items: start;
+    z-index: 1; /* pour que les cartes passent au-dessus du rail */
+  }
+  .flow-step__badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--badge);
+    height: var(--badge);
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    color: #111;
+    background: var(--orange);
+    border: 3px solid color-mix(in srgb, var(--orange) 40%, transparent);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    z-index: 2; /* la pastille par-dessus le rail */
+  }
+
+  .flow-step__card {
+    width: var(--card-w);
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px 16px;
+    box-shadow: var(--shadow);
+  }
+  .flow-step__card h3 {
+    margin: 0 0 4px;
+    font-size: clamp(1.02rem, 0.95rem + 0.4vw, 1.18rem);
+  }
+  .flow-step__card p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  @media (max-width: 1100px) {
+    .flow-steps {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 720px) {
+    .flow-steps {
+      grid-template-columns: 1fr;
+      gap: clamp(12px, 3.5vw, 18px);
+    }
+    .flow-steps::before,
+    .flow-steps::after {
+      display: none;
+    } /* rails cachés en 1 colonne */
+    .flow-step {
+      padding-top: 0;
+    }
+    .flow-step__badge {
+      position: static;
+      margin-bottom: 8px;
+    }
+  }
+}

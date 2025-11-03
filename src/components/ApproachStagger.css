@@ -17,7 +17,6 @@
   --card-max: clamp(360px, 28vw, 520px); /* ← cartes plus larges */
   --delay-step: 0.12s;
   position: relative;
-  margin-block: clamp(60px, 8vw, 140px);
   overflow-y: visible;
 }
 

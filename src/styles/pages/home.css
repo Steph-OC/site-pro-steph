@@ -1,4 +1,25 @@
 /* ===========================
+   HOME — spacing overrides
+   =========================== */
+@layer layout {
+  /* valeurs plus compactes que le layout global */
+  main#home,
+  #home {
+    --section-gap: clamp(48px, 6vw, 96px);
+    --section-pad: clamp(16px, 3.5vw, 28px);
+  }
+
+  /* encore plus serré sur mobile si tu veux */
+  @media (max-width: 720px) {
+    main#home,
+    #home {
+      --section-gap: clamp(36px, 5vw, 60px);
+      --section-pad: clamp(14px, 3vw, 24px);
+    }
+  }
+}
+
+/* ===========================
    HOME — components (no spacing)
    =========================== */
 @layer components {
