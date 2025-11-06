@@ -3,6 +3,7 @@ import SiteLayout from "@/layouts/SiteLayout.astro";
 import { getServicesPage } from "@/lib/wp";
 import { normalizeServices } from "@/lib/services";
 import { linesToItems } from "@/helpers/text";
+
 // page shell
 import "@/styles/pages/services/index.css";
 
@@ -10,12 +11,12 @@ import "@/styles/pages/services/index.css";
 import "@/styles/components/hero-services.css";
 import "@/styles/components/svc3-cards.css";
 import "@/styles/components/flow-steps.css"; // “Comment ça se passe”
-import "@/styles/components/faq.css"; // (optional) if you keep the FAQ block
+import "@/styles/components/faq.css"; // (optionnel)
 import "@/styles/components/bubbles.css"; // déjà existant
 
 const wp = await getServicesPage();
 const acf = wp?.acf ?? {};
-const data = normalizeServices(acf);
+const data = normalizeServices(acf) ?? {};
 
 const title = "Services — Stéphanie Quibel";
 const description = "Création, refonte, optimisation WordPress.";
@@ -31,30 +32,32 @@ function cleanWpIntro(html: string = "") {
       )
       // <code>…</code> -> … (texte simple)
       .replace(/<code[^>]*>([\s\S]*?)<\/code>/gi, "$1")
-      // trim soft
+      // trim doux
       .replace(/\s+$/g, "")
   );
 }
 
 // On prépare 3 cartes à partir d'ACF si dispo, sinon fallback statique.
-const svcFromAcf = (data.services ?? []).slice(0, 3).map((s, i) => ({
-  title:
-    s.title ||
-    [
-      "Création sur mesure",
-      "Refonte & optimisation",
-      "Maintenance & accompagnement",
-    ][i] ||
-    "Service",
-  desc:
-    s.desc ||
-    [
-      "Design fidèle à votre identité, intégration WordPress propre et modulaire. Performance & accessibilité au cœur.",
-      "Audit technique & éditorial, UX/UI, nettoyage thème, accélération (LCP/CLS), SEO technique et sécurisation.",
-      "Mises à jour, sauvegardes, corrections, petites évolutions et suivi continu des performances & SEO.",
-    ][i],
-  accent: s.accent || ["#5b98eb", "#ffd166", "#5cc7a0"][i],
-}));
+const svcFromAcf =
+  (data?.services ?? []).slice(0, 3).map((s: any, i: number) => ({
+    title:
+      s?.title ??
+      [
+        "Création sur mesure",
+        "Refonte & optimisation",
+        "Maintenance & accompagnement",
+      ][i] ??
+      "Service",
+    desc:
+      s?.desc ??
+      [
+        "Design fidèle à votre identité, intégration WordPress propre et modulaire. Performance & accessibilité au cœur.",
+        "Audit technique & éditorial, UX/UI, nettoyage thème, accélération (LCP/CLS), SEO technique et sécurisation.",
+        "Mises à jour, sauvegardes, corrections, petites évolutions et suivi continu des performances & SEO.",
+      ][i] ??
+      "",
+    accent: s?.accent ?? ["#5b98eb", "#ffd166", "#5cc7a0"][i],
+  })) ?? [];
 
 // Icônes simples inline (SVG) pour les 3 cartes
 const cardIcons = [
@@ -73,24 +76,24 @@ const cardIcons = [
         <div class="services-hero__col">
           <p class="kicker">WordPress sur mesure</p>
           {
-            data.intro.title && (
+            data?.intro?.title && (
               <h1 id="services-hero-title">{data.intro.title}</h1>
             )
           }
 
           {/* ⚠️ utiliser un DIV ici pour accueillir du HTML */}
           {
-            data.intro.text && (
+            data?.intro?.text && (
               <div class="lead" set:html={cleanWpIntro(data.intro.text)} />
             )
           }
 
           {
-            data.cta?.btnLabel && (
+            data?.cta?.btnLabel && (
               <div class="actions">
                 <a
-                  class={`btn btn--${data.cta.style}`}
-                  href={data.cta.btnUrl || "/contact"}
+                  class={`btn btn--${data.cta?.style ?? "accent"}`}
+                  href={data.cta?.btnUrl || "/contact"}
                 >
                   {data.cta.btnLabel}
                 </a>
@@ -229,7 +232,7 @@ const cardIcons = [
 
           <ul class="svc3-cards" role="list">
             {svcFromAcf.map((card, i) => {
-              const items = linesToItems(card.desc);
+              const items = linesToItems(card.desc ?? "");
               return (
                 <li class="svc3-card" style={`--accent:${card.accent}`}>
                   <div
@@ -268,89 +271,137 @@ const cardIcons = [
 
     {/* Étapes */}
     {
-      data.steps.length > 0 && (
+      (data?.steps?.length ?? 0) > 0 && (
         <section class="section--halo" aria-labelledby="flow-title">
           <header class="section-head">
-            <h2 id="flow-title">De l'idée au site en ligne</h2>
+            <h2 id="flow-title">De l’idée au site en ligne</h2>
             <p class="muted">
               Un parcours en 6 étapes, transparent et efficace.
             </p>
           </header>
 
-          <ol class="flow-steps" role="list">
-            <li class="flow-step">
-              <div class="flow-step__badge" aria-hidden="true">
+          <div
+            class="steps-slider"
+            id="steps-slider"
+            role="group"
+            aria-labelledby="flow-title"
+          >
+            <label class="step-card">
+              <input class="step-input" type="radio" name="flow" checked />
+              <span class="step-badge" aria-hidden="true">
                 1
-              </div>
-              <article class="flow-step__card">
+              </span>
+              <div class="step-info">
                 <h3>Échange & objectifs</h3>
-                <p>
+                <p class="step-kicker">
                   On clarifie vos besoins, votre audience et les
-                  fonctionnalitées.
+                  fonctionnalités.
                 </p>
-              </article>
-            </li>
+                <ul class="step-chips" aria-hidden="true">
+                  <li>échange</li>
+                  <li>1–2 h</li>
+                  <li>en visio</li>
+                </ul>
+              </div>
+            </label>
 
-            <li class="flow-step">
-              <div class="flow-step__badge" aria-hidden="true">
+            <label class="step-card">
+              <input class="step-input" type="radio" name="flow" />
+              <span class="step-badge" aria-hidden="true">
                 2
-              </div>
-              <article class="flow-step__card">
+              </span>
+              <div class="step-info">
                 <h3>Cadrage & planning</h3>
-                <p>On se met d’accord sur la suite et le budget</p>
-              </article>
-            </li>
-
-            <li class="flow-step">
-              <div class="flow-step__badge" aria-hidden="true">
-                3
-              </div>
-              <article class="flow-step__card">
-                <h3>Design</h3>
-                <p>UI propre, accessible, fidèle à votre identité.</p>
-              </article>
-            </li>
-
-            <li class="flow-step">
-              <div class="flow-step__badge" aria-hidden="true">
-                4
-              </div>
-              <article class="flow-step__card">
-                <h3>Intégration WordPress</h3>
-                <p>Blocs modulaires, performance et SEO technique.</p>
-              </article>
-            </li>
-
-            <li class="flow-step">
-              <div class="flow-step__badge" aria-hidden="true">
-                5
-              </div>
-              <article class="flow-step__card">
-                <h3>Recette</h3>
-                <p>
-                  On vérifie, on corrige, on s’assure que tout est accessible et
-                  rapide
+                <p class="step-kicker">
+                  On se met d’accord sur la suite et le budget.
                 </p>
-              </article>
-            </li>
-
-            <li class="flow-step">
-              <div class="flow-step__badge" aria-hidden="true">
-                6
+                <ul class="step-chips" aria-hidden="true">
+                  <li>plan</li>
+                  <li>budget</li>
+                  <li>calendrier</li>
+                </ul>
               </div>
-              <article class="flow-step__card">
+            </label>
+
+            <label class="step-card">
+              <input class="step-input" type="radio" name="flow" />
+              <span class="step-badge" aria-hidden="true">
+                3
+              </span>
+              <div class="step-info">
+                <h3>Design</h3>
+                <p class="step-kicker">
+                  UI propre, accessible, fidèle à votre identité.
+                </p>
+                <ul class="step-chips" aria-hidden="true">
+                  <li>maquettes</li>
+                  <li>identité</li>
+                  <li>accessible</li>
+                </ul>
+              </div>
+            </label>
+
+            <label class="step-card">
+              <input class="step-input" type="radio" name="flow" />
+              <span class="step-badge" aria-hidden="true">
+                4
+              </span>
+              <div class="step-info">
+                <h3>Intégration WordPress</h3>
+                <p class="step-kicker">
+                  Blocs modulaires, performance et SEO technique.
+                </p>
+                <ul class="step-chips" aria-hidden="true">
+                  <li>pages modifiables</li>
+                  <li>rapide</li>
+                  <li>SEO propre</li>
+                </ul>
+              </div>
+            </label>
+
+            <label class="step-card">
+              <input class="step-input" type="radio" name="flow" />
+              <span class="step-badge" aria-hidden="true">
+                5
+              </span>
+              <div class="step-info">
+                <h3>Recette</h3>
+                <p class="step-kicker">
+                  Tests, corrections, accessibilité et vitesse.
+                </p>
+                <ul class="step-chips" aria-hidden="true">
+                  <li>relecture</li>
+                  <li>mobile & ordi</li>
+                  <li>corrections</li>
+                </ul>
+              </div>
+            </label>
+
+            <label class="step-card">
+              <input class="step-input" type="radio" name="flow" />
+              <span class="step-badge" aria-hidden="true">
+                6
+              </span>
+              <div class="step-info">
                 <h3>Mise en ligne & suivi</h3>
-                <p>Déploiement, sauvegardes, sécurité et accompagnement.</p>
-              </article>
-            </li>
-          </ol>
+                <p class="step-kicker">
+                  Déploiement, sauvegardes, sécurité et accompagnement.
+                </p>
+                <ul class="step-chips" aria-hidden="true">
+                  <li>mise en ligne</li>
+                  <li>sauvegardes</li>
+                  <li>suivi</li>
+                </ul>
+              </div>
+            </label>
+          </div>
         </section>
       )
     }
 
     {/* Points clés */}
     {
-      (data.tips.cwv || data.tips.access || data.tips.seo) && (
+      (data?.tips?.cwv || data?.tips?.access || data?.tips?.seo) && (
         <section
           class="container section--halo halo-pulse-gentle"
           aria-labelledby="tips-title"
@@ -359,7 +410,7 @@ const cardIcons = [
             <h2 id="tips-title">Points clés</h2>
           </header>
           <ul class="tips" role="list">
-            {data.tips.cwv && (
+            {data?.tips?.cwv && (
               <li>
                 <strong>
                   <abbr title="Core Web Vitals = indicateurs Google sur la vitesse et la stabilité visuelle d’une page.">
@@ -370,14 +421,14 @@ const cardIcons = [
                 {data.tips.cwv}
               </li>
             )}
-            {data.tips.access && (
+            {data?.tips?.access && (
               <li>
                 <strong>Accessibilité</strong>
                 {" — "}
                 {data.tips.access}
               </li>
             )}
-            {data.tips.seo && (
+            {data?.tips?.seo && (
               <li>
                 <strong>SEO</strong>
                 {" — "}
@@ -391,7 +442,7 @@ const cardIcons = [
 
     {/* FAQ */}
     {
-      data.faqs.length > 0 && (
+      (data?.faqs?.length ?? 0) > 0 && (
         <section
           class="container section--halo halo-pulse-gentle"
           aria-labelledby="faq-title"
@@ -399,7 +450,7 @@ const cardIcons = [
           <header class="section-head">
             <h2 id="faq-title">FAQ</h2>
           </header>
-          {data.faqs.map(({ q, a }) => (
+          {data.faqs.map(({ q, a }: any) => (
             <details class="faq">
               {q && <summary>{q}</summary>}
               {a && <div class="faq__answer" set:html={a} />}
@@ -411,17 +462,17 @@ const cardIcons = [
 
     {/* CTA final */}
     {
-      (data.cta.title || data.cta.text || data.cta.btnLabel) && (
+      (data?.cta?.title || data?.cta?.text || data?.cta?.btnLabel) && (
         <section class="container section--halo halo-pulse-gentle">
           <article class="card">
             <div class="card__body">
-              {data.cta.title && <h2>{data.cta.title}</h2>}
-              {data.cta.text && <p class="muted">{data.cta.text}</p>}
+              {data?.cta?.title && <h2>{data.cta.title}</h2>}
+              {data?.cta?.text && <p class="muted">{data.cta.text}</p>}
               <div class="actions">
-                {data.cta.btnLabel && (
+                {data?.cta?.btnLabel && (
                   <a
-                    class={`btn btn--${data.cta.style}`}
-                    href={data.cta.btnUrl || "/contact"}
+                    class={`btn btn--${data.cta?.style ?? "accent"}`}
+                    href={data.cta?.btnUrl || "/contact"}
                   >
                     {data.cta.btnLabel}
                   </a>

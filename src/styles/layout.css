@@ -1,41 +1,64 @@
+/* src/styles/layout.css — GLOBAL CLEAN */
 @layer layout {
-  html {
-    scroll-behavior: smooth;
-  }
-  .project-card {
-    scroll-margin-top: 96px;
-  }
-
+  /* === Rythme vertical GLOBAL (toutes pages) === */
   :root {
-    --section-gap: clamp(96px, 9vw, 160px);
-    --section-pad: clamp(20px, 3vw, 36px);
+    /* Espace ENTRE sections */
+    --section-gap: clamp(64px, 8vw, 120px);
+    /* Padding INTERNE de chaque section */
+    --section-pad: clamp(24px, 3.5vw, 40px);
   }
 
-  /* s'applique aux sections directes ET aux sections dans un wrapper direct */
+  /* Sections (directes / dans un wrapper) */
   main > section,
   main > * > section {
+    position: relative; /* base neutre */
+    z-index: 0;
     margin: 0;
     padding-block: var(--section-pad);
-    border-top: 0.1px solid transparent;
+    background: transparent; /* évite les “bandes” opaques */
+    border: 0; /* supprime lignes fantômes */
+    overflow: visible; /* ne coupe rien (halos, ombres…) */
   }
 
+  /* Espace entre sections sœurs */
   main > section + section,
   main > * > section + section {
     margin-top: var(--section-gap);
   }
 
-  /* espace entre wrappers frères éventuels */
+  /* Espace entre wrappers frères éventuels */
   main > * + * {
     margin-top: var(--section-gap);
   }
 
-  /* home: wrapper #home ou main#home selon la page */
-  main#home,
-  #home {
-    --section-gap: clamp(126px, 12vw, 200px);
-    --section-pad: clamp(66px, 10vw, 108px);
+  /* --- Sections avec halo (z-index propre, pas de clipping) --- */
+  .section--halo {
+    position: relative;
+    z-index: 2; /* au-dessus d’une section “normale” précédente */
+    isolation: isolate; /* le ::before reste dans son contexte */
+    overflow: visible;
+  }
+  .section--halo::before {
+    /* dimensions/teintes/animations définies dans halos.css */
+    z-index: 0; /* IMPORTANT : pas de -1 */
+    pointer-events: none;
+    -webkit-mask-image: radial-gradient(
+      120% 110% at 50% 55%,
+      #000 60%,
+      transparent 100%
+    );
+    mask-image: radial-gradient(
+      120% 110% at 50% 55%,
+      #000 60%,
+      transparent 100%
+    );
+  }
+  .section--halo > * {
+    position: relative;
+    z-index: 1; /* contenu au-dessus de son halo */
   }
 
+  /* Variants sans décor éventuel */
   .section--alt,
   .section--stripe,
   .section--cut,
@@ -48,5 +71,36 @@
   .section--aurora-corners::before,
   .section--aurora-corners::after {
     content: none !important;
+  }
+
+  /* Panic button si un wrapper clippe malgré tout */
+  .no-section-bg,
+  .no-section-bg * {
+    overflow: visible !important;
+  }
+  .no-section-bg > section,
+  .no-section-bg > * > section,
+  .no-section-bg > section > .container,
+  .no-section-bg > * > section > .container {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: 0 !important;
+  }
+  .no-section-bg > section::before,
+  .no-section-bg > section::after,
+  .no-section-bg > * > section::before,
+  .no-section-bg > * > section::after,
+  .no-section-bg > section > .container::before,
+  .no-section-bg > section > .container::after,
+  .no-section-bg > * > section > .container::before,
+  .no-section-bg > * > section > .container::after {
+    content: none !important;
+    background: none !important;
+  }
+  /* layout.css */
+  /* espace entre le hero et la 1ʳᵉ section */
+  main#home > section:first-of-type,
+  #home > section:first-of-type {
+    margin-top: clamp(40px, 6vw, 80px);
   }
 }

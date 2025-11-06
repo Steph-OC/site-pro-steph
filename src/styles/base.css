@@ -1,6 +1,7 @@
+/* src/styles/base.css */
 @layer base {
   :root {
-    /* Palette */
+    /* ============== Couleurs ============== */
     --white: #ffffff;
     --offwhite: #f8f8f4;
     --gray: #3c394c;
@@ -19,10 +20,23 @@
     --btn-fg: #ffffff;
     --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 
-    /* Mise en page */
-    --page-pad: clamp(16px, 5vw, 50px);
+    /* ============== Échelle d’espacement ============== */
+    --space-0: 0;
+    --space-1: 8px;
+    --space-2: 12px;
+    --space-3: 16px;
+    --space-4: 24px;
+    --space-5: 32px;
+    --space-6: 40px;
+    --space-7: clamp(48px, 6vw, 72px);
+    --space-8: clamp(64px, 8vw, 120px);
 
-    /* HERO */
+    /* Aliases (compat) */
+    --page-pad: clamp(16px, 5vw, 50px);
+    --section-gap: var(--space-8);
+    --section-gap-lg: var(--space-8);
+
+    /* ============== Layout / Hero ============== */
     --hero-max: 1280px;
     --hero-grid-left: 0.9fr;
     --hero-grid-right: 1.1fr;
@@ -41,22 +55,13 @@
     --pc-code-dim: color-mix(in srgb, var(--gray) 46%, transparent 54%);
     --pc-shadow: color-mix(in srgb, #000 28%, transparent 72%);
     --pc-contour: color-mix(in srgb, var(--gray) 45%, transparent 55%);
-    --pc-shine-color: color-mix(
-      in srgb,
-      var(--offwhite) 38%,
-      var(--offwhite) 62%
-    );
+    --pc-shine-color: color-mix(in srgb, var(--offwhite) 100%, transparent 0%);
 
-    /* Rythme vertical (tokens) */
-    --section-gap: clamp(48px, 7vw, 120px);
-    --section-gap-lg: clamp(56px, 8.5vw, 132px);
-
-    /* Typo */
+    /* ============== Typo ============== */
     --font-title: "Josefin Sans", system-ui, sans-serif;
     --font-text: "Lato", system-ui, sans-serif;
 
-    /* Titrage unifié (h1–h6) */
-    --font-headings: var(--font-title, "Josefin Sans", system-ui, sans-serif);
+    --font-headings: var(--font-title);
     --h1-max: 3rem;
     --h2-max: 2.6rem;
     --h3-max: 1.9rem;
@@ -64,7 +69,6 @@
     --h5-max: 1.15rem;
     --h6-max: 1rem;
 
-    /* Curseur (iOS pointer) */
     --cursor-color: #1d1b26;
   }
 
@@ -98,13 +102,12 @@
     }
   }
 
-  /* Base */
+  /* ============== Base ============== */
   *,
   *::before,
   *::after {
     box-sizing: border-box;
   }
-
   html,
   body {
     overflow-x: clip;
@@ -116,10 +119,10 @@
     color: var(--fg);
     font-family: var(--font-text);
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    -moz-osx-font-smoothing: grayscale; /* ignoré par Firefox → OK */
   }
 
-  /* Titres unifiés */
+  /* Titres */
   h1,
   h2,
   h3,
@@ -175,7 +178,6 @@
     padding-inline: var(--page-pad);
   }
 
-  /* Icônes bouton thème */
   .theme-icon {
     display: none;
   }
@@ -186,9 +188,18 @@
     display: inline;
   }
 
+  /* ============== Réduction de mouvement ============== */
   @media (prefers-reduced-motion: reduce) {
-    * {
+    /* Anims décoratives uniquement */
+    .hero__visual .code-run,
+    .hero__visual .code-fade,
+    .hero__visual #siteLayer,
+    .section--halo::before,
+    .hero .hero__bg::before {
       animation: none !important;
+    }
+    /* Les transitions UI restent, à part le tilt 3D si tu veux l’éteindre : */
+    .pc-tilt {
       transition: none !important;
     }
   }

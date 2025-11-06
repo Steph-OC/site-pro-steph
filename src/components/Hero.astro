@@ -15,12 +15,11 @@ const AREA_W = 340;
 const AREA_H = 176;
 
 /* Motif de code (vertical) */
-const STEP = 22;   // pas vertical entre lignes
-const BAR_H = 12;  // hauteur d’une “ligne de code”
+const STEP = 22;      // pas vertical entre lignes
+const BAR_H = 12;     // hauteur d’une “ligne de code”
 
 /* Calculs pour le défilement */
-const H = BAR_H;
-const CHUNK_H = AREA_H + 120; // amplitude du scroll
+const CHUNK_H = AREA_H + 120;
 const ROWS = Math.ceil((AREA_H + 120) / STEP) + 6;
 const COL_MIN = Math.floor(AREA_W * 0.70);
 const COL_MAX = Math.floor(AREA_W * 0.98);
@@ -29,7 +28,15 @@ const COL_MAX = Math.floor(AREA_W * 0.98);
 const CODE_DUR = 12;
 const FADE_DUR = 0.45;
 const SITE_DUR = 4;
-const TOTAL = CODE_DUR + FADE_DUR + SITE_DUR + FADE_DUR;
+
+/* Palette PC (mêmes teintes que les bulles) */
+const PC_COLORS    = ["#6aa8ff", "#ef9355", "#5cc7a0", "#b984f6", "#d51111", "#ffd166"];
+const PC_PRIMARY   = "#5cc7a0"; // vert
+const PC_SECONDARY = "#ef9355"; // orange
+const PC_TERTIARY  = "#ffd166"; // jaune
+
+/* Déstructuration pratique pour le bloc SITE */
+const [PC_BLUE, PC_ORANGE_, PC_GREEN, PC_VIOLET, PC_RED, PC_YELLOW] = PC_COLORS;
 ---
 
 <section class={`hero hero--${variant} ${bleed ? "is-bleed" : ""}`} data-bg={bg}>
@@ -64,50 +71,51 @@ const TOTAL = CODE_DUR + FADE_DUR + SITE_DUR + FADE_DUR;
             >
               <title id="t">Le code qui devient un site</title>
 
-              <!-- Ombre au sol -->
-              <ellipse cx="260" cy="380" rx="180" ry="18" fill="var(--pc-shadow)" />
-
-              <!-- Châssis -->
-              <rect data-role="chassis" x="60" y="40" width="400" height="260" rx="16"
-                    fill="var(--pc-surface)" stroke="var(--pc-border-strong)" stroke-width="2" />
-              <rect x="60" y="40" width="400" height="36" rx="16" fill="var(--pc-chrome)" />
-              <circle cx="86"  cy="58" r="4" fill="var(--orange)" />
-              <circle cx="102" cy="58" r="4" fill="var(--green)" />
-              <circle cx="118" cy="58" r="4" fill="var(--gray)" />
-
-              <!-- Fenêtre -->
-              <rect data-role="screen" x="80" y="86" width="360" height="196" rx="8"
-                    fill="var(--pc-surface-2)" stroke="var(--pc-border-strong)" />
-
+              <!-- ========== DEFS (effets) ========== -->
               <defs>
+                <!-- Ombre douce pour les blocs du site -->
+                <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+                  <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="rgba(0,0,0,.22)"/>
+                </filter>
+
+                <!-- Lueur interne légère du fond d’écran -->
+                <filter id="inner" x="-15%" y="-25%" width="130%" height="150%">
+                  <feGaussianBlur in="SourceAlpha" stdDeviation="4" result="b"/>
+                  <feOffset dy="2" result="o"/>
+                  <feComposite in="b" in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="inner"/>
+                  <feColorMatrix in="inner" values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0   0 0 0 .55 0" result="c"/>
+                  <feMerge><feMergeNode in="c"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+
+                <!-- Reflet doux de la barre -->
+                <radialGradient id="chromeGlow" cx="0.2" cy="0.1" r="1">
+                  <stop offset="0"   stop-color="rgba(255,255,255,.22)"/>
+                  <stop offset=".5"  stop-color="rgba(255,255,255,.06)"/>
+                  <stop offset="1"   stop-color="rgba(255,255,255,0)"/>
+                </radialGradient>
+
+                <!-- Clip de l'écran -->
                 <clipPath id="screenArea">
                   <rect x="90" y="96" width={AREA_W} height={AREA_H} rx="6" />
                 </clipPath>
               </defs>
 
-              <!-- SITE -->
-              <g clip-path="url(#screenArea)" id="siteLayer" opacity="0">
-                <rect x="90" y="96" width={AREA_W} height="32" rx="6"
-                      fill="color-mix(in srgb, var(--green) 55%, var(--pc-surface-2))"/>
-                <rect x="100" y="105" width="160" height="12" rx="4"
-                      fill="color-mix(in srgb, var(--white) 96%, var(--pc-surface-2))"/>
-                <rect x="266" y="105" width="60" height="12" rx="4"
-                      fill="color-mix(in srgb, var(--white) 86%, var(--pc-surface-2))"/>
-                <rect x="90" y="136" width={AREA_W} height="72" rx="8"
-                      fill="color-mix(in srgb, var(--orange) 45%, var(--pc-surface-2))"/>
-                <rect x="106" y="150" width="260" height="12" rx="4"
-                      fill="color-mix(in srgb, var(--white) 94%, var(--pc-surface-2))"/>
-                <rect x="106" y="168" width="180" height="10" rx="4"
-                      fill="color-mix(in srgb, var(--white) 80%, var(--pc-surface-2))"/>
-                <rect x="90" y="214" width={(AREA_W - 12) / 2} height="56" rx="8"
-                      fill="color-mix(in srgb, var(--gray) 26%, var(--pc-surface-2))"/>
-                <rect x={90 + (AREA_W + 12) / 2} y="214" width={(AREA_W - 12) / 2} height="56" rx="8"
-                      fill="color-mix(in srgb, var(--gray) 26%, var(--pc-surface-2))"/>
-                <rect x="90" y="272" width={(AREA_W - 12) / 2} height="22" rx="6"
-                      fill="color-mix(in srgb, var(--green) 42%, var(--pc-surface-2))"/>
-                <rect x={90 + (AREA_W + 12) / 2} y="272" width={(AREA_W - 12) / 2} height="22" rx="6"
-                      fill="color-mix(in srgb, var(--orange) 42%, var(--pc-surface-2))"/>
-              </g>
+              <!-- Ombre au sol -->
+              <ellipse cx="260" cy="380" rx="180" ry="18" fill="var(--pc-shadow)" />
+
+              <!-- ========== CHÂSSIS derrière l’écran ========== -->
+              <rect data-role="chassis" x="60" y="40" width="400" height="260" rx="16"
+                    fill="var(--pc-surface)" stroke="var(--pc-border-strong)" stroke-width="2" />
+              <rect x="60" y="40" width="400" height="36" rx="16" fill="var(--pc-chrome)" />
+              <rect x="60" y="40" width="400" height="36" rx="16" fill="url(#chromeGlow)" />
+              <circle cx="86"  cy="58" r="4" fill={PC_SECONDARY} />
+              <circle cx="102" cy="58" r="4" fill={PC_PRIMARY} />
+              <circle cx="118" cy="58" r="4" fill={PC_TERTIARY} />
+
+              <!-- ========== ÉCRAN : fond + contenu ========== -->
+              <!-- Fond d’écran avec lueur interne -->
+              <rect x="80" y="86" width="360" height="196" rx="8"
+                    fill="var(--pc-surface-2)" filter="url(#inner)"/>
 
               <!-- CODE -->
               <g clip-path="url(#screenArea)">
@@ -118,9 +126,9 @@ const TOTAL = CODE_DUR + FADE_DUR + SITE_DUR + FADE_DUR;
                         Array.from({ length: ROWS }).map((_, i) => {
                           const y = i * STEP;
                           const w = Math.max(COL_MIN, COL_MAX - (i % 6) * 10);
-                          const color =
-                            i % 6 === 2 ? "var(--orange)" :
-                            i % 3 === 0 ? "var(--green)"  : "var(--pc-code-dim)";
+                          const color = i % 4 === 0
+                            ? "var(--pc-code-dim)"
+                            : PC_COLORS[i % PC_COLORS.length];
                           return <rect x="0" y={y} width={w} height={BAR_H} rx="6" fill={color} />;
                         })
                       }
@@ -128,6 +136,59 @@ const TOTAL = CODE_DUR + FADE_DUR + SITE_DUR + FADE_DUR;
                   </g>
                 </g>
               </g>
+
+              <!-- SITE (couleurs + vives, mix oklab) -->
+              <g clip-path="url(#screenArea)" id="siteLayer" opacity="1">
+                <!-- Bandeau vert -->
+                <rect x="90" y="96" width={AREA_W} height="32" rx="8"
+                      filter="url(#soft)"
+                      fill={`color-mix(in oklab, ${PC_GREEN} 82%, var(--pc-surface-2))`} />
+                <!-- pills : bleu + jaune -->
+                <rect x="100" y="104" width="170" height="12" rx="6"
+                      fill={`color-mix(in oklab, ${PC_BLUE} 88%, var(--pc-surface-2))`} />
+                <rect x="276" y="104" width="70" height="12" rx="6"
+                      fill={`color-mix(in oklab, ${PC_YELLOW} 88%, var(--pc-surface-2))`} />
+
+                <!-- Hero orange -->
+                <rect x="90" y="136" width={AREA_W} height="78" rx="10"
+                      filter="url(#soft)"
+                      fill={`color-mix(in oklab, ${PC_ORANGE_} 78%, var(--pc-surface-2))`} />
+                <!-- textes dans hero -->
+                <rect x="106" y="152" width="270" height="12" rx="6"
+                      fill={`color-mix(in oklab, ${PC_VIOLET} 72%, var(--pc-surface-2))`} />
+                <rect x="106" y="172" width="200" height="10" rx="6"
+                      fill={`color-mix(in oklab, ${PC_RED} 72%, var(--pc-surface-2))`} />
+
+                <!-- Cartes -->
+                <rect x="90" y="220" width={(AREA_W - 12) / 2} height="60" rx="12"
+                      filter="url(#soft)"
+                      fill={`color-mix(in oklab, ${PC_BLUE} 70%, var(--pc-surface-2))`} />
+                <rect x={90 + (AREA_W + 12) / 2} y="220" width={(AREA_W - 12) / 2} height="60" rx="12"
+                      filter="url(#soft)"
+                      fill={`color-mix(in oklab, ${PC_VIOLET} 70%, var(--pc-surface-2))`} />
+
+                <!-- Boutons -->
+                <rect x="90" y="282" width={(AREA_W - 12) / 2} height="24" rx="8"
+                      filter="url(#soft)"
+                      fill={`color-mix(in oklab, ${PC_GREEN} 86%, var(--pc-surface-2))`} />
+                <rect x={90 + (AREA_W + 12) / 2} y="282" width={(AREA_W - 12) / 2} height="24" rx="8"
+                      filter="url(#soft)"
+                      fill={`color-mix(in oklab, ${PC_ORANGE_} 86%, var(--pc-surface-2))`} />
+
+                <!-- Traits discrets pour le relief -->
+                <rect x="90" y="96" width={AREA_W} height="32" rx="8"
+                      fill="none" stroke="color-mix(in oklab, #fff 14%, transparent)" />
+                <rect x="90" y="136" width={AREA_W} height="78" rx="10"
+                      fill="none" stroke="color-mix(in oklab, #fff 10%, transparent)" />
+                <rect x="90" y="220" width={(AREA_W - 12) / 2} height="60" rx="12"
+                      fill="none" stroke="color-mix(in oklab, #fff 10%, transparent)" />
+                <rect x={90 + (AREA_W + 12) / 2} y="220" width={(AREA_W - 12) / 2} height="60" rx="12"
+                      fill="none" stroke="color-mix(in oklab, #fff 10%, transparent)" />
+              </g>
+
+              <!-- Cadre d’écran par-dessus (trait) -->
+              <rect x="80" y="86" width="360" height="196" rx="8"
+                    fill="none" stroke="var(--pc-border-strong)" />
 
               <!-- Socle -->
               <rect x="220" y="304" width="80" height="18" rx="6"

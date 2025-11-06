@@ -1,127 +1,191 @@
 /* ============================================
-   HALOS (hero + sections)
+   HALOS — source de vérité unique
    ============================================ */
 
-/* ============================================
-   SECTIONS — visuel de base (sans anim)
-   (si tu avais déjà ces fonds dans theme.css,
-    tu peux laisser ce bloc ici pour centraliser)
-   ============================================ */
-
+/* --- Base section halo --- */
 .section--halo {
-  position: relative;
-  isolation: isolate; /* halos derrière le contenu */
+  position: relative; /* ancre le ::before */
+  isolation: isolate; /* nouveau contexte de pile */
+  overflow: visible; /* le halo peut déborder */
+  background: transparent !important;
+  z-index: 0; /* cette section ne survole personne */
 
-  /* Couleurs des halos */
-  --halo-a: color-mix(in srgb, var(--green) 70%, #7dd3fc 30%);
-  --halo-b: color-mix(in srgb, var(--orange) 75%, #e879f9 25%);
+  /* Couleurs par défaut (clair) */
+  --halo-a: color-mix(in srgb, var(--green) 20%, transparent);
+  --halo-b: color-mix(in srgb, var(--orange) 18%, transparent);
 
-  /* Tailles / flou */
-  --halo-size-1: min(52vw, 780px);
-  --halo-size-2: min(40vw, 560px);
-  --halo-blur: 26px;
-
-  /* Position/rotation par défaut (alternées plus bas) */
-  --halo-1-x: -12%;
-  --halo-1-y: -10%;
-  --halo-2-x: 78%;
-  --halo-2-y: 88%;
-  --halo-rot-1: -10deg;
-  --halo-rot-2: 12deg;
+  /* Gabarit & placement par défaut */
+  --halo-w: min(1100px, 92vw);
+  --halo-h: 420px;
+  --halo-x: 0px;
+  --halo-y: 0px;
+  --halo-overlap: 140px; /* remontée au-dessus de la section */
 }
 
-.section--halo::before,
-.section--halo::after {
+/* Halo (derrière le contenu, mais visible) */
+.section--halo::before {
   content: "";
   position: absolute;
+  left: 50%;
+  bottom: calc(100% - var(--halo-overlap));
+  width: var(--halo-w);
+  height: var(--halo-h);
+  transform-origin: 50% 100%;
+  transform: translate(calc(-50% + var(--halo-x)), var(--halo-y));
   pointer-events: none;
-  z-index: -1; /* derrière la section */
-  filter: saturate(110%) contrast(102%) blur(var(--halo-blur));
-}
+  z-index: 0; /* IMPORTANT : pas de négatif */
 
-/* Halo #1 (gros, doux) */
-.section--halo::before {
-  width: var(--halo-size-1);
-  height: var(--halo-size-1);
-  left: var(--halo-1-x);
-  top: var(--halo-1-y);
-  transform: rotate(var(--halo-rot-1));
   background: radial-gradient(
-    60% 60% at 40% 40%,
-    color-mix(in srgb, var(--halo-a) 26%, transparent) 0%,
-    transparent 70%
+      60% 55% at 30% 40%,
+      var(--halo-a),
+      transparent 65%
+    ),
+    radial-gradient(60% 55% at 70% 60%, var(--halo-b), transparent 70%);
+  filter: blur(38px) saturate(120%);
+  opacity: 0.9;
+
+  /* adoucit les bords (évite une “bande” rectangulaire) */
+  -webkit-mask-image: radial-gradient(
+    120% 110% at 50% 55%,
+    #000 60%,
+    transparent 100%
   );
+  mask-image: radial-gradient(120% 110% at 50% 55%, #000 60%, transparent 100%);
+
+  /* animation douce */
+  animation: haloBreath 6.5s ease-in-out infinite,
+    haloDrift 18s ease-in-out 0.3s infinite alternate;
 }
 
-/* Halo #2 (plus petit) */
-.section--halo::after {
-  width: var(--halo-size-2);
-  height: var(--halo-size-2);
-  left: var(--halo-2-x);
-  top: var(--halo-2-y);
-  transform: rotate(var(--halo-rot-2));
-  background: radial-gradient(
-    60% 60% at 60% 60%,
-    color-mix(in srgb, var(--halo-b) 22%, transparent) 0%,
-    transparent 72%
-  );
+/* Contenu au-dessus du halo */
+.section--halo > * {
+  position: relative;
+  z-index: 1;
 }
 
-/* Alternance automatique pour casser la répétition */
-.section--halo:nth-of-type(2n) {
-  --halo-1-x: 84%;
-  --halo-1-y: -12%;
-  --halo-2-x: -14%;
-  --halo-2-y: 84%;
-  --halo-rot-1: 8deg;
-  --halo-rot-2: -10deg;
+/* Animations communes */
+@keyframes haloBreath {
+  0%,
+  100% {
+    opacity: 0.78;
+    transform: translate(calc(-50% + var(--halo-x)), var(--halo-y));
+  }
+  50% {
+    opacity: 1;
+    transform: translate(calc(-50% + var(--halo-x)), var(--halo-y)) scale(1.06);
+  }
 }
-.section--halo:nth-of-type(5n) {
-  --halo-1-x: 10%;
-  --halo-1-y: 85%;
-  --halo-2-x: 70%;
-  --halo-2-y: 78%;
-  --halo-rot-1: 0deg;
-  --halo-rot-2: 0deg;
-}
-
-/* Dark : teintes plus froides, blur un peu réduit */
-:root[data-theme="dark"] .section--halo {
-  --halo-a: color-mix(in srgb, var(--green) 55%, #60a5fa 45%);
-  --halo-b: color-mix(in srgb, var(--orange) 55%, #f472b6 45%);
-  --halo-blur: 22px;
-}
-
-/* Mobiles : halos plus compacts */
-@media (max-width: 720px) {
-  .section--halo {
-    --halo-size-1: min(70vw, 520px);
-    --halo-size-2: min(58vw, 420px);
+@keyframes haloDrift {
+  0% {
+    filter: blur(36px) saturate(118%);
+  }
+  50% {
+    filter: blur(44px) saturate(124%);
+  }
+  100% {
+    filter: blur(38px) saturate(120%);
   }
 }
 
+/* Thème sombre : teintes plus froides, un peu moins lumineuses */
+:root[data-theme="dark"] .section--halo::before {
+  --halo-a: color-mix(in srgb, #60a5fa 22%, transparent);
+  --halo-b: color-mix(in srgb, #8b5cf6 20%, transparent);
+  filter: blur(44px) saturate(118%) brightness(0.96);
+  opacity: 0.88;
+}
+
+/* Mobile : halos plus compacts */
+@media (max-width: 720px) {
+  .section--halo {
+    --halo-w: min(900px, 96vw);
+    --halo-h: 360px;
+    --halo-overlap: 120px;
+  }
+}
+
+/* --- Variantes par position (home) — optionnelles --- */
+#home > section.section--halo:nth-of-type(1)::before {
+  --halo-h: 360px;
+  --halo-overlap: 120px;
+  --halo-x: -40px;
+}
+#home > section.section--halo:nth-of-type(2)::before {
+  --halo-w: min(1250px, 95vw);
+  --halo-h: 440px;
+  --halo-overlap: 160px;
+}
+#home > section.section--halo:nth-of-type(3)::before {
+  --halo-h: 420px;
+  --halo-overlap: 110px;
+  --halo-x: 60px;
+  --halo-y: 6px;
+}
+
+/* Helpers d’offset simple */
+.section--halo.halo-left::before {
+  --halo-x: -60px;
+}
+.section--halo.halo-right::before {
+  --halo-x: 60px;
+}
+.section--halo.halo-tall::before {
+  --halo-h: 500px;
+  --halo-overlap: 180px;
+}
+
+/* --- Désynchro douce entre sections (option) --- */
+.halo-desync .section--halo:nth-of-type(1n)::before {
+  animation-duration: 16s, 18s;
+  animation-delay: 0.2s, 0.2s;
+}
+.halo-desync .section--halo:nth-of-type(2n)::before {
+  animation-duration: 17s, 19.8s;
+  animation-delay: 0.8s, 0.4s;
+}
+.halo-desync .section--halo:nth-of-type(3n)::before {
+  animation-duration: 15s, 16.5s;
+  animation-delay: 0s, 0.1s;
+}
+.halo-desync .section--halo:nth-of-type(4n)::before {
+  animation-duration: 18s, 21.6s;
+  animation-delay: 1.2s, 0.6s;
+}
+.halo-desync .section--halo:nth-of-type(5n)::before {
+  animation-duration: 16s, 17.6s;
+  animation-delay: 0.4s, 0.3s;
+}
+
+/* --- Anti-clipping / anti “bande” globale --- */
+main,
+main > section,
+main > * > section,
+main > section > .container,
+main > * > section > .container {
+  overflow: visible !important; /* ne coupe pas le halo */
+  background: transparent !important; /* pas de bande opaque */
+  border: 0 !important;
+}
+
 /* ============================================
-   HERO — animation d’intensité + voile
-   (ne redéfinit PAS le background du hero)
+   HERO — animation d’intensité + voile léger
+   (complète ton décor hero__bg::before existant)
    ============================================ */
 
 .hero {
-  /* “léger → intense” (jamais noir) */
-  --halo-int-min: 1; /* 1 = 100% */
-  --halo-int-max: 1.5; /* ↑ = plus lumineux */
-  --halo-sat-min: 1.1;
-  --halo-sat-max: 1.5; /* ↑ = plus de couleur */
-  --halo-fade-mid: 0.9; /* opacité au milieu */
-  --halo-dur: 16s; /* durée d’un cycle */
+  --hero-sat-min: 1.1;
+  --hero-sat-max: 1.5;
+  --hero-bright-min: 1;
+  --hero-bright-max: 1.5;
+  --hero-fade-mid: 0.9;
+  --hero-dur: 16s;
 }
 
-/* Pulsation (filtre + opacité) */
 .hero .hero__bg::before {
-  animation: heroHaloGlow var(--halo-dur) ease-in-out infinite;
+  animation: heroHaloGlow var(--hero-dur) ease-in-out infinite;
   will-change: filter, opacity;
 }
 
-/* Voile de lumière (optionnel) */
 .hero .hero__bg::after {
   content: "";
   position: absolute;
@@ -148,25 +212,24 @@
       transparent 70%
     );
   opacity: 0;
-  animation: heroHaloVeil var(--halo-dur) ease-in-out infinite;
+  animation: heroHaloVeil var(--hero-dur) ease-in-out infinite;
 }
 
 @keyframes heroHaloGlow {
   0% {
-    filter: saturate(var(--halo-sat-min)) brightness(var(--halo-int-min));
+    filter: saturate(var(--hero-sat-min)) brightness(var(--hero-bright-min));
     opacity: 0.98;
   }
   50% {
-    filter: saturate(var(--halo-sat-max)) brightness(var(--halo-int-max));
-    opacity: var(--halo-fade-mid);
+    filter: saturate(var(--hero-sat-max)) brightness(var(--hero-bright-max));
+    opacity: var(--hero-fade-mid);
   }
   100% {
-    filter: saturate(calc((var(--halo-sat-min) + var(--halo-sat-max)) / 2))
-      brightness(var(--halo-int-min));
+    filter: saturate(calc((var(--hero-sat-min) + var(--hero-sat-max)) / 2))
+      brightness(var(--hero-bright-min));
     opacity: 0.98;
   }
 }
-
 @keyframes heroHaloVeil {
   0%,
   100% {
@@ -177,9 +240,11 @@
   }
 }
 
+/* Préfère moins d’anim */
 @media (prefers-reduced-motion: reduce) {
   .hero .hero__bg::before,
-  .hero .hero__bg::after {
+  .hero .hero__bg::after,
+  .section--halo::before {
     animation: none !important;
     filter: none !important;
     opacity: 1 !important;
@@ -187,245 +252,16 @@
 }
 
 /* ============================================
-   SECTIONS — animations (breathe + variantes)
+   Ajustements utiles
    ============================================ */
 
-.section--halo {
-  /* Respiration par défaut (même peps que le hero) */
-  --sec-halo-sat-min: 1.1;
-  --sec-halo-sat-max: 1.5;
-  --sec-halo-bright-min: 1;
-  --sec-halo-bright-max: 1.5;
-  --sec-halo-fade-mid: 0.9;
-  --sec-halo-dur: 16s;
-  --sec-halo-drift: 2.2vh;
-  --sec-halo-phase: 0s;
+/* 1re section sous le héro : halo remonte moins pour laisser respirer le titre */
+#home > section.section--halo:first-of-type::before {
+  --halo-overlap: 60px;
+  opacity: 0.75;
 }
 
-/* Breathe + drift subtil sur les deux halos */
-.section--halo::before,
-.section--halo::after {
-  animation: sectionHaloBreathe var(--sec-halo-dur) ease-in-out infinite;
-  animation-delay: var(--sec-halo-phase);
-  will-change: filter, opacity, transform;
-}
-
-/* Drift en opposition de phase */
-.section--halo::before {
-  --_drift1: calc(var(--sec-halo-drift) * 1);
-  transform: translateY(0) rotate(var(--halo-rot-1));
-  animation-name: sectionHaloBreathe, sectionHaloDrift1;
-  animation-duration: var(--sec-halo-dur), calc(var(--sec-halo-dur) * 1.1);
-  animation-iteration-count: infinite, infinite;
-  animation-timing-function: ease-in-out, ease-in-out;
-  animation-delay: var(--sec-halo-phase), var(--sec-halo-phase);
-}
-.section--halo::after {
-  --_drift2: calc(var(--sec-halo-drift) * -1);
-  transform: translateY(0) rotate(var(--halo-rot-2));
-  animation-name: sectionHaloBreathe, sectionHaloDrift2;
-  animation-duration: var(--sec-halo-dur), calc(var(--sec-halo-dur) * 1.2);
-  animation-iteration-count: infinite, infinite;
-  animation-timing-function: ease-in-out, ease-in-out;
-  animation-delay: var(--sec-halo-phase), calc(var(--sec-halo-phase) + 0.6s);
-}
-
-/* Keyframes — respiration & drift */
-@keyframes sectionHaloBreathe {
-  0% {
-    filter: saturate(var(--sec-halo-sat-min))
-      brightness(var(--sec-halo-bright-min));
-    opacity: 0.98;
-  }
-  50% {
-    filter: saturate(var(--sec-halo-sat-max))
-      brightness(var(--sec-halo-bright-max));
-    opacity: var(--sec-halo-fade-mid);
-  }
-  100% {
-    filter: saturate(
-        calc((var(--sec-halo-sat-min) + var(--sec-halo-sat-max)) / 2)
-      )
-      brightness(var(--sec-halo-bright-min));
-    opacity: 0.98;
-  }
-}
-@keyframes sectionHaloDrift1 {
-  0% {
-    transform: translateY(0) rotate(var(--halo-rot-1));
-  }
-  50% {
-    transform: translateY(var(--_drift1)) rotate(var(--halo-rot-1));
-  }
-  100% {
-    transform: translateY(0) rotate(var(--halo-rot-1));
-  }
-}
-@keyframes sectionHaloDrift2 {
-  0% {
-    transform: translateY(0) rotate(var(--halo-rot-2));
-  }
-  50% {
-    transform: translateY(var(--_drift2)) rotate(var(--halo-rot-2));
-  }
-  100% {
-    transform: translateY(0) rotate(var(--halo-rot-2));
-  }
-}
-
-/* ---------- Variante “léger → intense” (jamais sombre) ---------- */
-.section--halo.halo-pulse-gentle {
-  /* Plage douce : toujours une lueur */
-  --pulse-bright-min: 1.06;
-  --pulse-bright-max: 1.42;
-  --pulse-sat-min: 1.04;
-  --pulse-sat-max: 1.38;
-  --pulse-op-min: 0.82;
-  --pulse-op-max: 0.98;
-  --pulse-dur: 16s;
-
-  /* Delays par défaut (peuvent être écrasés) */
-  --pulse-delay: 0s;
-  --drift-delay: 0.6s;
-
-  /* Drift un poil plus ample sur cette variante */
-  --sec-halo-drift: 1.6vh;
-}
-
-/* Active pulsation + drift subtil
-   (on lit les delays via variables pour la désynchro) */
-.section--halo.halo-pulse-gentle::before,
-.section--halo.halo-pulse-gentle::after {
-  animation-name: sectionHaloPulse, sectionHaloDrift1;
-  animation-duration: var(--pulse-dur), calc(var(--sec-halo-dur) * 1.1);
-  animation-iteration-count: infinite, infinite;
-  animation-timing-function: ease-in-out, ease-in-out;
-  animation-delay: var(--pulse-delay, 0s), var(--drift-delay, 0.6s);
-}
-
-/* Keyframes — pulse (filtre + opacité) */
-@keyframes sectionHaloPulse {
-  0% {
-    filter: saturate(var(--pulse-sat-min, 1.06))
-      brightness(var(--pulse-bright-min, 1));
-    opacity: var(--pulse-op-min, 0.9);
-  }
-  50% {
-    filter: saturate(var(--pulse-sat-max, 1.5))
-      brightness(var(--pulse-bright-max, 1.5));
-    opacity: var(--pulse-op-max, 0.98);
-  }
-  100% {
-    filter: saturate(
-        calc((var(--pulse-sat-min, 1.06) + var(--pulse-sat-max, 1.5)) / 2)
-      )
-      brightness(var(--pulse-bright-min, 1));
-    opacity: var(--pulse-op-min, 0.9);
-  }
-}
-
-/* Dark : plafonds plus bas pour ne pas éblouir */
-:root[data-theme="dark"] .section--halo.halo-pulse-gentle {
-  --pulse-bright-min: 1.02;
-  --pulse-bright-max: 1.26;
-  --pulse-sat-max: 1.22;
-  --pulse-op-min: 0.68;
-}
-
-/* ---------- Désynchronisation facile (auto) ----------
-   Ajoute class="halo-desync" sur un parent (ex: <main class="halo-desync">)
-   Les variables ci-dessous sont lues par animation-delay et duration.
-------------------------------------------------------- */
-.halo-desync .section--halo.halo-pulse-gentle:nth-of-type(1n) {
-  --pulse-dur: 15s;
-  --pulse-delay: 0.2s;
-  --drift-delay: 0.2s;
-}
-.halo-desync .section--halo.halo-pulse-gentle:nth-of-type(2n) {
-  --pulse-dur: 17s;
-  --pulse-delay: 0.8s;
-  --drift-delay: 0.4s;
-}
-.halo-desync .section--halo.halo-pulse-gentle:nth-of-type(3n) {
-  --pulse-dur: 14s;
-  --pulse-delay: 0s;
-  --drift-delay: 0.1s;
-}
-.halo-desync .section--halo.halo-pulse-gentle:nth-of-type(4n) {
-  --pulse-dur: 18s;
-  --pulse-delay: 1.2s;
-  --drift-delay: 0.6s;
-}
-.halo-desync .section--halo.halo-pulse-gentle:nth-of-type(5n) {
-  --pulse-dur: 16s;
-  --pulse-delay: 0.4s;
-  --drift-delay: 0.3s;
-}
-
-/* ============================================
-   Accessibilité
-   ============================================ */
-@media (prefers-reduced-motion: reduce) {
-  .section--halo::before,
-  .section--halo::after,
-  .section--halo.halo-pulse-gentle::before,
-  .section--halo.halo-pulse-gentle::after {
-    animation: none !important;
-    filter: none !important;
-    opacity: 1 !important;
-  }
-}
-/* Assure la visibilité des halos derrière le contenu de la section */
-.section--halo {
-  position: relative;
-  isolation: isolate; /* tu l'as déjà */
-  z-index: 0; /* <-- ajoute ceci */
-}
-
-/* Si un wrapper interne met overflow:hidden, ne coupe pas les halos */
-.section--halo > .container,
-.section--halo > .container.container--xl,
-.section--halo > .container.container--narrow {
+/* Si une grille interne clippe (ex: projets), garde visible */
+#home [aria-labelledby="dern-projets"] .projects-grid {
   overflow: visible;
 }
-
-/* Option : un peu plus de variété d’emplacements par section */
-main#home.halo-desync > section.section--halo:nth-of-type(1) {
-  --halo-1-x: -18%;
-  --halo-1-y: -12%;
-  --halo-2-x: 72%;
-  --halo-2-y: 82%;
-  --sec-halo-phase: 0.1s;
-}
-main#home.halo-desync > section.section--halo:nth-of-type(2) {
-  --halo-1-x: 80%;
-  --halo-1-y: -14%;
-  --halo-2-x: -10%;
-  --halo-2-y: 86%;
-  --sec-halo-phase: 0.6s;
-}
-main#home.halo-desync > section.section--halo:nth-of-type(3) {
-  --halo-1-x: -6%;
-  --halo-1-y: 78%;
-  --halo-2-x: 68%;
-  --halo-2-y: 70%;
-  --sec-halo-phase: 0.25s;
-}
-main#home.halo-desync > section.section--halo:nth-of-type(4) {
-  --halo-1-x: 82%;
-  --halo-1-y: -8%;
-  --halo-2-x: -16%;
-  --halo-2-y: 76%;
-  --sec-halo-phase: 0.9s;
-}
-/* Exemple : section Témoignages un peu plus violette/cyan */
-#temoin-title:where(*) {
-  /* hook via le header si tu veux */
-}
-main#home > section.section--halo:nth-of-type(5) {
-  --halo-a: color-mix(in srgb, #8b5cf6 26%, transparent);
-  --halo-b: color-mix(in srgb, #22d3ee 20%, transparent);
-}
-.section--halo {
-  z-index: 0;
-} /* le contenu ≠ positif */

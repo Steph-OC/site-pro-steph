@@ -1,4 +1,5 @@
 ---
+// Importation des composants et des styles
 import IosPointer from "@/components/IosPointer.jsx";
 const {
   title = "Stéphanie Quibel — Développeuse WordPress",
@@ -27,7 +28,7 @@ import "@/styles/components/pointer.css";
     <link rel="icon" href="/favicon.png" type="image/png" />
     <meta name="theme-color" content="#23212E" />
 
-    <!-- Init: light/dark (par défaut: light) -->
+    <!-- Initialisation du thème clair/sombre (par défaut : clair) -->
     <script is:inline>
       (() => {
         try {
@@ -41,7 +42,7 @@ import "@/styles/components/pointer.css";
   </head>
 
   <body>
-    <!-- Pointer performant, seulement sur desktop précis -->
+    <!-- Pointer performant, uniquement sur desktop avec support de l'hover -->
     <IosPointer
       client:media="(hover: hover) and (pointer: fine)"
       color="var(--green)"
@@ -109,7 +110,7 @@ import "@/styles/components/pointer.css";
           </ul>
         </nav>
 
-        <!-- Toggle light/dark -->
+        <!-- Bouton pour basculer entre le mode clair et sombre -->
         <button
           id="theme-toggle"
           class="btn btn--ghost"
@@ -158,6 +159,7 @@ import "@/styles/components/pointer.css";
       </div>
     </header>
 
+    <!-- Zone principale : Hero et contenu -->
     <slot name="hero" />
     <main class="container"><slot /></main>
 
@@ -168,10 +170,10 @@ import "@/styles/components/pointer.css";
       </div>
     </footer>
 
-    <!-- Tweaks perf & accessibilité -->
+    <!-- Scripts pour améliorer la performance et l'accessibilité -->
     <script is:inline>
       (function () {
-        // 1) Scroll: couper le blur du header pendant le scroll (perf)
+        // 1) Effet sur le scroll : supprimer l'effet de flou dans l'entête pendant le scroll
         let t;
         const header = document.querySelector("header.site-header");
         const onScroll = () => {
@@ -182,7 +184,7 @@ import "@/styles/components/pointer.css";
         };
         addEventListener("scroll", onScroll, { passive: true });
 
-        // 2) CSS var --header-h d'après la hauteur réelle (ancrages/scroll-padding)
+        // 2) Variable CSS pour la hauteur réelle de l'entête (utile pour les ancrages)
         const setHeaderH = () => {
           if (!header) return;
           document.documentElement.style.setProperty(
@@ -193,17 +195,16 @@ import "@/styles/components/pointer.css";
         setHeaderH();
         addEventListener("resize", setHeaderH);
 
-        // 3) Mode “éco” auto si RDM ou petit viewport (pause de certaines anims via CSS)
-        if (
-          matchMedia("(prefers-reduced-motion: reduce)").matches ||
-          innerWidth < 900
-        ) {
+        // 3) Mode éco automatique : désactive certaines animations si l'utilisateur a activé l'option "réduire les mouvements"
+        if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
           document.documentElement.classList.add("reduce-motion");
+        } else {
+          document.documentElement.classList.remove("reduce-motion");
         }
       })();
     </script>
 
-    <!-- Toggle logic (light ↔ dark) -->
+    <!-- Logiciel pour basculer entre le mode clair et sombre -->
     <script is:inline>
       (function () {
         const KEY = "theme-pref";

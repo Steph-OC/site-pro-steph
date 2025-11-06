@@ -1,127 +1,150 @@
-@layer components {
-  :root {
-    --header-h: clamp(56px, 6vw, 72px);
-  }
+:root {
+  --header-h: clamp(48px, 5vw, 64px);
+  --header-alpha: 0.86; /* opacité de base du fond */
+  --header-alpha-scroll: 0.94; /* un peu plus opaque quand .scrolling */
+}
 
-  /* Les ancres et auto-scroll ne passent pas sous la barre */
-  html {
-    scroll-padding-top: var(--header-h);
-  }
-  :where(h1, h2, h3, [id]) {
-    scroll-margin-top: calc(var(--header-h) + 12px);
-  }
+/* Les ancres et auto-scroll ne passent pas sous la barre */
+html {
+  scroll-padding-top: var(--header-h);
+}
+:where(h1, h2, h3, [id]) {
+  scroll-margin-top: calc(var(--header-h) + 12px);
+}
 
-  /* ✅ Header du site UNIQUEMENT */
+/* ✅ Header du site UNIQUEMENT */
+header.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000; /* au-dessus du contenu */
+  isolation: isolate; /* son ::before ne fuit pas */
+  min-height: var(--header-h);
+  background: color-mix(
+    in srgb,
+    var(--bg) calc(100% * var(--header-alpha)),
+    transparent
+  );
+  border-bottom: 1px solid var(--border);
+  will-change: transform, backdrop-filter;
+}
+
+/* Effet “glass” si dispo */
+@supports (
+  (backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))
+) {
   header.site-header {
-    position: sticky;
-    top: 0;
-    z-index: 1000; /* au-dessus du contenu */
-    isolation: isolate;
-    min-height: var(--header-h);
-    background: var(--bg); /* fallback opaque */
-    border-bottom: 1px solid var(--border);
-    will-change: transform;
-  }
-
-  /* Effet “glass” si dispo (sinon on garde le fond opaque) */
-  @supports (
-    (backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))
-  ) {
-    header.site-header {
-      -webkit-backdrop-filter: saturate(180%) blur(6px);
-      backdrop-filter: saturate(180%) blur(6px);
-      background: color-mix(
-        in srgb,
-        var(--bg) 92%,
-        transparent 8%
-      ); /* plus opaque pour éviter la “traversée” visuelle */
-    }
-  }
-
-  /* Nav interne au header */
-  header.site-header .nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding-block: 0.8rem;
-  }
-
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    font-weight: 700;
-    text-decoration: none;
-    color: var(--fg);
-  }
-
-  header.site-header nav ul {
-    display: flex;
-    gap: 0.9rem;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  header.site-header nav li {
-    display: flex;
-  }
-
-  header.site-header nav a,
-  header.site-header .nav .btn,
-  #theme-toggle {
-    display: inline-flex;
-    align-items: center;
-    line-height: 1;
-    padding: 0.5rem 0.65rem;
-    border-radius: 10px;
-    text-decoration: none;
-    color: var(--fg);
-  }
-
-  /* Actif + focus visibles */
-  header.site-header nav a[aria-current="page"] {
-    background: var(--card);
-    border: 1px solid var(--border);
-  }
-  header.site-header nav a:focus-visible,
-  #theme-toggle:focus-visible {
-    outline: 2px solid color-mix(in srgb, var(--orange) 70%, transparent);
-    outline-offset: 2px;
-  }
-  #theme-toggle {
-    gap: 0.25rem;
-  }
-
-  /* 🧹 Reset : tous les autres <header> (ex: headers de section) ne sont pas sticky */
-  header:not(.site-header),
-  .section-head {
-    position: static;
-    top: auto;
-    z-index: auto;
-    background: transparent;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    border: 0;
-  }
-
-  /* Sécurité : les blocs de section restent dans le plan normal */
-  .section--halo,
-  .section-head {
-    position: relative;
-    z-index: 0;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    html.use-ios-pointer body {
-      cursor: none;
-    }
+    -webkit-backdrop-filter: saturate(180%) blur(6px);
+    backdrop-filter: saturate(180%) blur(6px);
+    background: color-mix(in srgb, var(--bg) 92%, transparent 8%);
   }
 }
-/* header.css */
+
+/* Lisière douce : petit dégradé sous le header pour éviter une “barre” franche */
+header.site-header::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 14px;
+  pointer-events: none;
+  z-index: -1; /* derrière le contenu du header */
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--bg) 48%, transparent) 0%,
+    transparent 90%
+  );
+}
+
+/* État "en défilement" (si tu ajoutes/retire .scrolling via JS) */
 header.site-header.scrolling {
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
-  background: color-mix(in srgb, var(--bg) 96%, transparent 4%) !important;
+  background: color-mix(
+    in srgb,
+    var(--bg) calc(100% * var(--header-alpha-scroll)),
+    transparent
+  ) !important;
+}
+
+/* Nav interne */
+header.site-header .nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 0.5rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--fg);
+}
+
+header.site-header nav ul {
+  display: flex;
+  gap: 0.9rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+header.site-header nav li {
+  display: flex;
+}
+
+header.site-header nav a,
+header.site-header .nav .btn,
+#theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+  padding: 0.5rem 0.65rem;
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--fg);
+}
+
+/* Actif + focus visibles */
+header.site-header nav a[aria-current="page"] {
+  background: var(--card);
+  border: 1px solid var(--border);
+}
+header.site-header nav a:focus-visible,
+#theme-toggle:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--orange) 70%, transparent);
+  outline-offset: 2px;
+}
+#theme-toggle {
+  gap: 0.25rem;
+}
+
+/* Reset : tous les autres <header> (ex: headers de section) ne sont pas sticky
+   (on évite tout z-index négatif qui pourrait perturber les halos) */
+header:not(.site-header),
+.section-head {
+  position: static;
+  top: auto;
+  z-index: auto;
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border: 0;
+}
+
+/* Sécurité : les blocs de section restent dans le plan normal */
+.section--halo,
+.section-head {
+  position: relative;
+  z-index: 0;
+}
+
+/* Option curseur custom iOS-Pointer */
+@media (hover: hover) and (pointer: fine) {
+  html.use-ios-pointer body {
+    cursor: none;
+  }
 }

@@ -1,103 +1,274 @@
-@layer components {
-  .flow-steps {
-    --rail: 2px;
-    --gap: clamp(16px, 3vw, 28px);
-    --card-w: min(460px, 100%);
-    --badge: 36px; /* Ø de la pastille */
-    --rail-offset: calc(var(--badge) / 2); /* centre de la pastille */
-    position: relative;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--gap) clamp(18px, 3vw, 26px);
-    margin: 0;
-    padding: clamp(12px, 2vw, 16px) 0;
-    list-style: none;
-  }
+/* ————— Slider ————— */
+.steps-slider {
+  --h: clamp(220px, 34vw, 320px);
+  --gap: clamp(10px, 2vw, 16px);
+  --rad: 28px;
+  --pad: 14px;
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  gap: var(--gap);
+  height: var(--h);
+  margin: 0 auto;
+  max-width: 1100px;
+}
 
-  /* RAIL HAUT + RAIL BAS */
-  .flow-steps::before,
-  .flow-steps::after {
-    content: "";
-    position: absolute;
-    left: 0; /* ajuste si tu veux une marge: ex. clamp(8px,3vw,24px) */
-    right: 0;
-    height: var(--rail);
-    background: color-mix(in srgb, var(--border) 80%, var(--gray) 8%);
-    border-radius: 999px;
-    pointer-events: none;
-    z-index: 0;
-  }
-  /* Aligne les pastilles de la 1ère rangée */
-  .flow-steps::before {
-    top: var(--rail-offset);
-  }
-  /* Aligne les pastilles de la 2ème rangée (milieu de la grille + centre pastille) */
-  .flow-steps::after {
-    top: calc(50% + var(--rail-offset));
-  }
+/* ————— Carte (fermée par défaut) ————— */
+.steps-slider .step-card {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  align-items: start;
+  flex: 1 1 60px;
+  min-width: 60px;
+  padding: var(--pad);
+  padding-bottom: 56px;
+  border: 1px solid var(--border);
+  border-radius: var(--rad);
+  background: radial-gradient(
+      120% 120% at 50% 0%,
+      rgba(255, 255, 255, 0.02),
+      transparent 60%
+    ),
+    var(--card);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  user-select: none;
+  overflow: hidden;
+  -webkit-mask-image: -webkit-radial-gradient(#000, #000); /* clip WebKit */
+  transition: flex-grow 0.55s cubic-bezier(0.05, 0.61, 0.41, 0.95),
+    border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+}
 
-  .flow-step {
-    position: relative;
-    padding-top: 44px;
-    display: grid;
-    justify-items: start;
-    z-index: 1; /* pour que les cartes passent au-dessus du rail */
-  }
-  .flow-step__badge {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: var(--badge);
-    height: var(--badge);
-    border-radius: 999px;
-    display: grid;
-    place-items: center;
-    font-weight: 700;
-    color: #111;
-    background: var(--orange);
-    border: 3px solid color-mix(in srgb, var(--orange) 40%, transparent);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-    z-index: 2; /* la pastille par-dessus le rail */
-  }
+/* radio caché */
+.steps-slider .step-card > .step-input {
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  overflow: hidden;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
 
-  .flow-step__card {
-    width: var(--card-w);
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 14px 16px 16px;
-    box-shadow: var(--shadow);
-  }
-  .flow-step__card h3 {
-    margin: 0 0 4px;
-    font-size: clamp(1.02rem, 0.95rem + 0.4vw, 1.18rem);
-  }
-  .flow-step__card p {
-    margin: 0;
-    color: var(--muted);
-    line-height: 1.6;
-  }
+/* accents par position */
+.steps-slider .step-card:nth-of-type(1) {
+  --accent: var(--orange);
+}
+.steps-slider .step-card:nth-of-type(2) {
+  --accent: #e28b7d;
+}
+.steps-slider .step-card:nth-of-type(3) {
+  --accent: #b984f6;
+}
+.steps-slider .step-card:nth-of-type(4) {
+  --accent: #5cc7a0;
+}
+.steps-slider .step-card:nth-of-type(5) {
+  --accent: #5b98eb;
+}
+.steps-slider .step-card:nth-of-type(6) {
+  --accent: #ffd166;
+}
 
-  @media (max-width: 1100px) {
-    .flow-steps {
-      grid-template-columns: repeat(2, 1fr);
-    }
+/* bordure colorée subtile quand fermée */
+.steps-slider .step-card:not(:has(> .step-input:checked)) {
+  border-color: color-mix(in oklab, var(--accent) 35%, var(--border));
+  box-shadow: inset 0 0 0 1px
+      color-mix(in oklab, var(--accent) 18%, transparent),
+    var(--shadow);
+}
+
+/* badge */
+.steps-slider .step-badge {
+  position: absolute;
+  inset: auto auto var(--pad) var(--pad);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  transform: translateZ(0);
+  background: var(--accent, var(--orange));
+  color: #111;
+  font-weight: 800;
+  border: 2px solid color-mix(in srgb, var(--accent) 50%, #fff);
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+/* contenu */
+.steps-slider .step-info {
+  color: var(--text);
+}
+.steps-slider .step-info h3 {
+  margin: 0 0 6px;
+  font: 700 clamp(1rem, 0.9rem + 0.5vw, 1.25rem)
+    var(--font-title, ui-sans-serif);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  transition: transform 0.35s ease, writing-mode 0.35s ease;
+  position: relative;
+}
+.steps-slider .step-info p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.35s, opacity 0.35s;
+}
+
+/* chips */
+.steps-slider .step-chips {
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 0.3s, max-height 0.3s;
+}
+.steps-slider .step-chips li {
+  font-size: 0.75rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--accent), transparent 80%);
+  border: 1px solid color-mix(in oklab, var(--accent), #fff 65%);
+  color: color-mix(in oklab, var(--accent), #fff 15%);
+  backdrop-filter: blur(2px);
+}
+
+/* ————— Carte ACTIVE ————— */
+.steps-slider .step-card:has(> .step-input:checked) {
+  flex-grow: 1000;
+  align-items: center;
+  grid-template-rows: 1fr auto;
+  padding-bottom: var(--pad);
+  transform: translateZ(0);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  box-shadow: 0 14px 34px color-mix(in srgb, var(--accent) 20%, transparent),
+    var(--shadow);
+}
+
+/* rail + halo = ::after (plein conteneur, coins arrondis), grille = ::before (inset + coins internes) */
+.steps-slider .step-card:has(> .step-input:checked)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--accent) 75%, transparent) 0%,
+        color-mix(in oklab, var(--accent) 55%, transparent) 60%,
+        color-mix(in oklab, var(--accent) 35%, transparent) 100%
+      )
+      left/8px 100% no-repeat,
+    radial-gradient(
+      80% 160% at 0% 50%,
+      color-mix(in oklab, var(--accent) 22%, transparent) 0%,
+      transparent 70%
+    );
+}
+.steps-slider .step-card:has(> .step-input:checked)::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: calc(var(--rad) - 6px);
+  pointer-events: none;
+  background: linear-gradient(
+        0deg,
+        rgba(255, 255, 255, 0.03) 1px,
+        transparent 1px
+      )
+      0 0 / 100% 22px,
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px) 0 0 /
+      22px 100%;
+}
+
+.steps-slider .step-card:has(> .step-input:checked) .step-info h3 {
+  writing-mode: horizontal-tb;
+  text-orientation: initial;
+  transform: none;
+}
+.steps-slider .step-card:has(> .step-input:checked) .step-info h3::after {
+  content: "";
+  display: block;
+  margin-top: 0.5rem;
+  height: 2px;
+  width: clamp(80px, 20%, 140px);
+  background: linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--accent), #fff 25%),
+    transparent
+  );
+  border-radius: 2px;
+}
+.steps-slider .step-card:has(> .step-input:checked) .step-info p {
+  max-height: 240px;
+  opacity: 1;
+}
+.steps-slider .step-card:has(> .step-input:checked) .step-chips {
+  opacity: 1;
+  max-height: 200px;
+}
+
+/* focus */
+.steps-slider .step-card:has(> .step-input:focus-visible) {
+  outline: 2px solid color-mix(in srgb, var(--accent, #5b98eb) 60%, transparent);
+  outline-offset: 2px;
+}
+
+/* responsive */
+@media (max-width: 720px) {
+  .steps-slider {
+    flex-direction: column;
+    height: auto;
   }
-  @media (max-width: 720px) {
-    .flow-steps {
-      grid-template-columns: 1fr;
-      gap: clamp(12px, 3.5vw, 18px);
-    }
-    .flow-steps::before,
-    .flow-steps::after {
-      display: none;
-    } /* rails cachés en 1 colonne */
-    .flow-step {
-      padding-top: 0;
-    }
-    .flow-step__badge {
-      position: static;
-      margin-bottom: 8px;
-    }
+  .steps-slider .step-card {
+    min-height: 120px;
   }
+  .steps-slider .step-card:has(> .step-input:checked) {
+    flex-grow: 1;
+  }
+  .steps-slider .step-info h3 {
+    writing-mode: horizontal-tb;
+    transform: none;
+  }
+}
+
+/* ————— Thème clair : aucun fond sous le texte, contraste OK ————— */
+:root[data-theme="light"] .steps-slider .step-card:has(> .step-input:checked) {
+  background: transparent !important;
+  border-image: none;
+}
+:root[data-theme="light"] .steps-slider .step-badge {
+  color: #111;
+  border-color: color-mix(in oklab, var(--accent), #000 28%);
+  box-shadow: 0 8px 18px color-mix(in oklab, var(--accent) 35%, transparent);
+}
+:root[data-theme="light"] .steps-slider .step-chips li {
+  background: color-mix(in oklab, var(--accent), #fff 82%);
+  border-color: color-mix(in oklab, var(--accent), #000 28%);
+  color: #2b2b2b;
+}
+:root[data-theme="light"] .steps-slider .step-card:nth-of-type(6) {
+  --accent: #d19a00;
+} /* jaune foncé */
+:root[data-theme="light"] .steps-slider .step-card:nth-of-type(6) .step-badge {
+  background: color-mix(in oklab, var(--accent), #000 18%);
+  border-color: color-mix(in oklab, var(--accent), #000 30%);
 }

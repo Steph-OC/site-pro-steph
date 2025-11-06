@@ -1,4 +1,3 @@
-// src/components/ProjectSlider.tsx
 import React from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import "./ProjectSlider.css";
@@ -17,6 +16,8 @@ export type ProjectSliderProps = {
   className?: string;
   siteUrl?: string; // URL externe
   detailsUrl?: string; // URL interne "détails"
+  punch?: boolean; // 🔧 active le style “punchy” (défaut: true)
+  badge?: string; // 🔧 petit ruban (ex: "Nouveau", "Case study")
 };
 
 export default function ProjectSlider({
@@ -25,6 +26,8 @@ export default function ProjectSlider({
   className,
   siteUrl,
   detailsUrl,
+  punch = true,
+  badge,
 }: ProjectSliderProps): JSX.Element {
   const reduce = useReducedMotion();
 
@@ -42,10 +45,11 @@ export default function ProjectSlider({
   if (list.length === 0) {
     return (
       <section
-        className={`ps-card ${className ?? ""}`}
+        className={`ps-card ${punch ? "is-punchy" : ""} ${className ?? ""}`}
         style={{ ["--ps-accent" as any]: accent }}
         aria-label="Fonctionnalités du projet"
       >
+        {badge && <span className="ps-badge">{badge}</span>}
         <div className="ps-inner">
           <div className="ps-media" aria-hidden>
             <div className="ps-media__ph" />
@@ -141,23 +145,22 @@ export default function ProjectSlider({
     exit: { opacity: 0, y: -16, scale: 0.98 },
   };
 
-  // === Dots (inactives gris clair) ===
+  // Dots styles (JS, pour gérer le mode mobile vs desktop)
   const dotBase: React.CSSProperties = {
     display: "block",
     width: 10,
     height: 10,
     borderRadius: 999,
     border: "1px solid rgba(0,0,0,0.18)",
-    background: "#caced8", // ← gris clair
+    background: "#caced8",
     opacity: 0.9,
     padding: 0,
     margin: 0,
     transition: "height .25s, width .25s, opacity .2s, background .2s",
   };
-
   const dotActive: React.CSSProperties = {
     ...dotBase,
-    background: "var(--ps-accent)", // prend la CSS var de .ps-card
+    background: "var(--ps-accent)",
     opacity: 1,
     width: isMobile ? 28 : 10,
     height: isMobile ? 10 : 28,
@@ -167,11 +170,13 @@ export default function ProjectSlider({
 
   return (
     <section
-      className={`ps-card ${className ?? ""}`}
+      className={`ps-card ${punch ? "is-punchy" : ""} ${className ?? ""}`}
       style={{ ["--ps-accent" as any]: accent }}
       aria-roledescription="carrousel"
       aria-label="Fonctionnalités du projet"
     >
+      {badge && <span className="ps-badge">{badge}</span>}
+
       <div
         className="ps-inner"
         ref={wheelRef}
@@ -247,7 +252,7 @@ export default function ProjectSlider({
             </div>
           )}
 
-          {/* CTA en bas */}
+          {/* CTA */}
           {(href || detailsUrl) && (
             <div className="ps-ctaRow">
               {href && (
@@ -273,7 +278,7 @@ export default function ProjectSlider({
             </div>
           )}
 
-          {/* DOTS (dans .ps-content) */}
+          {/* DOTS */}
           {len > 1 && (
             <div
               className="ps-dots"

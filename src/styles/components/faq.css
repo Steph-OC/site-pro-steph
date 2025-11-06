@@ -1,78 +1,74 @@
-@layer components {
-  /* Conteneur de section (si tu utilises .section-head au-dessus, rien à faire ici) */
+/* Élément <details> utilisé comme FAQ */
+details.faq {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  padding: 0; /* on gère le padding sur summary + answer */
+  margin: clamp(8px, 1.2vw, 14px) 0;
+  overflow: clip; /* arrondis propres quand ça s’ouvre */
+}
 
-  /* Élément <details> utilisé comme FAQ */
-  details.faq {
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    background: var(--card);
-    box-shadow: var(--shadow);
-    padding: 0; /* on gère le padding sur summary + answer */
-    margin: clamp(8px, 1.2vw, 14px) 0;
-    overflow: clip; /* arrondis propres quand ça s’ouvre */
-  }
+/* En-tête cliquable */
+details.faq > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  list-style: none; /* retire le triangle natif */
+  font-weight: 700;
+  color: var(--fg);
+  outline: none;
+}
+/* retire le marqueur natif (Safari/Chromium) */
+details.faq > summary::-webkit-details-marker {
+  display: none;
+}
 
-  /* En-tête cliquable */
-  details.faq > summary {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    width: 100%;
-    padding: 0.8rem 1rem;
-    cursor: pointer;
-    list-style: none; /* retire le triangle natif */
-    font-weight: 700;
-    color: var(--fg);
-    outline: none;
-  }
-  /* retire le marqueur natif (Safari/Chromium) */
-  details.faq > summary::-webkit-details-marker {
-    display: none;
-  }
+/* Icône “chevron” via pseudo-élément */
+details.faq > summary::after {
+  content: "";
+  margin-left: auto;
+  inline-size: 10px;
+  block-size: 10px;
+  border-right: 2px solid color-mix(in srgb, var(--fg) 70%, transparent);
+  border-bottom: 2px solid color-mix(in srgb, var(--fg) 70%, transparent);
+  transform: rotate(-45deg); /* chevron vers le bas */
+  transition: transform 0.2s ease;
+}
+details.faq[open] > summary::after {
+  transform: rotate(45deg); /* chevron vers le haut */
+}
 
-  /* Icône “chevron” via pseudo-élément */
-  details.faq > summary::after {
-    content: "";
-    margin-left: auto;
-    inline-size: 10px;
-    block-size: 10px;
-    border-right: 2px solid color-mix(in srgb, var(--fg) 70%, transparent);
-    border-bottom: 2px solid color-mix(in srgb, var(--fg) 70%, transparent);
-    transform: rotate(-45deg); /* chevron vers le bas */
-    transition: transform 0.2s ease;
-  }
-  details.faq[open] > summary::after {
-    transform: rotate(45deg); /* chevron vers le haut */
-  }
+/* Corps de la réponse */
+.faq__answer {
+  padding: 0.2rem 1rem 1rem 1rem;
+  color: var(--muted);
+  line-height: 1.65;
+}
 
-  /* Corps de la réponse */
-  .faq__answer {
-    padding: 0.2rem 1rem 1rem 1rem;
-    color: var(--muted);
-    line-height: 1.65;
+/* Petite anim d’ouverture (optionnelle) */
+@media (prefers-reduced-motion: no-preference) {
+  details.faq[open] .faq__answer {
+    animation: faqReveal 0.22s ease-out;
   }
-
-  /* Petite anim d’ouverture (optionnelle) */
-  @media (prefers-reduced-motion: no-preference) {
-    details.faq[open] .faq__answer {
-      animation: faqReveal 0.22s ease-out;
+  @keyframes faqReveal {
+    from {
+      opacity: 0;
+      transform: translateY(-2px);
     }
-    @keyframes faqReveal {
-      from {
-        opacity: 0;
-        transform: translateY(-2px);
-      }
-      to {
-        opacity: 1;
-        transform: none;
-      }
+    to {
+      opacity: 1;
+      transform: none;
     }
   }
+}
 
-  /* Accessibilité focus */
-  details.faq > summary:focus-visible {
-    outline: 2px solid color-mix(in srgb, var(--orange) 55%, transparent);
-    outline-offset: 2px;
-    border-radius: 10px;
-  }
+/* Accessibilité focus */
+details.faq > summary:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--orange) 55%, transparent);
+  outline-offset: 2px;
+  border-radius: 10px;
 }

@@ -1,30 +1,27 @@
+/* src/styles/components/section-head.css — GLOBAL */
 @layer components {
+  /* Espace sous les titres de section (global) */
   .section-head {
     text-align: center;
-    margin-bottom: clamp(18px, 3.5vw, 28px);
+    margin-bottom: clamp(28px, 5vw, 60px);
   }
+
+  /* Espace entre le H2 et l’intro */
   .section-head h2 {
-    margin: 0 0 0.25rem;
+    margin: 0 0 clamp(16px, 2.8vw, 34px);
+    line-height: 1.18;
     letter-spacing: -0.01em;
   }
 
-  .section-head--aurora h2 {
-    background: radial-gradient(
-        60% 60% at 50% 120%,
-        color-mix(in srgb, var(--green) 32%, transparent) 0%,
-        transparent 70%
-      ),
-      radial-gradient(
-        60% 60% at 50% -60%,
-        color-mix(in srgb, var(--orange) 22%, transparent) 0%,
-        transparent 70%
-      );
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+  .section-head .section-sub {
+    margin-top: clamp(12px, 2vw, 22px);
+    margin-bottom: 0;
+    line-height: 1.55;
+    color: var(--muted);
   }
+
+  /* Variante décorative (facultative) */
   .section-head--aurora .section-sub {
-    margin: 0;
     color: var(--muted);
     position: relative;
     display: inline-block;
@@ -45,11 +42,13 @@
     opacity: 0.5;
   }
 
-  /* éviter que ces titres héritent du header sticky */
+  /* Les headers de section NE SONT PAS sticky */
   header.section-head {
-    border: 0;
-    background: transparent;
     position: static;
+    top: auto;
+    z-index: auto;
+    background: transparent;
+    border: 0;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }

@@ -3,7 +3,6 @@ import type React from "react";
 import { useEffect, useRef, useState, type SVGProps } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import "@/styles/testimonials-codepen.css";
 
 export type Testimonial = {
   id: string | number;

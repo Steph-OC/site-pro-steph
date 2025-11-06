@@ -1,80 +1,213 @@
-@layer components {
-  .services {
-    margin-block: 0;
-    padding-block: clamp(18px, 4.5vw, 40px);
-  }
+/* ====== Grille ====== */
+.services__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: clamp(16px, 2.2vw, 22px);
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  align-items: stretch;
+  overflow: visible;
+}
+.services__grid > li {
+  display: flex;
+  min-width: 0;
+}
 
-  .services__title {
-    text-align: center;
-    font-family: var(--font-title);
-    font-weight: 700;
-    font-size: clamp(1.25rem, 1.2rem + 1.2vw, 1.8rem);
-    margin: 0 0 clamp(16px, 3vw, 28px);
-  }
+/* ====== Carte ====== */
+.service-card {
+  --accent: var(--orange); /* fallback */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  text-align: center;
 
-  .services__grid {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: clamp(12px, 2vw, 18px);
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    align-items: stretch;
-  }
-  .services__grid > li {
-    display: flex;
-    min-width: 0;
-  }
+  border-radius: 18px;
+  padding: clamp(16px, 2.4vw, 22px);
+  background: radial-gradient(
+      120% 120% at 50% -10%,
+      color-mix(in oklab, var(--accent) 10%, transparent),
+      transparent 60%
+    ),
+    var(--card);
+  border: 1px solid color-mix(in oklab, var(--accent) 26%, var(--border) 74%);
+  box-shadow: 0 10px 28px color-mix(in srgb, #000 16%, transparent),
+    inset 0 1px 0 color-mix(in oklab, #fff 8%, transparent);
+  transition: box-shadow 0.25s ease, border-color 0.25s ease,
+    background 0.25s ease;
+  will-change: transform;
+  isolation: isolate;
+  z-index: 0;
+  transform: translateZ(0);
+}
 
-  .service-card {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    border: 1px solid var(--border);
-    background: var(--card);
-    border-radius: 14px;
-    padding: clamp(12px, 2vw, 18px);
-    text-align: center;
-    box-shadow: var(--shadow);
-    /* IMPORTANT : on ne transitionne PAS transform ici
-       pour éviter le conflit avec Framer Motion */
-    transition: box-shadow 0.25s ease, border-color 0.25s ease;
-    will-change: transform;
-  }
+/* Dégradé de bordure (masqué au centre) */
+.service-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  padding: 1px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--accent) 60%, transparent) 0%,
+    color-mix(in oklab, var(--accent) 28%, transparent) 60%,
+    transparent 100%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.65;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
 
-  .service-card__icon {
-    display: grid;
-    place-items: center;
-    margin-bottom: 10px;
-  }
-  .service-card__icon svg {
-    width: 44px;
-    height: 44px;
-  }
-  .service-card__icon--accent svg {
-    stroke: var(--orange);
-  }
-  .service-card__icon--dark svg {
-    stroke: var(--green);
-  }
+/* Couleurs d’accent par carte (via position) */
+.services__grid > .service-card:nth-child(1) {
+  --accent: #6aa8ff;
+} /* bleu   */
+.services__grid > .service-card:nth-child(2) {
+  --accent: #ef9355;
+} /* orange */
+.services__grid > .service-card:nth-child(3) {
+  --accent: #5cc7a0;
+} /* vert   */
 
-  .service-card__title {
-    margin: 6px 0 6px;
-    font-weight: 700;
-    font-size: clamp(1.05rem, 0.95rem + 0.8vw, 1.35rem);
-    letter-spacing: -0.01em;
-  }
-  .service-card__desc {
-    margin-top: auto;
-    color: var(--muted);
-    line-height: 1.55;
-  }
+/* Icône + halo */
+.service-card__icon {
+  position: relative;
+}
+.service-card__icon::before {
+  content: "";
+  position: absolute;
+  width: 62px;
+  height: 62px;
+  border-radius: 16px;
+  background: radial-gradient(
+    60% 60% at 40% 35%,
+    color-mix(in oklab, var(--accent) 24%, transparent),
+    transparent 70%
+  );
+  filter: blur(0.2px);
+  z-index: -1;
+}
+.service-card__icon svg,
+.service-card__icon--accent svg,
+.service-card__icon--dark svg {
+  width: 46px;
+  height: 46px;
+  stroke-width: 1.8;
+  stroke: color-mix(in oklab, var(--accent) 90%, #fff 10%);
+}
 
-  @media (hover: hover) {
-    .service-card:hover {
-      /* Le lift (y:-4) est géré par Framer → on ne touche pas transform */
-      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
-      border-color: color-mix(in srgb, var(--gray) 20%, var(--border) 80%);
-    }
+/* Titres/texte */
+.service-card__title {
+  margin: 8px 0 6px;
+  font-weight: 800;
+  font-size: clamp(1.08rem, 1rem + 0.9vw, 1.36rem);
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+.service-card__desc {
+  margin-top: 0.25rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* Hover (Framer fait le translateY; ici on ne touche pas transform) */
+@media (hover: hover) {
+  .service-card:hover {
+    z-index: 10; /* AU-DESSUS du décor */
+    border-color: color-mix(in oklab, var(--accent) 48%, var(--border) 52%);
+    box-shadow: 0 16px 36px color-mix(in srgb, #000 20%, transparent),
+      inset 0 1px 0 color-mix(in oklab, #fff 12%, transparent);
+    background: radial-gradient(
+        120% 120% at 50% -10%,
+        color-mix(in oklab, var(--accent) 16%, transparent),
+        transparent 62%
+      ),
+      var(--card);
   }
+  .service-card:hover::after {
+    opacity: 0.9;
+  }
+}
+
+/* Focus a11y */
+.service-card:focus-within {
+  outline: 2px solid color-mix(in oklab, var(--accent) 65%, transparent);
+  outline-offset: 2px;
+}
+
+/* Thème clair : contraste renforcé */
+:root[data-theme="light"] .service-card {
+  border-color: color-mix(in oklab, var(--accent) 30%, var(--border) 70%);
+  box-shadow: 0 10px 20px color-mix(in srgb, #000 10%, transparent),
+    inset 0 1px 0 color-mix(in oklab, #000 6%, transparent);
+}
+
+/* CTA */
+.service-card__cta {
+  margin-top: 0.75rem;
+}
+.service-card__cta .btn {
+  padding-inline: 0.9rem 1rem;
+}
+
+/* Variante data-accent (si tu l’utilises) */
+.service-card[data-accent="blue"] {
+  --accent: #6aa8ff;
+}
+.service-card[data-accent="orange"] {
+  --accent: #ef9355;
+}
+.service-card[data-accent="green"] {
+  --accent: #5cc7a0;
+}
+
+/* Bouton outline teinté par la carte */
+.service-card .btn.btn--card-outline {
+  --btn-accent: var(--accent);
+  background: transparent !important;
+  color: color-mix(in oklab, var(--btn-accent) 96%, #111 4%);
+  border: 2px solid color-mix(in oklab, var(--btn-accent) 85%, #000 15%);
+  padding-inline: 0.95rem 1.1rem;
+  border-radius: 12px;
+  box-shadow: none;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s;
+}
+@media (hover: hover) {
+  .service-card .btn.btn--card-outline:hover {
+    background: color-mix(in oklab, var(--btn-accent) 16%, transparent);
+    border-color: color-mix(in oklab, var(--btn-accent) 92%, #000 8%);
+    box-shadow: 0 6px 16px
+      color-mix(in oklab, var(--btn-accent) 22%, transparent);
+  }
+}
+.service-card .btn.btn--card-outline:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--accent) 65%, transparent);
+  outline-offset: 2px;
+}
+
+/* Variante “plein” */
+.service-card .btn.btn--card-solid {
+  --btn-accent: var(--accent);
+  background: var(--btn-accent) !important;
+  color: #111;
+  border: 2px solid color-mix(in oklab, var(--btn-accent), #000 18%);
+  padding-inline: 1rem 1.15rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 20px
+    color-mix(in oklab, var(--btn-accent) 30%, transparent);
+}
+.service-card .btn.btn--card-solid:hover {
+  filter: saturate(1.05) brightness(0.98);
+}
+
+/* éviter tout clipping en parents */
+.container.container--xl,
+.services__wrap,
+.section--halo {
+  overflow: visible;
 }

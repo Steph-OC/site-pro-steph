@@ -1,12 +1,8 @@
 // astro.config.mjs
 import { defineConfig } from 'astro/config';
 import { fileURLToPath } from 'node:url';
-import react from '@astrojs/react'; // ← ajouter l’intégration React
 
 export default defineConfig({
-  integrations: [
-    react(), // ← active le renderer React (SSR + client directives)
-  ],
   vite: {
     resolve: {
       alias: {

@@ -1,0 +1,36 @@
+@layer base, layout, components, utilities;
+
+/* ---------- Base + Layout (always first) ---------- */
+@import "@/styles/base.css" layer(base);
+@import "@/styles/layout.css" layer(layout);
+
+/* ---------- Site-wide components (tokens before pages) ---------- */
+@import "@/styles/components/buttons.css" layer(components);
+@import "@/styles/components/forms.css" layer(components);
+@import "@/styles/components/header.css" layer(components);
+@import "@/styles/components/section-head.css" layer(components);
+@import "@/styles/components/faq.css" layer(components); /* ← ajouté */
+
+/* Feature components */
+@import "@/styles/components/services.css" layer(components);
+@import "@/styles/components/flow-steps.css" layer(components);
+@import "@/styles/components/svc3-cards.css" layer(components);
+@import "@/styles/components/hero-services.css" layer(components);
+@import "@/styles/components/listing-card.css" layer(components);
+@import "@/styles/components/testimonials-codepen.css" layer(components);
+
+/* Visuals */
+@import "@/styles/components/bubbles.css" layer(components);
+@import "@/styles/components/pointer.css" layer(components);
+
+/* ---------- Pages (after components) ---------- */
+@import "@/styles/pages/home.css" layer(components);
+/* Pick ONE of the two below (uncomment the one you use) */
+@import "@/styles/pages/services.css" layer(components);
+/* @import "@/styles/pages/services/index.css" layer(components); */
+
+/* Optional decorative halos */
+@import "@/styles/halos.css" layer(components);
+
+/* ---------- Utilities (keep last) ---------- */
+@import "@/styles/utilities.css" layer(utilities);

@@ -253,7 +253,7 @@
 /* =========================
    Grille page Réalisations
    ========================= */
-.section--halo .container .projects-grid {
+main.realisations .projects-grid {
   display: grid !important;
   grid-template-columns: 1fr !important;
   row-gap: clamp(40px, 5vw, 80px) !important;

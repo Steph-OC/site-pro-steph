@@ -7,7 +7,7 @@ import BadgesMotion from "@/components/BadgesMotion";
 import ProjectSlider from "@/components/ProjectSlider";
 import { Reveal } from "@/components/Scroll";
 import TestimonialsCodepen from "@/components/TestimonialsCodepen";
-import "@/styles/pages/home.css";
+import "@/styles/index.css";
 
 import { getDerniersProjetsAvecSlides, getTemoignages } from "@/lib/wp";
 
@@ -48,7 +48,8 @@ const safeTemoins = (temoins ?? []).map((t) => ({
     />
   </Fragment>
 
-  <div id="home" class="halo-desync">
+  <!-- Ajoute la classe no-section-bg si tu utilises le correctif CSS pour éviter les “bandes” -->
+  <div id="home" class="no-section-bg">
     <!-- Principes -->
     <section
       class="section--halo halo-pulse-gentle"
@@ -82,65 +83,67 @@ const safeTemoins = (temoins ?? []).map((t) => ({
       class="section--halo halo-pulse-gentle"
       aria-labelledby="dern-projets"
     >
-      <header class="section-head">
-        <h2 id="dern-projets">Mes derniers projets</h2>
-        <p class="section-sub">
-          Deux sites récents, avec leurs fonctionnalités clés.
-        </p>
-      </header>
+      <div class="container container--xl">
+        <header class="section-head">
+          <h2 id="dern-projets">Mes derniers projets</h2>
+          <p class="section-sub">
+            Deux sites récents, avec leurs fonctionnalités clés.
+          </p>
+        </header>
 
-      <div class="projects-grid">
-        {
-          p1 && (
-            <Reveal client:visible direction="left">
-              <article class="card project-card">
-                <div class="card__body">
-                  <h3 class="h3">{p1.cardTitle ?? "Projet récent #1"}</h3>
-                  <p class="muted">
-                    {p1.cardIntro ??
-                      p1.subtitle ??
-                      "Focus sur les fonctionnalités marquantes."}
-                  </p>
-                  <ProjectSlider
-                    client:visible
-                    slides={p1.slides}
-                    accent="#fd7e14"
-                    siteUrl={p1.projet.siteUrl || "#"}
-                    detailsUrl={`/realisations/#${p1.projet.slug}`}
-                  />
-                </div>
-              </article>
-            </Reveal>
-          )
-        }
+        <div class="projects-grid">
+          {
+            p1 && (
+              <Reveal client:visible direction="left">
+                <article class="card project-card">
+                  <div class="card__body">
+                    <h3 class="h3">{p1.cardTitle ?? "Projet récent #1"}</h3>
+                    <p class="muted">
+                      {p1.cardIntro ??
+                        p1.subtitle ??
+                        "Focus sur les fonctionnalités marquantes."}
+                    </p>
+                    <ProjectSlider
+                      client:visible
+                      slides={p1.slides}
+                      accent="#fd7e14"
+                      siteUrl={p1.projet.siteUrl || "#"}
+                      detailsUrl={`/realisations/#${p1.projet.slug}`}
+                    />
+                  </div>
+                </article>
+              </Reveal>
+            )
+          }
 
-        {
-          p2 && (
-            <Reveal client:visible direction="right" delay={0.08}>
-              <article class="card project-card">
-                <div class="card__body">
-                  <h3 class="h3">{p2.cardTitle ?? "Projet récent #2"}</h3>
-                  <p class="muted">
-                    {p2.cardIntro ??
-                      p2.subtitle ??
-                      "Navigation fluide, mode sombre et galerie optimisée."}
-                  </p>
-                  <ProjectSlider
-                    client:visible
-                    slides={p2.slides}
-                    accent="#22b8cf"
-                    siteUrl={p2.projet.siteUrl || "#"}
-                    detailsUrl={`/realisations/#${p2.projet.slug}`}
-                  />
-                </div>
-              </article>
-            </Reveal>
-          )
-        }
+          {
+            p2 && (
+              <Reveal client:visible direction="right" delay={0.08}>
+                <article class="card project-card">
+                  <div class="card__body">
+                    <h3 class="h3">{p2.cardTitle ?? "Projet récent #2"}</h3>
+                    <p class="muted">
+                      {p2.cardIntro ??
+                        p2.subtitle ??
+                        "Navigation fluide, mode sombre et galerie optimisée."}
+                    </p>
+                    <ProjectSlider
+                      client:visible
+                      slides={p2.slides}
+                      accent="#22b8cf"
+                      siteUrl={p2.projet.siteUrl || "#"}
+                      detailsUrl={`/realisations/#${p2.projet.slug}`}
+                    />
+                  </div>
+                </article>
+              </Reveal>
+            )
+          }
+        </div>
       </div>
     </section>
 
-    <!-- Approche -->
+    <!-- Mon approche -->
     <section
       class="section--halo halo-pulse-gentle"
       aria-labelledby="approach-title"
@@ -180,27 +183,36 @@ const safeTemoins = (temoins ?? []).map((t) => ({
     </section>
 
     <!-- Zones desservies -->
-    <section class="section--halo halo-pulse-gentle">
-      <article class="card">
-        <div class="card__body local">
-          <h2>Zones desservies</h2>
-          <p class="muted">
-            Béziers, Agde, Pézenas… et à distance partout en France.
-          </p>
-          <iframe
-            title="Plan Béziers"
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"
-            src="https://maps.google.com/maps?q=B%C3%A9ziers&t=&z=12&ie=UTF8&iwloc=&output=embed"
-          ></iframe>
-        </div>
-      </article>
+    <section
+      class="section--halo halo-pulse-gentle has-local"
+      aria-labelledby="zones-title"
+    >
+      <div class="container container--xl">
+        <article class="card">
+          <div class="card__body local">
+            <h2 id="zones-title">Zones desservies</h2>
+            <p class="muted">
+              Béziers, Agde, Pézenas… et à distance partout en France.
+            </p>
+            <iframe
+              title="Plan Béziers"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              src="https://maps.google.com/maps?q=B%C3%A9ziers&t=&z=12&ie=UTF8&iwloc=&output=embed"
+            ></iframe>
+          </div>
+        </article>
+      </div>
     </section>
 
     <!-- FAQ -->
-    <section id="faq" class="section--alt section--halo halo-pulse-gentle">
+    <section
+      id="faq"
+      class="section--alt section--halo halo-pulse-gentle"
+      aria-labelledby="faq-title"
+    >
       <div class="container container--narrow">
-        <h2>FAQ</h2>
+        <h2 id="faq-title">FAQ</h2>
         <details class="faq">
           <summary>Combien coûte un site vitrine WordPress ?</summary>
           <p>
@@ -216,29 +228,34 @@ const safeTemoins = (temoins ?? []).map((t) => ({
     </section>
 
     <!-- CTA -->
-    <section class="section--halo halo-pulse-gentle">
-      <article class="card">
-        <div class="card__body">
-          <h2>Parlons de votre projet</h2>
-          <p class="muted">
-            Réponse sous 24 h. Vos données ne sont jamais revendues.
-          </p>
-          <div class="actions" style="display:flex;gap:.6rem;flex-wrap:wrap;">
-            <a
-              class="btn btn--accent btn--lg cursor-hover-item"
-              href="/contact"
-              data-cursor-text="CONTACT"
-              data-cursor-text-repeat="6">Ouvrir la page Contact</a
-            >
-            <a
-              class="btn btn--ghost cursor-hover-item"
-              href="mailto:contact@stephaniequibel.fr"
-              data-cursor-text="ÉCRIRE UN E-MAIL"
-              data-cursor-text-repeat="5">Écrire un e-mail</a
-            >
+    <section
+      class="section--halo halo-pulse-gentle"
+      aria-labelledby="cta-title"
+    >
+      <div class="container container--xl">
+        <article class="card">
+          <div class="card__body">
+            <h2 id="cta-title">Parlons de votre projet</h2>
+            <p class="muted">
+              Réponse sous 24 h. Vos données ne sont jamais revendues.
+            </p>
+            <div class="actions">
+              <a
+                class="btn btn--accent btn--lg cursor-hover-item"
+                href="/contact"
+                data-cursor-text="CONTACT"
+                data-cursor-text-repeat="6">Ouvrir la page Contact</a
+              >
+              <a
+                class="btn btn--ghost cursor-hover-item"
+                href="mailto:contact@stephaniequibel.fr"
+                data-cursor-text="ÉCRIRE UN E-MAIL"
+                data-cursor-text-repeat="5">Écrire un e-mail</a
+              >
+            </div>
           </div>
-        </div>
-      </article>
+        </article>
+      </div>
     </section>
   </div>
 </SiteLayout>
