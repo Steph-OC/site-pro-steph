@@ -1,0 +1,11 @@
+/* src/styles/components/wpimg.css */
+.wpimg {
+  display: block;
+}
+.wpimg.fit-cover {
+  object-fit: cover;
+}
+.wpimg.fit-contain {
+  object-fit: contain;
+  background: var(--card, #232333);
+}

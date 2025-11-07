@@ -1,0 +1,142 @@
+/* ========== PAGE BACKGROUND HALO (global) ========== */
+/* se met derrière tout le contenu, mais au-dessus de la couleur de fond */
+
+:root {
+  /* réglages rapides (tu peux les retoucher au besoin) */
+  --page-halo-w: max(1200px, 70vw);
+  --page-halo-h: 70vh;
+  --page-halo-top: -12vh; /* remonte depuis le haut de la page */
+  --page-halo-left: 50%; /* position horizontale (peut être 45% / 55%) */
+  --page-halo-rot: -4deg; /* légère rotation */
+  --page-halo-opacity: 0.85;
+
+  /* teintes par défaut (clair) */
+  --page-halo-a: color-mix(in srgb, var(--green) 22%, transparent);
+  --page-halo-b: color-mix(in srgb, var(--orange) 20%, transparent);
+}
+
+:root[data-theme="dark"] {
+  /* teintes plus froides et un poil moins lumineuses en dark */
+  --page-halo-a: color-mix(in srgb, #60a5fa 22%, transparent);
+  --page-halo-b: color-mix(in srgb, #8b5cf6 20%, transparent);
+}
+
+/* On crée un contexte de pile pour que z-index:-1 reste derrière le contenu,
+   mais au-dessus du fond uni du <html>. */
+body {
+  isolation: isolate;
+}
+
+/* Le halo “global” : fixé, inerte aux scrolls, ne capte pas la souris */
+body::before {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  inset: 0; /* occupe tout l’écran, mais on va peindre au centre */
+  pointer-events: none;
+
+  /* la tâche elle-même */
+  left: var(--page-halo-left);
+  top: var(--page-halo-top);
+  width: var(--page-halo-w);
+  height: var(--page-halo-h);
+  transform: translateX(-50%) rotate(var(--page-halo-rot));
+  opacity: var(--page-halo-opacity);
+
+  /* deux nappes colorées qui se mélangent */
+  background: radial-gradient(
+      60% 55% at 30% 40%,
+      var(--page-halo-a),
+      transparent 65%
+    ),
+    radial-gradient(60% 55% at 70% 60%, var(--page-halo-b), transparent 70%);
+
+  filter: blur(44px) saturate(118%);
+  /* masque doux pour éviter tout bord rectangulaire */
+  -webkit-mask-image: radial-gradient(
+    120% 110% at 50% 55%,
+    #000 60%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(120% 110% at 50% 55%, #000 60%, transparent 100%);
+
+  /* petite vie */
+  animation: pageHaloBreathe 16s ease-in-out infinite,
+    pageHaloDrift 28s ease-in-out 0.3s infinite alternate;
+}
+
+/* lumière d’appui en bas de page (facultatif, donne de la profondeur) */
+body::after {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+
+  /* tapis très diffus en bas */
+  background: radial-gradient(
+    80% 40% at 50% 110%,
+    color-mix(in srgb, var(--card) 12%, transparent) 0%,
+    transparent 70%
+  );
+  filter: blur(30px) saturate(104%);
+  opacity: 0.5;
+}
+
+/* Animations */
+@keyframes pageHaloBreathe {
+  0%,
+  100% {
+    transform: translateX(-50%) rotate(var(--page-halo-rot)) scale(1);
+  }
+  50% {
+    transform: translateX(-50%) rotate(var(--page-halo-rot)) scale(1.06);
+  }
+}
+@keyframes pageHaloDrift {
+  0% {
+    filter: blur(40px) saturate(112%);
+  }
+  50% {
+    filter: blur(50px) saturate(122%);
+  }
+  100% {
+    filter: blur(44px) saturate(118%);
+  }
+}
+
+/* Respect de la préférence “réduire les animations” */
+@media (prefers-reduced-motion: reduce) {
+  body::before,
+  body::after {
+    animation: none !important;
+    filter: blur(40px) saturate(110%) !important;
+    opacity: 0.8 !important;
+  }
+}
+
+:root {
+  --page-halo-opacity: 1;
+  --page-halo-a: color-mix(in srgb, var(--green) 30%, transparent);
+  --page-halo-b: color-mix(in srgb, var(--orange) 28%, transparent);
+}
+:root[data-theme="dark"] {
+  --page-halo-a: color-mix(in srgb, #60a5fa 30%, transparent);
+  --page-halo-b: color-mix(in srgb, #8b5cf6 28%, transparent);
+}
+body::before {
+  /* ...tes règles existantes... */
+  filter: blur(36px) saturate(130%);
+  opacity: var(--page-halo-opacity);
+}
+@keyframes pageHaloDrift {
+  0% {
+    filter: blur(34px) saturate(128%);
+  }
+  50% {
+    filter: blur(42px) saturate(138%);
+  }
+  100% {
+    filter: blur(36px) saturate(130%);
+  }
+}

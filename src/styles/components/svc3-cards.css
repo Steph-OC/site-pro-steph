@@ -1,10 +1,21 @@
+/* src/styles/components/svc3-cards.css */
+
+/* ============ Section Services (layout + stacking) ============ */
 .svc3 {
   padding-block: clamp(32px, 6vw, 72px);
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
 }
+
 .svc3 .section-head {
   text-align: center;
   margin-bottom: clamp(16px, 3vw, 28px);
+  z-index: 1; /* passe au-dessus du halo de section si présent */
+  background: transparent;
 }
+
+/* Grille des cartes */
 .svc3-cards {
   --gap: clamp(16px, 2.5vw, 24px);
   display: grid;
@@ -13,7 +24,10 @@
   margin: 0;
   padding: 0;
   list-style: none;
+  position: relative;
+  z-index: 2; /* contenu au-dessus du décor de section */
 }
+
 @media (max-width: 1024px) {
   .svc3-cards {
     grid-template-columns: repeat(2, 1fr);
@@ -25,32 +39,44 @@
   }
 }
 
+/* ============ Carte ============ */
 .svc3-card {
+  --r: 14px;
   --accent: var(--orange, #ffb86b);
   --card-bg: var(--card, #232333);
   --card-bd: var(--border, #31314a);
   --fg: var(--fg, #f5f6fb);
+
   position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
+
   padding: clamp(14px, 2.2vw, 18px);
   border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--card-bd));
-  border-radius: 14px;
+  border-radius: var(--r);
+
   background: linear-gradient(
     180deg,
     color-mix(in srgb, var(--accent) 4%, var(--card-bg)) 0%,
     var(--card-bg) 100%
   );
+
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
   isolation: isolate;
+  overflow: visible; /* important pour conserver la box-shadow */
   transition: transform 0.24s cubic-bezier(0.2, 0.65, 0.3, 1), box-shadow 0.24s;
 }
+
+/* Halo confiné dans la card (clip arrondi) */
 .svc3-card::before {
   content: "";
   position: absolute;
-  inset: -28% -8% auto -8%;
-  height: 58%;
+  inset: 0; /* on ne déborde plus : tout est confiné dans la card */
+  z-index: 0; /* sous le contenu, au-dessus du fond de la card */
+  pointer-events: none;
+
+  /* même matière que précédemment, mais confinée */
   background: radial-gradient(
       60% 60% at 50% 50%,
       color-mix(in srgb, var(--accent) 26%, transparent),
@@ -61,19 +87,35 @@
       color-mix(in srgb, var(--accent) 42%, transparent),
       transparent 60%
     );
+
   filter: blur(20px) saturate(115%);
   opacity: 0.35;
-  z-index: -1;
-  transition: opacity 0.25s ease;
+
+  /* clip arrondi = pas besoin d'overflow:hidden sur la card */
+  clip-path: inset(0 round var(--r));
+
+  /* léger décalage interne pour “respirer” */
+  transform: translateY(-12%) translateX(-4%);
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }
+
+/* s'assurer que le contenu passe bien au-dessus du halo */
+.svc3-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Hover */
 .svc3-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22);
 }
 .svc3-card:hover::before {
   opacity: 0.55;
+  transform: translateY(-14%) translateX(-5%);
 }
 
+/* Icone */
 .svc3-card__icon {
   --size: 64px;
   width: var(--size);
@@ -94,6 +136,7 @@
   transform: translateY(-1px);
 }
 
+/* Titres / textes */
 .svc3-card__title {
   margin: 0.25rem 0 0;
   font-size: clamp(1.1rem, 1rem + 0.45vw, 1.35rem);
@@ -105,6 +148,8 @@
   line-height: 1.55;
   max-width: 60ch;
 }
+
+/* CTA */
 .svc3-card__cta {
   margin-top: auto;
 }
@@ -132,6 +177,7 @@
   box-shadow: 0 0 0 3px #000, 0 0 0 5px var(--accent);
 }
 
+/* Liste */
 .svc3-card__list {
   margin: 0.4rem 0 0;
   padding-left: 1.25rem;
@@ -143,6 +189,8 @@
 .svc3-card__list li::marker {
   color: var(--accent);
 }
+
+/* Polyfill marqueur si besoin */
 @supports not (selector(li::marker)) {
   .svc3-card__list {
     list-style: none;
@@ -161,4 +209,41 @@
     color: var(--accent);
     font-weight: 700;
   }
+}
+
+/* ============ Règles spécifiques à la page services ============ */
+
+/* Héro de la page services */
+.services-hero {
+  scroll-margin-top: var(--header-h, 72px);
+}
+.services-hero .container {
+  width: min(1200px, 92vw);
+  margin-inline: auto;
+}
+
+/* Headers centrés sur cette page */
+#services .section-head {
+  text-align: center;
+  margin-bottom: clamp(16px, 3vw, 28px);
+}
+#services .section-head .muted {
+  max-width: 60ch;
+  margin-inline: auto;
+}
+
+/* Offset d’ancre sous le header sticky */
+#services :where(h1, h2) {
+  scroll-margin-top: var(--header-h, 72px);
+}
+
+/* Micro perf pour les grandes sections */
+.section--halo {
+  content-visibility: auto;
+  contain-intrinsic-size: 480px;
+}
+
+/* Empilement hover (au-dessus des voisines si lift) */
+.svc3-card:hover {
+  z-index: 3;
 }

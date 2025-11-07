@@ -101,6 +101,6 @@
   /* espace entre le hero et la 1ʳᵉ section */
   main#home > section:first-of-type,
   #home > section:first-of-type {
-    margin-top: clamp(40px, 6vw, 80px);
+    margin-top: clamp(60px, 10vw, 200px);
   }
 }

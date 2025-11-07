@@ -5,20 +5,18 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  pointer-events: auto; /* the UL receives the pointer */
+  pointer-events: auto;
   touch-action: none;
   -webkit-user-select: none;
   user-select: none;
-  z-index: 2; /* over the SVG */
+  z-index: 2;
 }
 
-/* Children must NOT intercept events, so the UL keeps pointermove */
 .bubble-cloud > li {
   position: absolute;
   left: var(--x);
   top: var(--y);
 
-  /* JS drives --dx/--dy each frame */
   --dx: 0px;
   --dy: 0px;
   transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy)))
@@ -26,15 +24,12 @@
   will-change: transform;
   z-index: 2;
 
-  /* Kill any CSS animation/transition that can fight with JS */
   animation: none !important;
   transition: none !important;
 
-  /* Don’t eat events */
   pointer-events: none;
 }
 
-/* Disc + highlight (purely visual) */
 .bubble-cloud > li::before,
 .bubble-cloud > li::after {
   content: "";
@@ -89,7 +84,6 @@
   opacity: 0.65;
 }
 
-/* Label (visible, but not interactive) */
 .bubble-cloud > li span {
   position: relative;
   z-index: 3;
@@ -101,7 +95,6 @@
   pointer-events: none;
 }
 
-/* Fallback palette if --c not provided inline */
 .bubble-cloud > li:nth-child(6n + 1) {
   --c: #6aa8ff;
 }
@@ -121,11 +114,10 @@
   --c: #ffd166;
 }
 
-/* Make sure the column confines the cloud */
 .services-hero__illu {
   position: relative;
 }
-/* place ça dans styles/components/bubbles.css (ou dans pages/services.css) */
+
 .bubble-cloud {
   position: absolute;
   inset: 0;
@@ -143,7 +135,6 @@
   transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy)))
     scale(var(--s, 1));
   will-change: transform;
-  animation: none !important; /* ⛔ */
-  transition: none; /* ⛔ */
+  animation: none !important;
+  transition: none;
 }
-/* disques + labels, comme tu avais déjà */

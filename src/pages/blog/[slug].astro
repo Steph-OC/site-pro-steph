@@ -1,12 +1,20 @@
 ---
-import Layout from "../../layouts/SiteLayout.astro";
-import Hero from "../../components/Hero.astro";
-import * as wp from "../../lib/wp";
+import Layout from "@/layouts/SiteLayout.astro";
+import HeroBlog from "@/components/HeroBlog.astro";
+import * as wp from "@/lib/wp";
+import WPImg from "@/components/WPImg.astro";
+import { sizesFullBleed } from "@/lib/img";
+
+import "@/styles/index.css";
+import "@/styles/components/blog-hero-bg.css";
+import "@/styles/pages/blog.css";
+import "@/styles/pages/post.css";
 
 export async function getStaticPaths() {
-  // pré-génère les dernières pages (tu peux augmenter per_page)
   const items = await wp.getPosts({ per_page: 50 });
-  return items.map((p: any) => ({ params: { slug: p.slug } }));
+  return (Array.isArray(items) ? items : []).map((p: any) => ({
+    params: { slug: p.slug },
+  }));
 }
 
 const { slug } = Astro.params;
@@ -31,38 +39,54 @@ const plain = (post.content?.rendered || "").replace(/<[^>]*>/g, " ");
 const words = plain.trim().split(/\s+/).filter(Boolean).length;
 const readMin = Math.max(1, Math.round(words / 200));
 
-// Précédent / suivant (dans l'ordre chronologique décroissant par défaut)
+// Titre/description plain text pour les metas
+const plainTitle = (post.title?.rendered || "").replace(/<[^>]+>/g, "");
+const plainDesc = (post.excerpt?.rendered || "")
+  .replace(/<[^>]+>/g, "")
+  .slice(0, 150);
+
+// Précédent / suivant
 const all = await wp.getPosts({ per_page: 100 });
-const idx = all.findIndex((p: any) => p.id === post.id);
-const prev = idx > 0 ? all[idx - 1] : null; // article plus récent
-const next = idx >= 0 && idx < all.length - 1 ? all[idx + 1] : null; // article plus ancien
+const idx = (Array.isArray(all) ? all : []).findIndex(
+  (p: any) => p.id === post.id
+);
+const prev = idx > 0 ? all[idx - 1] : null; // plus récent
+const next = idx >= 0 && idx < all.length - 1 ? all[idx + 1] : null; // plus ancien
 ---
 
-<Layout
-  title={`${post.title.rendered} — Parlons web`}
-  description={post.excerpt?.rendered?.replace(/<[^>]+>/g, "").slice(0, 150)}
->
-  <!-- Hero compact -->
-  <Hero
+<Layout title={`${plainTitle} — Parlons web`} description={plainDesc}>
+  <!-- Hero -->
+  <HeroBlog
     slot="hero"
-    variant="blog"
     kicker="Article"
-    title={post.title.rendered}
+    title={plainTitle}
     lead={`${dateStr} • ${readMin} min de lecture`}
     actions={[{ href: "/blog", label: "Tous les articles", kind: "ghost" }]}
+    tags={[
+      "WordPress",
+      "SEO",
+      "Performance",
+      "Création",
+      "Design",
+      "Accessibilité",
+    ]}
   />
 
-  <!-- Image de couverture -->
+  <!-- Image de couverture avec parallax doux -->
   {
     coverSrc && (
-      <p style="margin:.6rem 0 1rem">
-        <img
-          src={coverSrc}
+      <div class="post-cover" style="--h: 58vh">
+        <WPImg
+          media={m}
           alt={coverAlt}
-          loading="lazy"
-          style="width:100%;height:auto;border-radius:12px;background:#3B3950"
+          sizes={sizesFullBleed}
+          fit="cover"
+          fetchpriority="high"
+          loading="eager"
+          variant="abs-cover"
+          class="post-cover__img"
         />
-      </p>
+      </div>
     )
   }
 
@@ -72,18 +96,16 @@ const next = idx >= 0 && idx < all.length - 1 ? all[idx + 1] : null; // article 
   <!-- Navigation précédent / suivant -->
   {
     (prev || next) && (
-      <nav
-        aria-label="Navigation des articles"
-        style="display:flex;justify-content:space-between;gap:1rem;margin:2rem 0 0"
-      >
+      <nav class="post-nav" aria-label="Navigation des articles">
         <div>
           {next && (
             <a
               href={`/blog/${next.slug}`}
               class="btn btn--ghost"
-              aria-label={`Article plus ancien : ${next.title.rendered.replace(/<[^>]+>/g, "")}`}
+              data-pointer
+              aria-label={`Article plus ancien : ${(next.title.rendered || "").replace(/<[^>]+>/g, "")}`}
             >
-              ← {next.title.rendered}
+              ← <span set:html={next.title.rendered} />
             </a>
           )}
         </div>
@@ -92,13 +114,55 @@ const next = idx >= 0 && idx < all.length - 1 ? all[idx + 1] : null; // article 
             <a
               href={`/blog/${prev.slug}`}
               class="btn btn--ghost"
-              aria-label={`Article plus récent : ${prev.title.rendered.replace(/<[^>]+>/g, "")}`}
+              data-pointer
+              aria-label={`Article plus récent : ${(prev.title.rendered || "").replace(/<[^>]+>/g, "")}`}
             >
-              {prev.title.rendered} →
+              <span set:html={prev.title.rendered} /> →
             </a>
           )}
         </div>
       </nav>
     )
   }
+
+  <!-- Parallax cover script (doux, perf-friendly, respecte RDM) -->
+  <!-- Parallax doux et centré -->
+  <script type="module">
+    const wrap = document.querySelector(".post-cover");
+    if (wrap && matchMedia("(prefers-reduced-motion: no-preference)").matches) {
+      const img = wrap.querySelector(".post-cover__img");
+      if (img) {
+        const AMP = innerWidth >= 900 ? 90 : 40; // intensité
+        img.style.setProperty("--pad", `${AMP * 2}px`); // marge anti-bords
+
+        let raf = 0,
+          y = 0,
+          active = true;
+
+        const io = new IntersectionObserver(
+          (entries) => {
+            active = entries.some((e) => e.isIntersecting);
+            if (active) tick();
+            else cancelAnimationFrame(raf);
+          },
+          { threshold: [0, 1] }
+        );
+        io.observe(wrap);
+
+        function tick() {
+          const r = wrap.getBoundingClientRect();
+          const center = r.top + r.height / 2;
+          let norm = (innerHeight / 2 - center) / (innerHeight / 2); // -1..1
+          norm = Math.max(-1, Math.min(1, norm));
+          const target = norm * AMP;
+
+          // lissage
+          y += (target - y) * 0.22;
+          img.style.setProperty("--y", `${y}px`);
+
+          raf = requestAnimationFrame(tick);
+        }
+      }
+    }
+  </script>
 </Layout>

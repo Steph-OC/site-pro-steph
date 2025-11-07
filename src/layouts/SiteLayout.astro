@@ -1,15 +1,18 @@
 ---
-// Importation des composants et des styles
-import IosPointer from "@/components/IosPointer.jsx";
+/* AUCUN import de wp ici */
 const {
   title = "Stéphanie Quibel — Développeuse WordPress",
   description = "",
 } = Astro.props;
+
+/* styles globaux */
 import "@/styles/base.css";
 import "@/styles/layout.css";
 import "@/styles/components/header.css";
 import "@/styles/components/buttons.css";
-import "@/styles/components/pointer.css";
+
+/* CSS du pointeur (vanilla) */
+import "@/styles/components/pointer-cursor.css";
 ---
 
 <!doctype html>
@@ -28,8 +31,8 @@ import "@/styles/components/pointer.css";
     <link rel="icon" href="/favicon.png" type="image/png" />
     <meta name="theme-color" content="#23212E" />
 
-    <!-- Initialisation du thème clair/sombre (par défaut : clair) -->
     <script is:inline>
+      // thème par défaut
       (() => {
         try {
           const pref = localStorage.getItem("theme-pref") || "light";
@@ -42,15 +45,28 @@ import "@/styles/components/pointer.css";
   </head>
 
   <body>
-    <!-- Pointer performant, uniquement sur desktop avec support de l'hover -->
-    <IosPointer
-      client:media="(hover: hover) and (pointer: fine)"
-      color="var(--green)"
-      radius={2}
-      pad={8}
-      magnetRadius={56}
-      targets='[data-pointer], .nav a, a[href], button, [role="button"]'
-    />
+    <!-- Pointeur iOS-like vanilla (import conditionnel) -->
+    <script type="module">
+      const canHover = matchMedia("(hover: hover) and (pointer: fine)").matches;
+      const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (canHover && !reduced) {
+        import("/js/pointer-cursor.js")
+          .then(({ default: initPointerCursor }) => {
+            const root = getComputedStyle(document.documentElement);
+            const brand = root.getPropertyValue("--green").trim() || "#5cc7a0";
+            initPointerCursor({
+              color: brand,
+              size: 14,
+              radius: 12,
+              pad: 8,
+              magnetRadius: 56,
+              targets:
+                "[data-pointer], .post-nav a.btn, .wp-block-button__link, .nav a, a[href], button, [role='button'], .btn",
+            });
+          })
+          .catch(() => {});
+      }
+    </script>
 
     <header class="site-header">
       <div class="container nav">
@@ -110,7 +126,6 @@ import "@/styles/components/pointer.css";
           </ul>
         </nav>
 
-        <!-- Bouton pour basculer entre le mode clair et sombre -->
         <button
           id="theme-toggle"
           class="btn btn--ghost"
@@ -118,7 +133,6 @@ import "@/styles/components/pointer.css";
           aria-label="Basculer le thème"
           title="Basculer le thème"
         >
-          <!-- Icône soleil -->
           <svg
             class="theme-icon theme-icon--sun"
             width="18"
@@ -140,7 +154,6 @@ import "@/styles/components/pointer.css";
               stroke-width="1.5"
               fill="none"></circle>
           </svg>
-          <!-- Icône lune -->
           <svg
             class="theme-icon theme-icon--moon"
             width="18"
@@ -159,7 +172,6 @@ import "@/styles/components/pointer.css";
       </div>
     </header>
 
-    <!-- Zone principale : Hero et contenu -->
     <slot name="hero" />
     <main class="container"><slot /></main>
 
@@ -170,10 +182,8 @@ import "@/styles/components/pointer.css";
       </div>
     </footer>
 
-    <!-- Scripts pour améliorer la performance et l'accessibilité -->
     <script is:inline>
       (function () {
-        // 1) Effet sur le scroll : supprimer l'effet de flou dans l'entête pendant le scroll
         let t;
         const header = document.querySelector("header.site-header");
         const onScroll = () => {
@@ -184,7 +194,6 @@ import "@/styles/components/pointer.css";
         };
         addEventListener("scroll", onScroll, { passive: true });
 
-        // 2) Variable CSS pour la hauteur réelle de l'entête (utile pour les ancrages)
         const setHeaderH = () => {
           if (!header) return;
           document.documentElement.style.setProperty(
@@ -195,7 +204,6 @@ import "@/styles/components/pointer.css";
         setHeaderH();
         addEventListener("resize", setHeaderH);
 
-        // 3) Mode éco automatique : désactive certaines animations si l'utilisateur a activé l'option "réduire les mouvements"
         if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
           document.documentElement.classList.add("reduce-motion");
         } else {
@@ -204,7 +212,6 @@ import "@/styles/components/pointer.css";
       })();
     </script>
 
-    <!-- Logiciel pour basculer entre le mode clair et sombre -->
     <script is:inline>
       (function () {
         const KEY = "theme-pref";

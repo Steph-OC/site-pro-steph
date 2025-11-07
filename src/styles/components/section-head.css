@@ -1,55 +1,54 @@
 /* src/styles/components/section-head.css — GLOBAL */
-@layer components {
-  /* Espace sous les titres de section (global) */
-  .section-head {
-    text-align: center;
-    margin-bottom: clamp(28px, 5vw, 60px);
-  }
 
-  /* Espace entre le H2 et l’intro */
-  .section-head h2 {
-    margin: 0 0 clamp(16px, 2.8vw, 34px);
-    line-height: 1.18;
-    letter-spacing: -0.01em;
-  }
+/* Espace sous les titres de section (global) */
+.section-head {
+  text-align: center;
+  margin-bottom: clamp(28px, 5vw, 60px);
+}
 
-  .section-head .section-sub {
-    margin-top: clamp(12px, 2vw, 22px);
-    margin-bottom: 0;
-    line-height: 1.55;
-    color: var(--muted);
-  }
+/* Espace entre le H2 et l’intro */
+.section-head h2 {
+  margin: 0 0 clamp(16px, 2.8vw, 34px);
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+}
 
-  /* Variante décorative (facultative) */
-  .section-head--aurora .section-sub {
-    color: var(--muted);
-    position: relative;
-    display: inline-block;
-    padding-inline: 10px;
-  }
-  .section-head--aurora .section-sub::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -8px;
-    height: 6px;
-    background: radial-gradient(
-      40% 100% at 50% 100%,
-      color-mix(in srgb, var(--green) 22%, transparent) 0%,
-      transparent 70%
-    );
-    opacity: 0.5;
-  }
+.section-head .section-sub {
+  margin-top: clamp(12px, 2vw, 22px);
+  margin-bottom: 0;
+  line-height: 1.55;
+  color: var(--muted);
+}
 
-  /* Les headers de section NE SONT PAS sticky */
-  header.section-head {
-    position: static;
-    top: auto;
-    z-index: auto;
-    background: transparent;
-    border: 0;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
+/* Variante décorative (facultative) */
+.section-head--aurora .section-sub {
+  color: var(--muted);
+  position: relative;
+  display: inline-block;
+  padding-inline: 10px;
+}
+.section-head--aurora .section-sub::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -8px;
+  height: 6px;
+  background: radial-gradient(
+    40% 100% at 50% 100%,
+    color-mix(in srgb, var(--green) 22%, transparent) 0%,
+    transparent 70%
+  );
+  opacity: 0.5;
+}
+
+/* Les headers de section NE SONT PAS sticky */
+header.section-head {
+  position: static;
+  top: auto;
+  z-index: auto;
+  background: transparent;
+  border: 0;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }

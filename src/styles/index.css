@@ -1,36 +1,42 @@
-@layer base, layout, components, utilities;
+/* src/styles/index.css */
 
-/* ---------- Base + Layout (always first) ---------- */
+/* 1) Déclare les couches présentes */
+@layer base, layout, components, pages, utilities;
+
+/* 2) Base + Layout */
 @import "@/styles/base.css" layer(base);
 @import "@/styles/layout.css" layer(layout);
+@import "@/styles/background.css" layer(layout); /* décor global */
 
-/* ---------- Site-wide components (tokens before pages) ---------- */
+/* 3) Components globaux */
 @import "@/styles/components/buttons.css" layer(components);
 @import "@/styles/components/forms.css" layer(components);
 @import "@/styles/components/header.css" layer(components);
 @import "@/styles/components/section-head.css" layer(components);
-@import "@/styles/components/faq.css" layer(components); /* ← ajouté */
+@import "@/styles/components/faq.css" layer(components);
 
-/* Feature components */
 @import "@/styles/components/services.css" layer(components);
-@import "@/styles/components/flow-steps.css" layer(components);
+
 @import "@/styles/components/svc3-cards.css" layer(components);
+
+@import "@/styles/components/flow-steps.css" layer(components);
 @import "@/styles/components/hero-services.css" layer(components);
 @import "@/styles/components/listing-card.css" layer(components);
 @import "@/styles/components/testimonials-codepen.css" layer(components);
 
-/* Visuals */
+/* 5) Visuels/UI */
 @import "@/styles/components/bubbles.css" layer(components);
 @import "@/styles/components/pointer.css" layer(components);
 
-/* ---------- Pages (after components) ---------- */
-@import "@/styles/pages/home.css" layer(components);
-/* Pick ONE of the two below (uncomment the one you use) */
-@import "@/styles/pages/services.css" layer(components);
-/* @import "@/styles/pages/services/index.css" layer(components); */
+/* 6) Pages */
+@import "@/styles/pages/home.css" layer(pages);
+@import "@/styles/pages/services.css" layer(pages);
+/* Ou:
+   @import "@/styles/pages/services/index.css" layer(pages);
+*/
 
-/* Optional decorative halos */
-@import "@/styles/halos.css" layer(components);
+/* 7) Halos décoratifs */
+@import "@/styles/halos.css" layer(layout);
 
-/* ---------- Utilities (keep last) ---------- */
+/* 8) Utilities */
 @import "@/styles/utilities.css" layer(utilities);

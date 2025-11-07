@@ -1,6 +1,6 @@
 import React from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import "@/styles/listing-card.css";
+import "@/styles/components/listing-card.css";
 
 export type ListingSlide = {
   img?: string;

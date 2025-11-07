@@ -1,0 +1,53 @@
+---
+import { buildWpSrc } from "@/lib/img";
+
+interface Props {
+  media?: any;
+  alt?: string;
+  sizes?: string;
+  fit?: "cover" | "contain" | "fill" | "none" | "scale-down";
+  loading?: "lazy" | "eager";
+  fetchpriority?: "high" | "low" | "auto";
+  class?: string;
+  style?: string;
+  /** "default": img normal ; "abs-cover": img absolue pour parallax */
+  variant?: "default" | "abs-cover";
+}
+
+const {
+  media,
+  alt = "",
+  sizes,
+  fit = "cover",
+  loading = "lazy",
+  fetchpriority = "auto",
+  class: className,
+  style,
+  variant = "default",
+} = Astro.props as Props;
+
+if (!media) return;
+
+const { src, srcset, width, height } = buildWpSrc(media);
+
+const baseStyle = `object-fit:${fit}; object-position:center center; display:block; ${style || ""}`;
+
+const styleDefault = `width:100%; height:100%; ${baseStyle}`;
+const styleAbsCover = `position:absolute; inset:calc(-1*var(--pad,0)) calc(-1*var(--pad,0));
+   width:calc(100% + 2*var(--pad,0)); height:calc(100% + 2*var(--pad,0));
+   transform:translate3d(0,var(--y,0),0); will-change:transform;
+   ${baseStyle}`;
+---
+
+<img
+  src={src}
+  srcset={srcset || undefined}
+  sizes={sizes || undefined}
+  alt={alt}
+  width={width || undefined}
+  height={height || undefined}
+  loading={loading}
+  fetchpriority={fetchpriority}
+  class={className}
+  style={variant === "abs-cover" ? styleAbsCover : styleDefault}
+/>

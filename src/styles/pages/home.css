@@ -47,7 +47,7 @@
   transform: translateX(-50%);
   width: 100vw;
   top: -15vh; /* hausse un peu l’origine du décor */
-  bottom: -50vh; /* et on coupe plus haut qu’avant pour éviter l’overlap */
+  bottom: -70vh; /* et on coupe plus haut qu’avant pour éviter l’overlap */
   z-index: 0;
 
   /* teintes (clair) */
@@ -92,6 +92,7 @@
 
   filter: saturate(110%) contrast(102%);
 }
+
 :root[data-theme="dark"] .hero .hero__bg::before {
   --a1: color-mix(in srgb, var(--green) 55%, #60a5fa 45%);
   --a2: color-mix(in srgb, var(--orange) 55%, #f472b6 45%);
@@ -148,6 +149,43 @@
   will-change: transform, filter;
   overflow: visible;
 }
+/* Hover: petit tilt + lift + reflet balayage */
+@media (hover: hover) and (pointer: fine) {
+  .hero__visual .pc-tilt {
+    cursor: pointer;
+  }
+
+  .hero__visual .pc-tilt:hover {
+    transform: scale(calc(var(--pc-scale) * 1.02))
+      rotateY(calc(var(--pc-tilt-y) + 6deg))
+      rotateX(calc(var(--pc-tilt-x) + 2deg)) translateY(-2px);
+    filter: drop-shadow(
+      0 28px 46px color-mix(in srgb, var(--gray) 28%, transparent 72%)
+    );
+  }
+
+  /* déclenche aussi le balayage du reflet (déjà défini dans ton CSS) */
+  .hero__visual:hover .pc-tilt::after {
+    animation: pcShineSlow 1.4s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+    opacity: 0.52; /* donne un peu plus de présence au highlight */
+  }
+}
+
+/* Si l’utilisateur préfère moins d’animations : pas de hover “mouvant” */
+@media (prefers-reduced-motion: reduce) {
+  .hero__visual .pc-tilt {
+    transition: none !important;
+  }
+  .hero__visual .pc-tilt:hover {
+    transform: none !important;
+    filter: none !important;
+  }
+  .hero__visual .pc-tilt::after {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+}
+
 .pc [data-role="chassis"],
 .pc [data-role="screen"] {
   stroke: var(--pc-contour);
@@ -334,4 +372,58 @@ html[data-theme="dark"] .pc-tilt::after {
   .hero__visual .pc-tilt::after {
     animation: none !important;
   }
+}
+/* === SERVICES — empilement + anti-clipping =============================== */
+/* Isole la section pour contrôler sa pile */
+section[aria-labelledby="services-title"] {
+  position: relative;
+  isolation: isolate;
+  /* un peu d'air pour que le lift ne tape pas le bas de section */
+  padding-bottom: var(--space-6, 40px);
+  overflow: visible; /* rien n'est coupé */
+}
+
+/* Si le halo global coupe avec un mask, on le neutralise ici uniquement */
+section[aria-labelledby="services-title"]::before {
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+}
+
+/* Le header reste derrière les cards */
+section[aria-labelledby="services-title"] .section-head {
+  position: relative;
+  z-index: 1; /* header bas dans la pile */
+  background: transparent !important;
+  transform: none !important; /* évite un stacking context parasite */
+  overflow: visible !important;
+}
+section[aria-labelledby="services-title"] .section-head::before,
+section[aria-labelledby="services-title"] .section-head::after {
+  z-index: 0; /* si décor, derrière le contenu */
+  pointer-events: none;
+}
+
+/* Tous les wrappers des services ne doivent rien clipper */
+section[aria-labelledby="services-title"] .container,
+section[aria-labelledby="services-title"] .services,
+section[aria-labelledby="services-title"] .services__wrap,
+section[aria-labelledby="services-title"] .services-grid {
+  position: relative;
+  z-index: 0;
+  overflow: visible !important;
+}
+
+/* Les cards passent au-dessus du header et ne sont pas coupées */
+section[aria-labelledby="services-title"] .card {
+  position: relative;
+  z-index: 2; /* au-dessus du header (z:1) */
+  transform: translateZ(0); /* lisse le rendu */
+  will-change: transform, box-shadow;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, z-index 0s;
+  overflow: visible; /* pas de clipping interne */
+}
+section[aria-labelledby="services-title"] .card:hover,
+section[aria-labelledby="services-title"] .card:focus-within {
+  z-index: 40; /* passe franchement au-dessus */
+  transform: translateY(-8px); /* l’élévation */
 }

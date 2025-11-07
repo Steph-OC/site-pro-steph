@@ -1,0 +1,364 @@
+/* =========================================================
+   BLOG HERO — fond local (aurora) + badges interactifs
+   Portée : uniquement le hero du blog
+   ========================================================= */
+
+/* — Shell & container (scopé) — */
+.hbix {
+  position: relative;
+  isolation: isolate; /* contexte z-index */
+  padding: clamp(42px, 7vw, 84px) 0 clamp(56px, 6vw, 84px);
+  margin-bottom: clamp(24px, 9vw, 200px); /* respiration sous le hero */
+}
+.hbix .container {
+  width: min(1100px, 92vw);
+  margin-inline: auto;
+}
+.hbix__inner {
+  position: relative; /* au-dessus du fond local */
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: min(6vw, 48px);
+  align-items: center;
+}
+@media (max-width: 900px) {
+  .hbix__inner {
+    grid-template-columns: 1fr;
+  }
+  .hbix__stage {
+    order: -1;
+    min-height: 240px;
+  }
+}
+
+/* — Texte — */
+.hbix__text {
+  max-width: 820px;
+}
+.kicker {
+  margin: 0 0 0.45rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.82rem;
+  color: var(--muted, #cfd0e6);
+}
+.title {
+  margin: 0 0 0.5rem;
+  font-family: var(
+    --font-head,
+    "Josefin Sans",
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    Ubuntu,
+    Cantarell,
+    Noto Sans,
+    "Helvetica Neue",
+    Arial
+  );
+  font-size: clamp(1.8rem, 1.25rem + 2.2vw, 3rem);
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+.lead {
+  margin: 0;
+  color: var(--muted, #cfd0e6);
+  max-width: 70ch;
+  font-size: clamp(1rem, 0.96rem + 0.3vw, 1.15rem);
+  line-height: 1.55;
+}
+
+/* — Actions — */
+.actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: clamp(12px, 1.2vw, 16px);
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 42px;
+  padding: 0 14px;
+  border-radius: 12px;
+  font-weight: 600;
+  border: 2px solid transparent;
+  text-decoration: none;
+  transition: 0.2s transform, 0.2s background, 0.2s color;
+}
+.btn:hover {
+  transform: translateY(-1px);
+}
+.btn--accent {
+  background: var(--accent, #ffd166);
+  color: #111;
+  border-color: var(--accent, #ffd166);
+}
+.btn--accent:hover {
+  background: transparent;
+  color: var(--fg, #f5f6fb);
+}
+.btn--ghost {
+  background: transparent;
+  color: var(--fg, #f5f6fb);
+  border-color: var(--border, #31314a);
+}
+.btn--ghost:hover {
+  border-color: var(--fg, #f5f6fb);
+  background: rgba(245, 246, 251, 0.08);
+}
+
+/* — Scène interactive (badges) — */
+.hbix__stage {
+  position: relative;
+  isolation: isolate; /* confine le halo de scène */
+  min-height: 320px;
+  overflow: visible;
+  background: transparent;
+}
+.hbix__chips {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  z-index: 1; /* au-dessus du halo de scène */
+}
+
+/* — Halo de scène : léger glow derrière les badges (calme) — */
+.hbix__stage::before {
+  content: "";
+  position: absolute;
+  inset: -8% -6% -18% -6%;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+      42% 40% at 25% 35%,
+      rgba(106, 168, 255, 0.2),
+      transparent 65%
+    ),
+    radial-gradient(
+      38% 36% at 75% 30%,
+      rgba(185, 132, 246, 0.18),
+      transparent 70%
+    ),
+    radial-gradient(
+      42% 40% at 55% 65%,
+      rgba(255, 209, 102, 0.14),
+      transparent 70%
+    ),
+    radial-gradient(
+      36% 34% at 68% 58%,
+      rgba(92, 199, 160, 0.18),
+      transparent 70%
+    ),
+    radial-gradient(
+      30% 28% at 48% 38%,
+      rgba(213, 17, 17, 0.16),
+      transparent 70%
+    );
+  filter: blur(22px) saturate(120%);
+  opacity: 0.75;
+}
+
+/* — Badges (nets, sans blur de fond) — */
+.chip {
+  --c: rgba(59, 57, 80, 0.7);
+  --cO: rgba(255, 255, 255, 0.22);
+  --cG: transparent; /* glow coloré désactivé pour netteté */
+  --ink: #fff;
+
+  position: absolute;
+  inset: auto;
+  display: inline-grid;
+  place-items: center;
+  height: 38px;
+  padding-inline: 14px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--ink);
+  white-space: nowrap;
+
+  background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0.02)
+    ),
+    var(--c);
+  outline: 1px solid var(--cO);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+  text-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+
+  user-select: none;
+  cursor: grab;
+  pointer-events: auto;
+  transition: filter 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+  will-change: transform;
+}
+.chip:hover {
+  filter: saturate(1.05) brightness(1.03);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.22);
+}
+.chip:active {
+  cursor: grabbing;
+}
+
+/* — Palette badges (identique aux bulles, un peu plus punchy) — */
+.chip[data-tag="wordpress"] {
+  --c: rgba(106, 168, 255, 0.78);
+  --cO: rgba(106, 168, 255, 0.62);
+}
+.chip[data-tag="design"] {
+  --c: rgba(239, 147, 85, 0.78);
+  --cO: rgba(239, 147, 85, 0.62);
+}
+.chip[data-tag="seo"] {
+  --c: rgba(92, 199, 160, 0.78);
+  --cO: rgba(92, 199, 160, 0.62);
+}
+.chip[data-tag="maintenance"] {
+  --c: rgba(185, 132, 246, 0.8);
+  --cO: rgba(185, 132, 246, 0.64);
+}
+.chip[data-tag="securite"],
+.chip[data-tag="sécurité"] {
+  --c: rgba(213, 17, 17, 0.82);
+  --cO: rgba(213, 17, 17, 0.64);
+}
+.chip[data-tag="performance"] {
+  --c: rgba(255, 209, 102, 0.86);
+  --cO: rgba(255, 209, 102, 0.66);
+  --ink: #111;
+}
+
+/* Fallback par index si les libellés changent */
+.chip:nth-child(1) {
+  --c: rgba(106, 168, 255, 0.78);
+  --cO: rgba(106, 168, 255, 0.62);
+}
+.chip:nth-child(2) {
+  --c: rgba(239, 147, 85, 0.78);
+  --cO: rgba(239, 147, 85, 0.62);
+}
+.chip:nth-child(3) {
+  --c: rgba(92, 199, 160, 0.78);
+  --cO: rgba(92, 199, 160, 0.62);
+}
+.chip:nth-child(4) {
+  --c: rgba(185, 132, 246, 0.8);
+  --cO: rgba(185, 132, 246, 0.64);
+}
+.chip:nth-child(5) {
+  --c: rgba(213, 17, 17, 0.82);
+  --cO: rgba(213, 17, 17, 0.64);
+}
+.chip:nth-child(6) {
+  --c: rgba(255, 209, 102, 0.86);
+  --cO: rgba(255, 209, 102, 0.66);
+  --ink: #111;
+}
+
+/* — Fond local du hero (aurora) — */
+.hbix--localbg::before {
+  content: "";
+  position: absolute;
+  z-index: 0; /* derrière le contenu du hero */
+  pointer-events: none;
+  inset: -6% -6% -18% -6%; /* débord doux */
+  transform: rotate(-5deg);
+  opacity: 0.92;
+  background: radial-gradient(
+      60% 55% at 28% 36%,
+      rgba(106, 168, 255, 0.24),
+      transparent 66%
+    ),
+    radial-gradient(
+      52% 48% at 72% 30%,
+      rgba(185, 132, 246, 0.22),
+      transparent 70%
+    ),
+    radial-gradient(
+      58% 52% at 56% 64%,
+      rgba(255, 209, 102, 0.18),
+      transparent 72%
+    ),
+    radial-gradient(
+      48% 44% at 66% 58%,
+      rgba(92, 199, 160, 0.2),
+      transparent 72%
+    ),
+    radial-gradient(
+      34% 32% at 46% 40%,
+      rgba(213, 17, 17, 0.18),
+      transparent 74%
+    );
+  filter: blur(46px) saturate(118%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0 86%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0 86%, transparent 100%);
+  animation: blogHeroBreathe 16s ease-in-out infinite,
+    blogHeroDrift 26s ease-in-out 0.3s infinite alternate;
+}
+
+/* — Animations du fond local — */
+@keyframes blogHeroBreathe {
+  0%,
+  100% {
+    transform: rotate(-5deg) scale(1);
+  }
+  50% {
+    transform: rotate(-5deg) scale(1.04);
+  }
+}
+@keyframes blogHeroDrift {
+  0% {
+    filter: blur(44px) saturate(116%);
+  }
+  50% {
+    filter: blur(52px) saturate(124%);
+  }
+  100% {
+    filter: blur(46px) saturate(118%);
+  }
+}
+
+/* — Mobile : un peu plus léger — */
+@media (max-width: 900px) {
+  .hbix--localbg::before {
+    inset: -4% -6% -14% -6%;
+    opacity: 0.88;
+    filter: blur(40px) saturate(114%);
+    transform: rotate(-4deg);
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      #000 0 82%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(to bottom, #000 0 82%, transparent 100%);
+  }
+}
+
+/* — Accessibilité : réduit les animations — */
+@media (prefers-reduced-motion: reduce) {
+  .hbix--localbg::before {
+    animation: none !important;
+  }
+  .hbix__chips {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 14px;
+  }
+  .chip {
+    position: relative;
+    inset: auto;
+    transform: none !important;
+  }
+}
