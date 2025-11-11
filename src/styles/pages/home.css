@@ -427,3 +427,30 @@ section[aria-labelledby="services-title"] .card:focus-within {
   z-index: 40; /* passe franchement au-dessus */
   transform: translateY(-8px); /* l’élévation */
 }
+
+#home section#faq.section--halo {
+  margin-top: var(--space-4);
+  display: flow-root;
+}
+
+#home #faq details.faq:first-of-type {
+  margin-top: 0;
+}
+
+.hero {
+  overflow-x: clip;
+}
+
+/* Hero grid: 1 colonne < 880px */
+@media (max-width: 880px) {
+  .hero__grid.has-visual {
+    grid-template-columns: 1fr;
+    gap: clamp(12px, 3vw, 20px);
+  }
+  .hero__visual {
+    min-height: 220px;
+  }
+  :root {
+    --pc-scale: 1.2;
+  }
+}

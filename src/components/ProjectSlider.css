@@ -91,19 +91,21 @@
 
 /* ===== Contenu ===== */
 .ps-content {
-  position: relative; /* ancre des dots */
+  position: relative;
   display: grid;
-  grid-template-rows: auto auto 1fr auto auto; /* meta, title, text, controls, cta */
+  grid-template-columns: 1fr 28px; /* <- colonne fixe pour les dots */
+  column-gap: 16px;
+  grid-template-rows: auto auto 1fr auto auto;
   grid-template-areas:
-    "meta"
-    "title"
-    "text"
-    "controls"
-    "cta";
+    "meta     dots"
+    "title    dots"
+    "text     dots"
+    "controls dots"
+    "cta      dots";
   gap: 10px;
   min-block-size: 320px;
-  padding-inline-end: 56px; /* place réservée aux dots à droite */
-  padding-block-end: 12px; /* petit souffle pour les CTA */
+  padding-inline-end: 0; /* plus besoin de padding pour les dots */
+  padding-block-end: 12px;
 }
 @media (max-width: 768px) {
   .ps-content {
@@ -222,16 +224,15 @@
 
 /* ===== Dots (visibles, actives allongées) ===== */
 .ps-dots {
-  position: absolute;
-  right: 12px;
-  top: 50%; /* centrées verticalement dans le contenu */
-  transform: translateY(-50%);
+  position: static; /* <- plus d'absolu */
+  transform: none;
+  grid-column: 2;
+  grid-row: 1 / -1;
+  align-self: center;
+  justify-self: center;
   display: grid;
   gap: 10px;
-  justify-items: center;
-  align-content: center;
-  z-index: 3; /* au-dessus du texte/CTA mais dans la card */
-  pointer-events: auto;
+  z-index: 1;
 }
 .ps-card .ps-dots .ps-dot {
   width: 10px;
@@ -507,4 +508,156 @@
 }
 .ps-btn:hover {
   filter: brightness(1.03) saturate(100%);
+}
+@media (max-width: 768px) {
+  .ps-content {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "meta"
+      "title"
+      "text"
+      "controls"
+      "cta";
+  }
+  .ps-dots {
+    grid-column: auto;
+    grid-row: auto;
+    position: static;
+    transform: none;
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    justify-self: start;
+  }
+}
+/* 1) Donne une colonne dots et exclue la rangée CTA */
+.ps-content {
+  display: grid;
+  grid-template-columns: 1fr 28px; /* colonne dédiée aux dots */
+  column-gap: 16px;
+  grid-template-rows: auto auto 1fr auto auto; /* meta, title, text, controls, cta */
+  grid-template-areas:
+    "meta     dots"
+    "title    dots"
+    "text     dots"
+    "controls dots"
+    "cta      cta"; /* ⟵ cta ne partage pas la colonne dots */
+  gap: 10px;
+  padding-inline-end: 0; /* plus besoin du padding pour les dots */
+}
+
+/* 2) Place correctement les dots et annule l'absolu du JSX */
+.ps-dots {
+  grid-area: dots;
+  position: static !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  align-self: center; /* centrées sur la hauteur meta→controls */
+  justify-self: center;
+  display: grid;
+  gap: 10px;
+  z-index: 1;
+}
+
+/* 3) Mobile : repasse en 1 colonne et insère les dots avant les CTA */
+@media (max-width: 768px) {
+  .ps-content {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "meta"
+      "title"
+      "text"
+      "controls"
+      "dots"
+      "cta";
+  }
+  .ps-dots {
+    justify-self: start;
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+}
+/* Pile interne du bloc textuel */
+.ps-copy {
+  display: grid;
+  grid-template-areas:
+    "meta"
+    "title"
+    "text";
+  gap: 6px;
+  align-content: start;
+  min-width: 0; /* empêche la boîte de déborder */
+}
+
+/* Les zones redeviennent explicites, mais au sein de .ps-copy */
+.ps-meta {
+  grid-area: meta;
+}
+.ps-title {
+  grid-area: title;
+  line-height: 1.15; /* évite l’écrasement */
+  overflow: hidden; /* sécurité */
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* reste à 2 lignes */
+  -webkit-box-orient: vertical;
+  overflow-wrap: anywhere; /* casse les longs mots/URLs */
+  word-break: break-word;
+  hyphens: auto;
+  /* optionnel: borne dure équivalente à 2 lignes */
+  max-height: calc(1.15em * 2 + 2px);
+}
+.ps-text {
+  grid-area: text;
+  margin-top: 2px;
+}
+
+@media (max-width: 768px) {
+  .ps-title {
+    -webkit-line-clamp: 3;
+    max-height: none;
+  }
+}
+
+#home .projects-grid {
+  margin-block-start: clamp(22px, 5vw, 84px); /* ↑ avant c’était ~0 */
+}
+
+/* Si chaque colonne a un petit titre + paragraphe au-dessus de la card,
+   on ajoute aussi un souffle sous ces éléments */
+#home .projects-grid :where(h3, h4, .subhead, p) + .ps-card {
+  margin-block-start: clamp(12px, 13vw, 54px);
+}
+/* ——— Dots horizontaux SEULEMENT en mobile ——— */
+@media (max-width: 768px) {
+  /* La zone texte repasse en 1 colonne et expose une rangée "dots" */
+  .ps-content {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "meta"
+      "title"
+      "text"
+      "controls"
+      "dots" /* ⬅︎ les dots viennent ici */
+      "cta";
+  }
+
+  /* Les dots deviennent une ligne horizontale */
+  .ps-dots {
+    grid-area: dots;
+    position: static !important;
+    transform: none !important;
+    display: flex !important;
+    flex-direction: row;
+    gap: 8px;
+    justify-self: start; /* ou center si tu préfères */
+    margin-top: 12px;
+  }
+
+  /* Actif = pastille allongée horizontalement */
+  .ps-card .ps-dots .ps-dot.is-active {
+    width: 28px;
+    height: 10px;
+  }
 }

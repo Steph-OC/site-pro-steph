@@ -72,3 +72,48 @@ details.faq > summary:focus-visible {
   outline-offset: 2px;
   border-radius: 10px;
 }
+/* Le premier bloc FAQ ne pousse pas la section vers le haut */
+#home #faq details.faq:first-of-type {
+  margin-top: 0;
+}
+
+/* Home – mini-FAQ compacte et sans margin-collapsing */
+#home #faq {
+  display: flow-root;
+}
+#home #faq details.faq:first-of-type {
+  margin-top: 0;
+}
+/* Cache visuellement, reste dans le DOM (mieux pour un honeypot) */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Le conteneur du honeypot est sorti de l'écran */
+.hp {
+  position: absolute !important;
+  left: -10000px !important;
+  top: 0 !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+}
+
+/* Ceinture et bretelles : même si un style global cible tous les inputs */
+#contact-form input[name="website"] {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  width: 0 !important;
+  border: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}

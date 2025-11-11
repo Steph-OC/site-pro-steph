@@ -1,9 +1,12 @@
 ---
 import SiteLayout from "@/layouts/SiteLayout.astro";
+import { pickFaq } from "@/content/faq";
+import "@/styles/components/faq.css";
+import "@/styles/background.css";
 
 /* Helpers locaux (pour ne PAS modifier src/lib/wp.ts) */
 const WP = (import.meta.env.WP_URL || "").replace(/\/$/, "");
-async function getPageBySlug(slug) {
+async function getPageBySlug(slug: string) {
   if (!WP) throw new Error("WP_URL manquant dans .env");
   const url = new URL("/wp-json/wp/v2/pages", WP);
   url.searchParams.set("slug", slug);
@@ -26,10 +29,28 @@ const description =
 // Contenus ACF / fallback
 const introHtml = acf.intro_rich_text || item?.content?.rendered || "";
 const email = acf.email || "contact@stephaniequibel.fr";
-const telephone = acf.telephone || ""; // ACF téléphone (optionnel)
+const telephone = acf.telephone || "";
 const help =
   acf.contact_notes ||
-  "Réponse sous 24 h. Vos données ne sont jamais revendues.";
+  "Une question, un projet ? N’hésitez pas à me contacter via le formulaire ci-dessous ou par e-mail.";
+
+/** Sélection des Q/R spécifiques à la page Contact */
+const contactFaq = pickFaq({
+  surface: "contact",
+  includeTags: ["timeline", "contact", "maintenance"],
+  limit: 4,
+});
+
+/** JSON-LD aligné sur l’affichage réel */
+const contactFaqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: contactFaq.map(({ q, a }) => ({
+    "@type": "Question",
+    name: q,
+    acceptedAnswer: { "@type": "Answer", text: a },
+  })),
+};
 ---
 
 <SiteLayout {title} {description}>
@@ -45,247 +66,392 @@ const help =
             <p class="muted">{help}</p>
           )
         }
-
-        <div class="actions" style="display:flex;gap:.6rem;flex-wrap:wrap;">
-          <a class="btn btn--accent" href={`mailto:${email}`}>{email}</a>
-          {
-            telephone && (
-              <a
-                class="btn btn--ghost"
-                href={`tel:${telephone.replace(/\s+/g, "")}`}
-              >
-                {telephone}
-              </a>
-            )
-          }
-        </div>
       </div>
     </section>
   </Fragment>
 
   <!-- FORMULAIRE -->
-  <section class="container section">
-    <div class="two-col">
-      <!-- Colonne 1 : formulaire (narrow) -->
-      <article class="card">
-        <div class="card__body">
-          <h2>Parlons de votre projet</h2>
+  <section class="container section two-col">
+    <!-- Colonne 1 : formulaire -->
+    <article class="card">
+      <div class="card__body">
+        <h2>Parlons de votre projet</h2>
 
-          <form
-            id="contact-form"
-            class="flow"
-            method="POST"
-            action="/api/contact"
-            novalidate
-            aria-describedby="contact-help"
-          >
-            <!-- Honeypot -->
+        <form
+          id="contact-form"
+          class="flow"
+          method="POST"
+          action="/api/contact"
+          novalidate
+          aria-describedby="contact-help"
+        >
+          <!-- Honeypot (anti-spam) -->
+          <p class="hp">
+            <label for="website" class="visually-hidden"
+              >Laissez ce champ vide</label
+            >
             <input
+              id="website"
               type="text"
               name="website"
-              tabindex="-1"
               autocomplete="off"
-              class="visually-hidden"
+              inputmode="text"
+              tabindex="-1"
               aria-hidden="true"
             />
-
-            <div class="grid formgrid">
-              <p>
-                <label for="name">Votre nom</label>
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  class="field"
-                  required
-                  autocomplete="name"
-                />
-              </p>
-              <p>
-                <label for="email">Votre e-mail</label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  class="field"
-                  required
-                  inputmode="email"
-                  autocomplete="email"
-                />
-              </p>
-            </div>
-
-            <p>
-              <label for="phone">Votre téléphone (optionnel)</label>
-              <input
-                id="phone"
-                name="phone"
-                type="tel"
-                class="field"
-                inputmode="tel"
-                autocomplete="tel"
-              />
-            </p>
-
-            <p>
-              <label for="subject">Sujet</label>
-              <input id="subject" name="subject" type="text" class="field" />
-            </p>
-
-            <p>
-              <label for="message">Votre message</label>
-              <textarea id="message" name="message" rows="6" class="field"
-              ></textarea>
-            </p>
-
-            <p id="contact-help" class="muted">
-              Réponse sous 24 h. Vos données ne sont jamais revendues.
-            </p>
-
-            <div class="actions">
-              <button class="btn btn--accent btn--lg" type="submit"
-                >Envoyer</button
-              >
-              <a class="btn btn--ghost" href="mailto:contact@stephaniequibel.fr"
-                >Ou écrire directement</a
-              >
-            </div>
-
-            <p id="form-status" class="muted" role="status" aria-live="polite">
-            </p>
-          </form>
-        </div>
-      </article>
-
-      <!-- Colonne 2 : image “Zones desservies” -->
-      <!-- Colonne 2 : illustration inline (pas d'image à fournir) -->
-      <aside class="card">
-        <div class="card__body">
-          <h2>Zones desservies</h2>
-          <p class="muted">
-            Béziers, Montpelliers, Narbonne… et à distance partout en France.
           </p>
 
-          <figure class="zones-figure">
-            <svg
-              class="zones-svg"
-              viewBox="0 0 600 360"
-              role="img"
-              aria-labelledby="zonesTitle zonesDesc"
-              width="600"
-              height="360"
-            >
-              <title id="zonesTitle">Zones desservies</title>
-              <desc id="zonesDesc"
-                >Illustration stylisée avec un repère près de Béziers et des
-                connexions à distance.</desc
+          <div class="grid formgrid">
+            <p>
+              <label for="name">Votre nom</label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                class="field"
+                required
+                autocomplete="name"
+              />
+            </p>
+            <p>
+              <label for="email">Votre e-mail</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                class="field"
+                required
+                inputmode="email"
+                autocomplete="email"
+              />
+            </p>
+          </div>
+
+          <p>
+            <label for="phone">Votre téléphone (optionnel)</label>
+            <input
+              id="phone"
+              name="phone"
+              type="tel"
+              class="field"
+              inputmode="tel"
+              autocomplete="tel"
+              pattern="^[0-9+().\s-]{6,20}$"
+              title="Numéro de téléphone (chiffres, espaces, +, - ou parenthèses)"
+            />
+          </p>
+
+          <p>
+            <label for="subject">Sujet</label>
+            <input id="subject" name="subject" type="text" class="field" />
+          </p>
+
+          <p>
+            <label for="message">Votre message</label>
+            <textarea id="message" name="message" rows="6" class="field"
+            ></textarea>
+          </p>
+
+          <p id="contact-help" class="muted">
+            Vos données ne sont jamais revendues.
+          </p>
+          <p class="accept">
+            <input id="accept" name="accept" type="checkbox" required />
+            <label for="accept">
+              J’accepte la
+              <a
+                href="/politique-de-confidentialite"
+                target="_blank"
+                rel="noopener"
               >
+                politique de confidentialité
+              </a>.
+            </label>
+          </p>
 
-              <!-- Fond -->
-              <rect x="0" y="0" width="600" height="360" rx="14" class="z-bg"
-              ></rect>
+          <div class="actions">
+            <button class="btn btn--accent btn--lg" type="submit"
+              >Envoyer</button
+            >
+            <a class="btn btn--ghost" href={`mailto:${email}`}
+              >Ou écrire directement</a
+            >
+          </div>
 
-              <!-- Halo central -->
-              <circle cx="410" cy="220" r="120" class="z-halo"></circle>
+          <p id="form-status" class="muted" role="status" aria-live="polite">
+          </p>
+        </form>
+      </div>
+    </article>
 
-              <!-- Lignes (connexions) -->
-              <g class="z-lines">
-                <line x1="410" y1="220" x2="110" y2="80"></line>
-                <line x1="410" y1="220" x2="520" y2="90"></line>
-                <line x1="410" y1="220" x2="140" y2="300"></line>
-                <line x1="410" y1="220" x2="560" y2="300"></line>
-              </g>
-
-              <!-- Repère / Béziers -->
-              <g class="z-pin">
-                <circle cx="410" cy="220" r="10"></circle>
-                <path
-                  d="M410 200c14 0 24 10 24 23 0 16-21 39-24 42-3-3-24-26-24-42 0-13 10-23 24-23z"
-                ></path>
-              </g>
-
-              <!-- Pastilles (autres villes) -->
-              <g class="z-dots">
-                <circle cx="110" cy="80" r="6"></circle>
-                <circle cx="520" cy="90" r="6"></circle>
-                <circle cx="140" cy="300" r="6"></circle>
-                <circle cx="560" cy="300" r="6"></circle>
-              </g>
-            </svg>
-            <figcaption class="muted">
-              Réponse sous 24 h — échanges visio/téléphone.
-            </figcaption>
-          </figure>
-        </div>
-      </aside>
-    </div>
+    <!-- Colonne 2 : Zones desservies -->
+    <aside class="card">
+      <div class="card__body">
+        <h2>Zones desservies</h2>
+        <p class="muted">
+          À distance partout en France. Basée près de Béziers (Hérault),
+          j’accompagne des clientes et clients sur tout le territoire.
+        </p>
+        <ul class="zone-list">
+          <li>France entière (à distance)</li>
+          <li>Occitanie : Hérault, Aude, Gard</li>
+          <li>Grandes villes : Montpellier, Béziers, Narbonne…</li>
+        </ul>
+      </div>
+    </aside>
   </section>
+
+  <!-- FAQ (unique, après le CTA) -->
+  {
+    contactFaq.length > 0 && (
+      <section
+        id="faq"
+        class="section--alt section--halo halo-pulse-gentle"
+        aria-labelledby="faq-title"
+      >
+        <div class="container container--narrow">
+          <h2 id="faq-title">Questions fréquentes</h2>
+
+          {contactFaq.map(({ q, a }) => (
+            <details class="faq">
+              <summary>{q}</summary>
+              <p class="faq__answer">{a}</p>
+            </details>
+          ))}
+
+          <p class="muted" style="margin-top:var(--space-3)">
+            D’autres questions ?{" "}
+            <a href="/services#faq">Voir la FAQ complète</a>.
+          </p>
+        </div>
+      </section>
+    )
+  }
 
   <!-- JS: envoi AJAX + messages d'état -->
   <script is:inline>
-    (function () {
+    (() => {
       const f = document.getElementById("contact-form");
+      if (!f) return;
+      // Évite les doublons en dev (HMR)
+      if (f.dataset.bound === "1") return;
+      f.dataset.bound = "1";
+
       const s = document.getElementById("form-status");
-      if (!f || !s) return;
+      const submitBtn = f.querySelector('button[type="submit"]');
 
-      f.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        s.textContent = "";
+      f.addEventListener(
+        "submit",
+        async (e) => {
+          e.preventDefault();
+          if (!s) return;
 
-        // honeypot
-        if (f.website && f.website.value.trim()) {
-          s.textContent = "Message non envoyé (anti-spam).";
-          return;
-        }
+          // Anti double-clic / double envoi
+          if (f.dataset.sending === "1") return;
+          f.dataset.sending = "1";
+          submitBtn?.setAttribute("disabled", "true");
+          s.textContent = "";
 
-        const name = f.name.value.trim();
-        const email = f.email.value.trim();
-        if (!name || !email) {
-          s.textContent = "Veuillez renseigner votre nom et votre e-mail.";
-          return;
-        }
-
-        try {
-          const fd = new FormData(f);
-          const r = await fetch(f.action, { method: "POST", body: fd });
-          const j = await r.json().catch(() => ({}));
-          if (r.ok && j.ok) {
-            s.textContent = "Merci ! Votre message a bien été envoyé.";
-            f.reset();
-          } else {
-            s.textContent = j.error || "Impossible d’envoyer pour le moment.";
+          // honeypot
+          if (f.website && f.website.value.trim()) {
+            s.textContent = "Message non envoyé (anti-spam).";
+            f.dataset.sending = "0";
+            submitBtn?.removeAttribute("disabled");
+            return;
           }
-        } catch {
-          s.textContent = "Erreur réseau.";
-        }
-      });
+
+          const name = f.name.value.trim();
+          const email = f.email.value.trim();
+          if (!name || !email) {
+            s.textContent = "Veuillez renseigner votre nom et votre e-mail.";
+            f.dataset.sending = "0";
+            submitBtn?.removeAttribute("disabled");
+            return;
+          }
+
+          try {
+            const fd = new FormData(f);
+            const r = await fetch(f.action, {
+              method: "POST",
+              body: fd,
+              headers: { Accept: "application/json" },
+            });
+            const j = await r.json().catch(() => ({}));
+
+            if (r.ok && j.ok) {
+              s.textContent = "Merci ! Votre message a bien été envoyé.";
+              f.reset();
+            } else {
+              s.textContent = j.error || "Impossible d’envoyer pour le moment.";
+              if (j.debug) console.debug("[contact debug]", j.debug);
+            }
+          } catch {
+            s.textContent = "Erreur réseau.";
+          } finally {
+            f.dataset.sending = "0";
+            submitBtn?.removeAttribute("disabled");
+          }
+        },
+        { passive: false }
+      );
     })();
   </script>
 
   <style>
+    /* Accessibilité / honeypot */
+    .visually-hidden {
+      position: absolute !important;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0 0 1px 1px);
+      clip-path: inset(50%);
+      white-space: nowrap;
+      border: 0;
+    }
+    .hp {
+      position: absolute;
+      left: -9999px;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+    }
+
+    /* Rythme du formulaire */
     .flow > * + * {
       margin-top: 0.9rem;
     }
+
+    /* Grille des 2 champs en haut */
     .formgrid {
       grid-template-columns: 1fr;
     }
     @media (min-width: 720px) {
       .formgrid {
         grid-template-columns: 1fr 1fr;
+        gap: 0.9rem;
       }
     }
+
+    /* Champs */
     .field {
       width: 100%;
       padding: 0.65rem;
       border-radius: 10px;
       border: 1px solid var(--border);
-      background: var(--white);
+      background: var(--card);
       color: var(--fg);
       font: inherit;
     }
     .field:focus-visible {
-      outline: 3px solid color-mix(in srgb, var(--green), #fff 35%);
+      outline: 3px solid color-mix(in srgb, var(--green) 65%, #fff 35%);
       outline-offset: 2px;
     }
+
+    /* Grille formulaire + zones */
+    .two-col {
+      display: grid;
+      gap: var(--space-4, 24px);
+      align-items: start;
+    }
+    @media (min-width: 960px) {
+      .two-col {
+        grid-template-columns: 1.15fr 0.85fr;
+      }
+    }
+    .two-col > .card {
+      height: 100%;
+    }
+
+    /* Liste “zones desservies” */
+    .zone-list {
+      margin: 0.5rem 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .zone-list li {
+      margin: 0.35rem 0;
+      padding-left: 1.1rem;
+      position: relative;
+      color: var(--muted);
+    }
+    .zone-list li::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      position: absolute;
+      left: 0;
+      top: 0.55rem;
+      background: color-mix(in srgb, var(--green) 70%, var(--fg) 30%);
+    }
+
+    /* Texte d’aide sous le textarea */
+    #contact-form #contact-help {
+      margin-top: 0.8rem;
+      margin-bottom: 0.9rem;
+    }
+
+    /* Ligne d’acceptation RGPD */
+    #contact-form .accept {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      margin: 0.8rem 0 1.1rem;
+      color: var(--muted);
+    }
+    #contact-form .accept input[type="checkbox"] {
+      inline-size: 1rem;
+      block-size: 1rem;
+      accent-color: var(--green);
+    }
+    :root[data-theme="dark"] #contact-form .accept input[type="checkbox"] {
+      accent-color: color-mix(in srgb, var(--green) 85%, #fff 15%);
+    }
+    #contact-form .accept a {
+      text-decoration: underline;
+    }
+
+    /* Boutons */
+    #contact-form .actions {
+      display: flex;
+      gap: 0.7rem;
+      flex-wrap: wrap;
+      margin-top: 1.2rem;
+      margin-bottom: 0.8rem;
+    }
+
+    /* Message d’état */
+    #contact-form #form-status {
+      margin-top: 1rem;
+      min-height: 1.3rem;
+    }
   </style>
+
+  <!-- JSON-LD: ProfessionalService (zones desservies) -->
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "ProfessionalService",
+      name: "Stéphanie Quibel — Développeuse WordPress",
+      url: "https://stephaniequibel.fr/contact",
+      areaServed: "France",
+      serviceArea: [
+        { "@type": "AdministrativeArea", name: "Occitanie" },
+        { "@type": "AdministrativeArea", name: "Hérault" },
+        { "@type": "City", name: "Béziers" },
+        { "@type": "City", name: "Montpellier" },
+      ],
+      provider: { "@type": "Person", name: "Stéphanie Quibel" },
+    })}
+  />
+
+  <!-- JSON-LD: FAQPage (synchro avec contactFaq) -->
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify(contactFaqJsonLd)}
+  />
 </SiteLayout>

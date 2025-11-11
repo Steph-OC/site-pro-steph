@@ -1,0 +1,6 @@
+---
+/* Redirection permanente 301 de toutes les sous-routes /blog/... vers /parlons-web/... */
+const { rest = [] } = Astro.params; // ex: ["mon-article"]
+const to = `/parlons-web/${Array.isArray(rest) ? rest.join("/") : rest}`;
+return Astro.redirect(to.replace(/\/+$/, ""), 301);
+---

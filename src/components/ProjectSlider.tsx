@@ -219,6 +219,7 @@ export default function ProjectSlider({
           <AnimatePresence mode="wait">
             <motion.div
               key={`content-${index}`}
+              className="ps-copy"
               initial={reduce ? false : "enter"}
               animate="center"
               exit="exit"

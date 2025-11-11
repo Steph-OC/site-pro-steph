@@ -1,5 +1,4 @@
-/* ======= Article (WordPress → .prose) ======= */
-/* largeur de lecture + rythme vertical */
+/* ======= Article (.prose) ======= */
 .prose {
   color: var(--fg, #f5f6fb);
   margin: 0 auto;
@@ -13,7 +12,7 @@
   }
 }
 
-/* offset pour ancres sous header sticky */
+/* Offset sous header sticky pour les ancres */
 .prose :where(h2, h3, h4, h5)[id] {
   scroll-margin-top: var(--header-h, 72px);
 }
@@ -66,7 +65,7 @@
   font-size: 1.05rem;
 }
 
-/* Paragraphes / liens */
+/* Texte & liens */
 .prose p {
   margin: 0 0 1.05em;
 }
@@ -105,7 +104,6 @@
 .prose blockquote {
   margin: 1.6rem 0;
   padding: 0.9rem 1rem 0.9rem 1.1rem;
-  border-radius: 8px;
   border-left: 4px solid
     color-mix(in srgb, var(--accent, #ffd166) 65%, transparent);
   background: linear-gradient(
@@ -114,6 +112,7 @@
     rgba(255, 255, 255, 0.02)
   );
   color: var(--muted, #cfd0e6);
+  border-radius: 8px;
 }
 .prose blockquote p {
   margin: 0;
@@ -132,7 +131,7 @@
   );
 }
 
-/* Figures / images (base) */
+/* Images / figures */
 .prose figure {
   margin: 1.2rem 0;
 }
@@ -248,14 +247,12 @@
   color: var(--fg, #f5f6fb);
 }
 
-/* Petites notes / sources */
+/* Petites notes / sources & nettoyage */
 .prose small,
 .prose .is-small-text {
   font-size: 0.9em;
   color: var(--muted, #cfd0e6);
 }
-
-/* Nettoyage WP */
 .prose .wp-block-separator {
   border: 0;
   height: 1px;
@@ -266,8 +263,7 @@
   margin: 1.6rem 0;
 }
 
-/* ===== Médias compacts dans le contenu ===== */
-/* toutes les images/figures standard, centrées & plus étroites, SAUF alignwide/full/left/right */
+/* ===== Médias compacts (centrés & plus étroits) – sauf alignwide/full/left/right ===== */
 .prose
   :where(img, figure):not(.alignwide):not(.alignfull):not(.alignleft):not(
     .alignright
@@ -330,16 +326,16 @@
   border-top: 1px solid
     color-mix(in srgb, var(--border, #31314a) 70%, transparent);
 }
-.post-nav .btn {
-  min-height: 44px;
-  padding-inline: 16px;
-}
-.post-nav a.btn,
-.post-nav a {
+.post-nav a,
+.post-nav a.btn {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
   padding-inline: 12px;
-  position: relative;
+  position: relative; /* utile pour le pointer custom */
   z-index: 0;
+}
+.post-nav .btn {
+  min-height: 44px;
+  padding-inline: 16px;
 }

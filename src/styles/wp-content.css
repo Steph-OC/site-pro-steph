@@ -1,0 +1,18 @@
+.wp-content .entry {
+  line-height: 1.7;
+}
+.wp-content h2,
+.wp-content h3 {
+  margin-top: 1.25rem;
+}
+.wp-content p {
+  margin: 0.75rem 0;
+}
+.wp-content ul,
+.wp-content ol {
+  padding-left: 1.25rem;
+  margin: 0.75rem 0;
+}
+.wp-content a {
+  text-decoration: underline;
+}

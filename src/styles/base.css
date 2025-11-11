@@ -203,4 +203,42 @@
       transition: none !important;
     }
   }
+  /* Limites sûres de contenu */
+  .container {
+    max-width: 1152px;
+    margin-inline: auto;
+  }
+
+  /* Fluid typographique vraiment lisible sur mobile */
+  h1 {
+    font-size: clamp(1.8rem, 1.2rem + 2.5vw, var(--h1-max));
+  }
+  h2 {
+    font-size: clamp(1.4rem, 1.1rem + 2vw, var(--h2-max));
+  }
+  p,
+  li {
+    line-height: 1.65;
+  }
+
+  /* Rythme vertical plus compact en mobile */
+  @media (max-width: 720px) {
+    :root {
+      --section-pad: clamp(18px, 3.5vw, 28px);
+      --section-gap: clamp(36px, 6vw, 56px);
+    }
+    .section-head p {
+      margin-top: 0.35rem;
+    }
+  }
+
+  /* Images/iframes auto */
+  img,
+  svg,
+  video,
+  canvas,
+  iframe {
+    max-width: 100%;
+    height: auto;
+  }
 }

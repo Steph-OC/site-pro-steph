@@ -1,32 +1,49 @@
-/* Ajoute simplement ce bloc (garde le reste de tes règles existantes) */
-@layer components {
-  /* Titre local au composant */
-  :where(.approach__title) {
-    text-align: center;
-    margin: 0 0 clamp(16px, 2vw, 28px);
-  }
+/* ============================
+   ApproachStagger — CLEAN + PUNCH SOFT
+   ============================ */
+
+/* Titre local (garde ton système @layer si tu veux) */
+:where(.approach__title) {
+  text-align: center;
+  margin: 0 0 clamp(16px, 2vw, 28px);
 }
 
-/* …tes styles actuels d’ApproachStagger restent ici, inchangés */
-
-/* ===== ApproachStagger — compat Vite (sans 'translate:') ===== */
+/* ===== Base ===== */
 .approach-stagger {
   --rail-h: 4px;
   --stem: 52px;
   --col-gap: clamp(40px, 7vw, 110px);
-  --card-max: clamp(360px, 28vw, 520px); /* ← cartes plus larges */
+  --card-max: clamp(360px, 28vw, 520px);
   --delay-step: 0.12s;
+
   position: relative;
-  overflow-y: visible;
+  isolation: isolate; /* halo confiné */
+  overflow: visible;
 }
 
-/* Titre */
+/* Titre section */
 .approach-stagger .approach__title {
   text-align: center;
   margin: 0 0 clamp(38px, 6vw, 82px) !important;
 }
 
-/* Grille + rail */
+/* ===== Halo de section (doux) ===== */
+.approach-stagger::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+      60% 42% at 18% 30%,
+      hsl(260 70% 62% / 0.14),
+      transparent 60%
+    ),
+    radial-gradient(55% 36% at 82% 40%, hsl(200 70% 58% / 0.1), transparent 65%);
+  filter: saturate(108%) contrast(103%);
+}
+
+/* ===== Grille + rail ===== */
 .approach-stagger .stagger {
   position: relative;
   display: grid;
@@ -42,18 +59,45 @@
   top: 50%;
   height: var(--rail-h);
   transform: translateY(-50%);
-  background: color-mix(in srgb, var(--border) 80%, var(--gray) 8%);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--border) 60%, transparent),
+    color-mix(in oklab, var(--orange) 28%, transparent),
+    color-mix(in srgb, var(--border) 60%, transparent)
+  );
   border-radius: 999px;
   pointer-events: none;
   z-index: 0;
 }
+/* sheen discret qui ne couvre rien */
+@media (hover: hover) {
+  .approach-stagger .stagger__rail::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0 46%,
+      color-mix(in oklab, #fff 16%, transparent) 50%,
+      transparent 54% 100%
+    );
+    opacity: 0.45;
+    transform: translateX(-100%);
+    animation: rail-sheen 3.8s cubic-bezier(0.22, 0.8, 0.2, 1) infinite;
+  }
+}
+@keyframes rail-sheen {
+  to {
+    transform: translateX(100%);
+  }
+}
 
-/* Items */
+/* ===== Items ===== */
 .approach-stagger .stagger__item {
   position: relative;
   padding-block: clamp(110px, 12vw, 160px);
   opacity: 0;
-  transform: translateY(12px) scale(0.98);
+  transform: translateY(12px); /* pas de scale -> pas d’effet de largeur */
   will-change: transform, opacity;
 }
 .approach-stagger.is-inview .stagger__item {
@@ -61,7 +105,7 @@
   animation-delay: calc(var(--i, 0) * var(--delay-step));
 }
 
-/* Dot */
+/* ===== Dots (plus visibles) ===== */
 .approach-stagger .stagger__dot {
   position: absolute;
   left: 50%;
@@ -69,12 +113,13 @@
   width: 30px;
   height: 30px;
   border-radius: 999px;
-  background: var(--card);
-  border: 4px solid color-mix(in srgb, var(--gray) 35%, var(--border));
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+  background: color-mix(in srgb, var(--card) 86%, #000 14%);
+  border: 0;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--border) 65%, transparent) inset,
+    0 0 14px color-mix(in oklab, var(--orange) 26%, transparent);
   z-index: 2;
   opacity: 0;
-  transform: translate(-50%, -50%); /* ← compat */
+  transform: translate(-50%, -50%);
 }
 .approach-stagger .stagger__dot::after {
   content: "";
@@ -85,46 +130,46 @@
   height: 10px;
   border-radius: 999px;
   transform: translate(-50%, -50%);
-  background: color-mix(in srgb, var(--gray) 45%, var(--card));
+  background: var(--orange);
+  box-shadow: 0 0 12px color-mix(in oklab, var(--orange) 40%, transparent);
 }
 .approach-stagger.is-inview .stagger__dot {
-  animation: as-dot 700ms cubic-bezier(0.22, 0.8, 0.2, 1) forwards;
-  animation-delay: calc(var(--i, 0) * var(--delay-step));
+  animation: as-dot 700ms cubic-bezier(0.22, 0.8, 0.2, 1) forwards,
+    dot-ping 1.8s ease-out calc(var(--i, 0) * var(--delay-step) + 0.25s);
 }
-/* couleurs */
-.approach-stagger .c-1 .stagger__dot {
-  border-color: var(--green);
+/* variantes couleur si tu veux conserver les c-1..c-4 */
+.approach-stagger .c-1 .stagger__dot::after {
+  background: var(--green);
 }
-.approach-stagger .c-2 .stagger__dot {
-  border-color: color-mix(in srgb, var(--gray) 45%, var(--offwhite) 55%);
-}
-.approach-stagger .c-3 .stagger__dot {
-  border-color: var(--orange);
-}
-.approach-stagger .c-4 .stagger__dot {
-  border-color: color-mix(in srgb, var(--green) 65%, var(--orange) 35%);
+.approach-stagger .c-3 .stagger__dot::after {
+  background: var(--orange);
 }
 
-/* Cartes + tiges (jonction rail assurée) */
+/* ===== Cartes + tiges ===== */
 .approach-stagger .stagger__card {
   position: absolute;
   left: 50%;
   width: var(--card-max);
-  background: var(--card);
-  border: 1px solid var(--border);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--card) 96%, transparent),
+    color-mix(in srgb, var(--card) 90%, #000 10%) 60%
+  );
+  border: 1px solid color-mix(in srgb, var(--border) 78%, transparent);
   border-radius: 14px;
   padding: 16px 18px 18px;
   text-align: center;
-  box-shadow: var(--shadow);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1),
+    0 0 24px color-mix(in oklab, var(--orange) 10%, transparent);
   opacity: 0;
   z-index: 1;
-  transform: translateX(-50%); /* ← compat */
+  transform: translateX(-50%);
 }
 .approach-stagger .top .stagger__card {
-  bottom: calc(50% + var(--stem) + var(--rail-h) / 2); /* ← touche le rail */
+  bottom: calc(50% + var(--stem) + var(--rail-h) / 2);
 }
 .approach-stagger .bottom .stagger__card {
-  top: calc(50% + var(--stem) + var(--rail-h) / 2); /* ← touche le rail */
+  top: calc(50% + var(--stem) + var(--rail-h) / 2);
 }
 .approach-stagger .top .stagger__card::after,
 .approach-stagger .bottom .stagger__card::after {
@@ -134,7 +179,7 @@
   width: 2px;
   background: color-mix(in srgb, var(--border) 80%, var(--gray) 8%);
   transform: translateX(-50%);
-  height: calc(var(--stem) + var(--rail-h) / 2); /* ← même longueur */
+  height: calc(var(--stem) + var(--rail-h) / 2);
 }
 .approach-stagger .top .stagger__card::after {
   top: 100%;
@@ -147,31 +192,19 @@
 .approach-stagger .stagger__icon {
   display: inline-grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
+  margin: 0 auto 10px;
   border-radius: 999px;
-  margin: 0 auto 8px;
-  border: 1px solid transparent;
+  background: color-mix(in srgb, var(--orange) 18%, var(--card) 82%);
+  color: color-mix(in srgb, var(--orange) 86%, #000 14%);
+  border: 1px solid color-mix(in srgb, var(--orange) 45%, transparent);
+  box-shadow: 0 8px 18px color-mix(in oklab, var(--orange) 22%, transparent);
 }
 .approach-stagger .c-1 .stagger__icon {
   background: color-mix(in srgb, var(--green) 18%, var(--card) 82%);
-  color: color-mix(in srgb, var(--green) 80%, #000 20%);
-  border-color: color-mix(in srgb, var(--green) 40%, transparent);
-}
-.approach-stagger .c-2 .stagger__icon {
-  background: color-mix(in srgb, var(--offwhite) 14%, var(--card) 86%);
-  color: color-mix(in srgb, var(--offwhite) 80%, #000 20%);
-  border-color: color-mix(in srgb, var(--offwhite) 35%, transparent);
-}
-.approach-stagger .c-3 .stagger__icon {
-  background: color-mix(in srgb, var(--orange) 18%, var(--card) 82%);
-  color: color-mix(in srgb, var(--orange) 80%, #000 20%);
-  border-color: color-mix(in srgb, var(--orange) 40%, transparent);
-}
-.approach-stagger .c-4 .stagger__icon {
-  background: color-mix(in srgb, var(--green) 16%, var(--card) 84%);
-  color: color-mix(in srgb, var(--green) 75%, #000 25%);
-  border-color: color-mix(in srgb, var(--green) 38%, transparent);
+  color: color-mix(in srgb, var(--green) 86%, #000 14%);
+  border-color: color-mix(in srgb, var(--green) 45%, transparent);
 }
 .approach-stagger .stagger__title {
   margin: 0 0 4px;
@@ -184,7 +217,7 @@
   font-size: 0.98rem;
 }
 
-/* Hover */
+/* Hover (soft) */
 @media (hover: hover) {
   .approach-stagger .stagger__card {
     transition: transform 0.25s ease, box-shadow 0.25s ease,
@@ -192,59 +225,17 @@
   }
   .approach-stagger .stagger__item:hover .stagger__card {
     transform: translate(-50%, -2px);
-    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12),
+      0 0 30px color-mix(in oklab, var(--orange) 14%, transparent);
     border-color: color-mix(in srgb, var(--gray) 18%, var(--border));
   }
 }
 
-/* Breakpoints */
-@media (max-width: 1200px) {
-  .approach-stagger .stagger {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-@media (max-width: 800px) {
-  .approach-stagger .stagger {
-    grid-template-columns: 1fr;
-    padding-left: 28px;
-    gap: clamp(18px, 4vw, 24px);
-    justify-items: center;
-  }
-  .approach-stagger .stagger__rail {
-    left: 14px;
-    right: auto;
-    top: 0;
-    bottom: 0;
-    height: auto;
-    width: 2px;
-    transform: none;
-  }
-  .approach-stagger .stagger__item {
-    padding-block: 0;
-    padding-left: 24px;
-  }
-  .approach-stagger .stagger__dot {
-    left: 14px;
-    top: 0;
-    transform: translate(-50%, 0);
-  }
-  .approach-stagger .stagger__card {
-    position: relative;
-    left: 0;
-    transform: none;
-    width: 100%;
-    margin-left: 18px;
-  }
-  .approach-stagger .stagger__card::after {
-    display: none;
-  }
-}
-
-/* Animations */
+/* ===== Animations ===== */
 @keyframes as-rise {
   to {
     opacity: 1;
-    transform: none;
+    transform: translateY(0);
   }
 }
 @keyframes as-dot {
@@ -281,7 +272,6 @@
     transform: translate(-50%, 0);
   }
 }
-
 .approach-stagger.is-inview .stagger__item.top .stagger__card {
   animation: slideUp 680ms cubic-bezier(0.22, 0.8, 0.2, 1) forwards;
   animation-delay: calc(var(--i, 0) * var(--delay-step) + 0.1s);
@@ -300,5 +290,343 @@
     animation: none !important;
     opacity: 1;
     transform: none !important;
+  }
+}
+
+/* ===== Petit ping des dots ===== */
+@keyframes dot-ping {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--orange) 26%, transparent);
+  }
+  70% {
+    box-shadow: 0 0 0 12px color-mix(in oklab, var(--orange) 0%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--orange) 0%, transparent);
+  }
+}
+/* ===== Palette par carte ===== */
+.approach-stagger .stagger__item {
+  --acc: var(--orange);
+} /* défaut */
+.approach-stagger .stagger__item.c-1 {
+  --acc: var(--green);
+}
+.approach-stagger .stagger__item.c-2 {
+  --acc: #22d3ee;
+} /* cyan */
+.approach-stagger .stagger__item.c-3 {
+  --acc: var(--orange);
+}
+.approach-stagger .stagger__item.c-4 {
+  --acc: #8b5cf6;
+} /* violet */
+
+/* ===== Icone = badge assorti ===== */
+.approach-stagger .stagger__item .stagger__icon {
+  background: color-mix(in srgb, var(--acc) 18%, var(--card) 82%);
+  color: color-mix(in srgb, var(--acc) 86%, #000 14%);
+  border-color: color-mix(in srgb, var(--acc) 45%, transparent);
+  box-shadow: 0 8px 18px color-mix(in oklab, var(--acc) 22%, transparent);
+}
+
+/* ===== Dot assorti (noyau + halo) ===== */
+.approach-stagger .stagger__item .stagger__dot {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--border) 65%, transparent) inset,
+    0 0 14px color-mix(in oklab, var(--acc) 28%, transparent);
+}
+.approach-stagger .stagger__item .stagger__dot::after {
+  background: var(--acc) !important;
+  box-shadow: 0 0 12px color-mix(in oklab, var(--acc) 40%, transparent);
+}
+
+/* ===== Tige + léger glow de carte assortis ===== */
+.approach-stagger .stagger__item .stagger__card::after {
+  background: color-mix(
+    in srgb,
+    var(--acc) 16%,
+    color-mix(in srgb, var(--border) 80%, var(--gray) 8%)
+  );
+}
+.approach-stagger .stagger__item .stagger__card {
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1),
+    0 0 24px color-mix(in oklab, var(--acc) 10%, transparent);
+}
+.approach-stagger .stagger__item .stagger__card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  z-index: -1;
+  background: linear-gradient(
+    140deg,
+    color-mix(in oklab, var(--acc) 55%, transparent),
+    transparent 40% 60%,
+    color-mix(in oklab, var(--acc) 28%, transparent)
+  );
+  filter: blur(12px);
+  opacity: 0.32;
+}
+
+/* ===== Hover renforcé (assorti) ===== */
+@media (hover: hover) {
+  .approach-stagger .stagger__item:hover .stagger__card {
+    border-color: color-mix(in srgb, var(--acc) 28%, var(--border));
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12),
+      0 0 30px color-mix(in oklab, var(--acc) 16%, transparent);
+  }
+}
+
+.approach-stagger {
+  --card-min: clamp(220px, 26vw, 320px);
+}
+
+/* On ne laisse plus la hauteur au hasard via un padding fixe */
+.approach-stagger .stagger__item {
+  padding-block: var(--stem); /* tige uniquement */
+  position: relative;
+}
+
+/* Spacer de flow = place occupée par la card (qui, elle, est en absolute) */
+.approach-stagger .stagger__item::after {
+  content: "";
+  display: block;
+  height: var(--card-min); /* ← réserve verticale pour la card */
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1200px) {
+  .approach-stagger .stagger {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+/* ——— Timeline mobile : rail au centre + cartes empilées ——— */
+@media (max-width: 800px) {
+  /* on masque l'ancien rail/dots */
+  .approach-stagger .stagger__rail,
+  .approach-stagger .stagger__dot {
+    display: none !important;
+  }
+
+  /* wrapper de la timeline */
+  .approach-stagger .stagger {
+    position: relative;
+    display: grid;
+    gap: 20px;
+    padding: 0 16px; /* un peu d'air latéral */
+    max-width: 720px; /* limite douce en très grands mobiles */
+    margin-inline: auto; /* centre l'ensemble */
+  }
+
+  /* rail centré (derrière les cartes) */
+  .approach-stagger .stagger::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    left: 50%;
+    width: 2px;
+    transform: translateX(-50%);
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--border) 70%, transparent),
+      color-mix(in oklab, var(--orange) 35%, transparent),
+      color-mix(in srgb, var(--border) 70%, transparent)
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* items : une seule colonne, centrée */
+  .approach-stagger .stagger__item {
+    display: block;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* cartes : centrées, largeur max, pas de tige */
+  .approach-stagger .stagger__card {
+    position: relative !important;
+    z-index: 1; /* au-dessus du rail */
+    width: min(520px, 100%);
+    margin: 0 auto; /* centre la carte */
+    transform: none !important;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.14);
+  }
+  .approach-stagger .stagger__card::after {
+    display: none !important;
+  }
+
+  /* on neutralise les animations qui peuvent décaler */
+  .approach-stagger.is-inview .stagger__item,
+  .approach-stagger.is-inview .stagger__card {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+/* ===== ApproachStagger — MODE MOBILE SIMPLE ===== */
+@media (max-width: 1200px) {
+  /* coupe l'ancien rail/dots/tiges */
+  .approach-stagger .stagger__rail,
+  .approach-stagger .stagger__dot,
+  .approach-stagger .stagger__card::after {
+    display: none !important;
+  }
+
+  /* wrapper mobile */
+  .approach-stagger .stagger {
+    position: relative;
+    display: block !important;
+    max-width: 720px;
+    padding: 0 18px;
+    margin: 0 auto;
+
+    /* rail config */
+    --rail-w: 2px;
+    --rail-over-top: 48px; /* ⟵ plus court au-dessus (était ~90px) */
+    --rail-over-bottom: 90px; /* ⟵ garde du dépassement en bas */
+    overflow: visible;
+  }
+
+  /* rail centré avec dépassement haut/bas paramétrable */
+  .approach-stagger .stagger::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: calc(-1 * var(--rail-over-top));
+    height: calc(100% + var(--rail-over-top) + var(--rail-over-bottom));
+    width: var(--rail-w);
+    border-radius: 999px;
+    pointer-events: none;
+    z-index: 0;
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--border) 60%, transparent) 0%,
+      color-mix(in oklab, var(--orange) 30%, transparent) 50%,
+      color-mix(in srgb, var(--border) 60%, transparent) 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0 8%,
+      /* ⟵ fondu un peu plus long en haut */ #000 16% 84%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0 8%,
+      #000 16% 84%,
+      transparent 100%
+    );
+  }
+
+  /* sheen vertical, plus lent */
+  .approach-stagger .stagger::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -100%);
+    top: calc(-1 * var(--rail-over-top));
+    height: calc(100% + var(--rail-over-top) + var(--rail-over-bottom));
+    width: max(6px, calc(var(--rail-w) * 2));
+    pointer-events: none;
+    z-index: -1;
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      color-mix(in oklab, #fff 40%, transparent) 8%,
+      transparent 16%
+    );
+    mix-blend-mode: screen;
+    opacity: 0.55;
+    animation: rail-sheen-v 3.2s cubic-bezier(0.22, 0.8, 0.2, 1) infinite; /* ⟵ était 1.6s */
+  }
+  @keyframes rail-sheen-v {
+    0% {
+      transform: translate(-50%, -100%);
+    }
+    100% {
+      transform: translate(-50%, 100%);
+    }
+  }
+
+  /* items / cartes comme avant */
+  .approach-stagger .stagger__item {
+    position: relative !important;
+    display: block !important;
+    margin: 22px 0 !important;
+    padding: 0 !important;
+  }
+  .approach-stagger .stagger__item::after {
+    display: none !important;
+  }
+
+  .approach-stagger .stagger__card {
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    width: min(540px, 100%) !important;
+    margin: 0 auto !important;
+    z-index: 1;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.14);
+    text-align: center;
+  }
+
+  .approach-stagger.is-inview .stagger__item,
+  .approach-stagger.is-inview .stagger__card {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+/* Boost the rail & sheen in LIGHT mode */
+:root[data-theme="light"] .approach-stagger .stagger::before {
+  /* a bit darker rail so the flash pops */
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--border) 85%, #000 12%) 0%,
+    color-mix(in oklab, var(--orange) 45%, #000 6%) 50%,
+    color-mix(in srgb, var(--border) 85%, #000 12%) 100%
+  );
+}
+
+/* brighter, wider sheen and a different blend for light bg */
+:root[data-theme="light"] .approach-stagger .stagger::after {
+  opacity: 0.8; /* was 0.55 */
+  width: max(8px, calc(var(--rail-w) * 3.5));
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    color-mix(in oklab, #fff 30%, var(--orange) 65%) 10%,
+    transparent 22%
+  );
+  mix-blend-mode: overlay; /* 'screen' is too subtle on light bg */
+  filter: saturate(110%) contrast(110%);
+}
+
+/* If you also honor system preference without data-theme: */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .approach-stagger .stagger::before {
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--border) 85%, #000 12%) 0%,
+      color-mix(in oklab, var(--orange) 45%, #000 6%) 50%,
+      color-mix(in srgb, var(--border) 85%, #000 12%) 100%
+    );
+  }
+  :root:not([data-theme="dark"]) .approach-stagger .stagger::after {
+    opacity: 0.8;
+    width: max(8px, calc(var(--rail-w) * 3.5));
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      color-mix(in oklab, #fff 70%, var(--orange) 25%) 10%,
+      transparent 22%
+    );
+    mix-blend-mode: overlay;
+    filter: saturate(110%) contrast(110%);
   }
 }

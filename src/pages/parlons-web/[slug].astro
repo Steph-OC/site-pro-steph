@@ -100,7 +100,7 @@ const next = idx >= 0 && idx < all.length - 1 ? all[idx + 1] : null; // plus anc
         <div>
           {next && (
             <a
-              href={`/blog/${next.slug}`}
+              href={`/parlons-web/${next.slug}`}
               class="btn btn--ghost"
               data-pointer
               aria-label={`Article plus ancien : ${(next.title.rendered || "").replace(/<[^>]+>/g, "")}`}
@@ -112,7 +112,7 @@ const next = idx >= 0 && idx < all.length - 1 ? all[idx + 1] : null; // plus anc
         <div>
           {prev && (
             <a
-              href={`/blog/${prev.slug}`}
+              href={`/parlons-web/${prev.slug}`}
               class="btn btn--ghost"
               data-pointer
               aria-label={`Article plus récent : ${(prev.title.rendered || "").replace(/<[^>]+>/g, "")}`}

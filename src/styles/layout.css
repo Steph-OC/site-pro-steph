@@ -103,4 +103,19 @@
   #home > section:first-of-type {
     margin-top: clamp(60px, 10vw, 200px);
   }
+  /* Rythme global */
+  main > section,
+  main > * > section {
+    margin: 0;
+    padding-block: var(--section-pad);
+  }
+
+  main > section + section,
+  main > * > section + section,
+  main > * + * {
+    margin-top: var(--section-gap);
+  }
+
+  /* Supprime la règle énorme : */
+  /* main#home > section:first-of-type, #home > section:first-of-type { ... } */
 }

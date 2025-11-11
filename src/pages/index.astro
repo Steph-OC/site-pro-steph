@@ -10,7 +10,18 @@ import TestimonialsCodepen from "@/components/TestimonialsCodepen";
 import "@/styles/index.css";
 
 import { getDerniersProjetsAvecSlides, getTemoignages } from "@/lib/wp";
+import { pickFaq } from "@/content/faq";
+const miniFaq = pickFaq({ surface: "home", limit: 2 }); // 2 questions max sur la Home
 
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: miniFaq.map(({ q, a }) => ({
+    "@type": "Question",
+    name: q,
+    acceptedAnswer: { "@type": "Answer", text: a },
+  })),
+};
 const title = "Développeuse WordPress freelance — Stéphanie Quibel";
 const description =
   "Sites WordPress rapides, accessibles et bien référencés. Refonte, création, maintenance. Réponse sous 24h.";
@@ -48,7 +59,6 @@ const safeTemoins = (temoins ?? []).map((t) => ({
     />
   </Fragment>
 
-  <!-- Ajoute la classe no-section-bg si tu utilises le correctif CSS pour éviter les “bandes” -->
   <div id="home" class="no-section-bg">
     <!-- Principes -->
     <section
@@ -182,30 +192,7 @@ const safeTemoins = (temoins ?? []).map((t) => ({
       </div>
     </section>
 
-    <!-- Zones desservies -->
-    <section
-      class="section--halo halo-pulse-gentle has-local"
-      aria-labelledby="zones-title"
-    >
-      <div class="container container--xl">
-        <article class="card">
-          <div class="card__body local">
-            <h2 id="zones-title">Zones desservies</h2>
-            <p class="muted">
-              Béziers, Agde, Pézenas… et à distance partout en France.
-            </p>
-            <iframe
-              title="Plan Béziers"
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-              src="https://maps.google.com/maps?q=B%C3%A9ziers&t=&z=12&ie=UTF8&iwloc=&output=embed"
-            ></iframe>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <!-- FAQ -->
+    <!-- Mini-FAQ -->
     <section
       id="faq"
       class="section--alt section--halo halo-pulse-gentle"
@@ -213,19 +200,22 @@ const safeTemoins = (temoins ?? []).map((t) => ({
     >
       <div class="container container--narrow">
         <h2 id="faq-title">FAQ</h2>
-        <details class="faq">
-          <summary>Combien coûte un site vitrine WordPress ?</summary>
-          <p>
-            Selon le périmètre, entre 1 500€ et 4 000€ en moyenne. Je fournis un
-            devis détaillé.
-          </p>
-        </details>
-        <details class="faq">
-          <summary>Quels délais pour la livraison ?</summary>
-          <p>De 2 à 6 semaines selon le contenu et les fonctionnalités.</p>
-        </details>
+
+        {
+          miniFaq.map((item) => (
+            <details class="faq">
+              <summary>{item.q}</summary>
+              <p class="faq__answer">{item.a}</p>
+            </details>
+          ))
+        }
+        <p class="muted" style="text-align:center;margin-top:var(--space-3)">
+          <a href="/services#faq">Voir toutes les questions</a>
+        </p>
       </div>
     </section>
+
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
 
     <!-- CTA -->
     <section
@@ -260,7 +250,7 @@ const safeTemoins = (temoins ?? []).map((t) => ({
   </div>
 </SiteLayout>
 
-<!-- JSON-LD inchangé -->
+<!-- JSON-LD -->
 <script
   type="application/ld+json"
   set:html={JSON.stringify({
@@ -272,22 +262,10 @@ const safeTemoins = (temoins ?? []).map((t) => ({
     logo: "https://stephaniequibel.fr/logo.png",
   })}
 />
-<script
-  type="application/ld+json"
-  set:html={JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "ProfessionalService",
-    name: "Stéphanie Quibel — Développeuse WordPress",
-    url: "https://stephaniequibel.fr/",
-    areaServed: { "@type": "AdministrativeArea", name: "Hérault" },
-    serviceArea: [
-      { "@type": "City", name: "Béziers" },
-      { "@type": "City", name: "Agde" },
-    ],
-    email: "mailto:contact@stephaniequibel.fr",
-    telephone: "+33-6-00-00-00-00",
-  })}
-/>
+
+<!-- ⚠️ Retiré sur Home : le bloc ProfessionalService avec areaServed -->
+<!-- À déplacer sur /services ou /contact -->
+
 <script
   type="application/ld+json"
   set:html={JSON.stringify({
@@ -299,15 +277,15 @@ const safeTemoins = (temoins ?? []).map((t) => ({
         name: "Combien coûte un site vitrine WordPress ?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Selon le périmètre, entre 1 500€ et 4 000€ en moyenne, incluant design, intégration et optimisation.",
+          text: "Selon le périmètre, entre 1 500€ et 4 000€ en moyenne. Je fournis un devis détaillé.",
         },
       },
       {
         "@type": "Question",
-        name: "Quels délais de livraison ?",
+        name: "Quels délais pour la livraison ?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Entre 2 et 6 semaines selon le contenu et les fonctionnalités.",
+          text: "De 2 à 6 semaines selon le contenu et les fonctionnalités.",
         },
       },
     ],

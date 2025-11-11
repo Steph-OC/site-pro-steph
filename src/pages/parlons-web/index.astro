@@ -23,8 +23,8 @@ try {
 >
   <HeroBlog
     slot="hero"
-    kicker="Parlons web"
-    title="Articles & notes"
+    kicker="Blog"
+    title="Parlons Web!"
     lead="Des billets concis sur WordPress, l’accessibilité, la performance et des astuces concrètes."
   />
 
@@ -38,12 +38,18 @@ try {
         {posts.map((p) => {
           const m = p?._embedded?.["wp:featuredmedia"]?.[0];
           const s = m?.media_details?.sizes || {};
-          // fallback de base : viser une taille large pour limiter l’upscale
+          // viser une taille assez large pour limiter l’upscale
           const pick = s?.large || s?.medium_large || s?.full || s?.medium || m;
           const src = pick?.source_url || m?.source_url || "";
-          const alt =
-            m?.alt_text || m?.title?.rendered || p?.title?.rendered || "";
+
+          // texte brut du titre pour aria-label
           const titleText = (p?.title?.rendered || "").replace(/<[^>]+>/g, "");
+
+          const dateStr = p?.date
+            ? new Date(p.date).toLocaleDateString("fr-FR", {
+                dateStyle: "medium",
+              })
+            : "";
 
           // srcset trié par largeur croissante
           const entries = Object.values(s || {})
@@ -59,33 +65,33 @@ try {
                 ? `${src} 1600w`
                 : "";
 
-          // correspond à la grille 3 → 2 → 1 colonnes
+          // grille 3 → 2 → 1 colonnes
           const sizes = "(min-width:1100px) 32vw, (min-width:640px) 48vw, 92vw";
 
-          // width/height si dispos (meilleur CLS)
           const w = (pick as any)?.width;
           const h = (pick as any)?.height;
 
           return (
-            <li class="card">
+            <li class="card card--punch">
               {src && (
                 <figure class="card__media" aria-hidden="true">
                   <img
                     src={src}
                     srcset={srcset || undefined}
                     sizes={sizes}
-                    alt={alt}
+                    alt=""
                     loading="lazy"
                     decoding="async"
                     fetchpriority="low"
                     width={w || undefined}
                     height={h || undefined}
-                    style="width:100%;height:100%;object-fit:cover;"
                   />
                 </figure>
               )}
 
               <div class="card__body">
+                {dateStr && <span class="card__meta">{dateStr}</span>}
+
                 <h3 class="card__title">
                   <span set:html={p.title?.rendered} />
                 </h3>
@@ -97,8 +103,9 @@ try {
                 <p class="card__actions">
                   <a
                     class="btn btn--accent"
-                    href={`/blog/${p.slug}`}
+                    href={`/parlons-web/${p.slug}`}
                     aria-label={`Lire l’article : ${titleText}`}
+                    data-pointer
                   >
                     Lire →
                   </a>

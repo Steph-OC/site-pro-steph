@@ -530,3 +530,108 @@ export async function getServicesPage() {
   const list = Array.isArray(arr) ? arr : [];
   return list?.[0] ?? null;
 }
+// =====================
+// FSE Footer Navigation
+// =====================
+
+export type NavLink = { label: string; url: string; opensInNewTab?: boolean };
+type WpNavigationItem = { id: number; slug: string; content?: { raw: string } };
+
+/** Récupère le post wp_navigation (FSE) par slug, ex: "footer-nav". */
+export async function getNavigationBySlugFSE(slug: string): Promise<WpNavigationItem | null> {
+  const arr = await wpFetchJSON<WpNavigationItem[]>(
+    `/navigation?slug=${encodeURIComponent(slug)}&_fields=id,slug,content`
+  );
+  return Array.isArray(arr) && arr[0] ? arr[0] : null;
+}
+
+/** Parse les liens du bloc Navigation (self-closing ET ouvert/fermé). */
+export function parseNavLinksFromContent(raw = ""): NavLink[] {
+  const links: NavLink[] = [];
+  if (!raw) return links;
+
+  // <!-- wp:navigation-link {...} /-->
+  const reSelf = /wp:navigation-link\s+({[^}]*})\s*\/-->/g;
+  let m: RegExpExecArray | null;
+  while ((m = reSelf.exec(raw)) !== null) {
+    try {
+      const o = JSON.parse(m[1]);
+      if (o?.label && o?.url) links.push({ label: String(o.label), url: String(o.url), opensInNewTab: !!o.opensInNewTab });
+    } catch {}
+  }
+
+  // <!-- wp:navigation-link {...} --> ... <!-- /wp:navigation-link -->
+  const reOpen = /wp:navigation-link\s+({[^}]*})\s*-->([\s\S]*?)<!--\s*\/wp:navigation-link\s*-->/g;
+  while ((m = reOpen.exec(raw)) !== null) {
+    try {
+      const o = JSON.parse(m[1]);
+      if (o?.label && o?.url) links.push({ label: String(o.label), url: String(o.url), opensInNewTab: !!o.opensInNewTab });
+    } catch {}
+  }
+
+  return links;
+}
+
+/** Si la nav contient "Liste de pages", renvoie les pages publiées (niveau racine). */
+async function getTopLevelPagesAsLinks(limit = 100): Promise<NavLink[]> {
+  const rows = await wpFetchJSON<Array<{ title?: { rendered?: string }; link?: string }>>(
+    `/pages?status=publish&parent=0&_fields=title,link&orderby=menu_order&order=asc&per_page=${limit}`
+  );
+  const arr = Array.isArray(rows) ? rows : [];
+  return arr
+    .filter(p => p?.link)
+    .map(p => ({
+      label: (p.title?.rendered || "").trim() || "Page",
+      url: String(p.link),
+      opensInNewTab: false,
+    }));
+}
+
+/** 👉 À utiliser dans le footer : lit la nav FSE, gère "Liste de pages", sinon [] */
+export async function getFooterMenuLinksFSE(slug = "footer-nav"): Promise<NavLink[]> {
+  const nav = await getNavigationBySlugFSE(slug);
+  const raw = nav?.content?.raw || "";
+
+  const direct = parseNavLinksFromContent(raw);
+  if (direct.length) return direct;
+
+  if (/wp:page-list/.test(raw)) return getTopLevelPagesAsLinks();
+
+  return [];
+}
+
+/** Utilitaire URL relative (si besoin). */
+export function toRelative(url: string) {
+  try { const u = new URL(url); return u.pathname + u.search + u.hash; }
+  catch { return url; }
+}
+// =====================
+// Headless endpoints (mu-plugin)
+// =====================
+
+async function fetchHeadlessNav(slug: string, allowPageList = true): Promise<NavLink[]> {
+  if (!WP) return [];
+  const url = new URL(`${WP}/wp-json/headless/v1/nav`);
+  url.searchParams.set("slug", slug);
+  url.searchParams.set("allow_page_list", allowPageList ? "1" : "0");
+
+  try {
+    const r = await fetchWithTimeout(url.toString());
+    if (!r.ok) return [];
+    const json = await r.json();
+    return Array.isArray(json) ? (json as NavLink[]) : [];
+  } catch {
+    if (DEV) warnOnce(`headless:${slug}`, `[wp.ts] headless nav "${slug}" KO → []`);
+    return [];
+  }
+}
+
+/** Navigation principale (slug fixé : header-nav) */
+export async function getHeaderLinks(): Promise<NavLink[]> {
+  return fetchHeadlessNav("header-nav", /* allowPageList */ true);
+}
+
+/** Navigation footer (slug fixé : footer-nav) */
+export async function getFooterLinks(): Promise<NavLink[]> {
+  return fetchHeadlessNav("footer-nav", /* allowPageList */ false);
+}

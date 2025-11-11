@@ -9,6 +9,7 @@
     },
     "types": ["astro/client"]   // 👈 pas de @astrojs/react ici
   },
+  "plugins": [{ "name": "@astrojs/ts-plugin" }],
   "include": [
     "src",
     "astro.config.*",

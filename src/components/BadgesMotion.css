@@ -172,3 +172,121 @@ header.section-head {
 :root[data-theme="dark"] .hex-caption {
   display: none;
 }
+/* BadgesMotion — variante flex */
+section[aria-labelledby="principes"] .badges,
+section[aria-labelledby="principes"] .badges-motion,
+section[aria-labelledby="principes"] .badgesList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(10px, 2.4vw, 16px);
+}
+
+section[aria-labelledby="principes"] .badges > *,
+section[aria-labelledby="principes"] .badges-motion > *,
+section[aria-labelledby="principes"] .badgesList > * {
+  flex: 1 1 120px; /* base 120px, se réduit et passe à la ligne */
+  min-width: 0; /* évite l’overflow du contenu */
+}
+/* ---- Badges: wrap + largeur pilotée par --n ---- */
+
+/* 1) Autoriser le retour à la ligne */
+.hex-badges .row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--gap);
+  list-style: none;
+  margin-block: clamp(4px, 0.6vw, 8px) 0;
+  padding: 0;
+  flex-wrap: wrap; /* ⬅️ wrap ON */
+}
+
+/* 2) Les items prennent exactement la largeur calculée par --s */
+.badge {
+  flex: 0 0 var(--s); /* ⬅️ largeur fixe par item pour un wrap propre */
+  width: var(--s);
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(6px, 0.8vw, 10px);
+  filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.08));
+  transition: transform 0.18s ease, filter 0.18s ease;
+  margin: 0;
+}
+
+/* 3) Valeur par défaut (desktop) */
+.hex-badges {
+  --n: 6; /* 6 par ligne par défaut */
+}
+
+/* 4) Adapter le nombre d’items par ligne selon la largeur */
+@media (max-width: 1200px) {
+  .hex-badges {
+    --n: 5;
+  }
+}
+@media (max-width: 980px) {
+  .hex-badges {
+    --n: 4;
+  }
+}
+@media (max-width: 720px) {
+  .hex-badges {
+    --n: 3;
+  }
+}
+@media (max-width: 480px) {
+  .hex-badges {
+    --n: 2;
+  }
+}
+
+/* 5) (option) Si tu veux garantir 1 badge / ligne tout en bas */
+@media (max-width: 340px) {
+  .hex-badges {
+    --n: 1;
+  }
+}
+
+/* 6) On garde ton calcul de taille en fonction de --n */
+.hex-badges {
+  --gap: clamp(7px, 0.9vw, 11px);
+  --s-min: 116px;
+  --s-max: 200px;
+
+  --s: clamp(
+    var(--s-min),
+    calc((100% - (var(--n) - 1) * var(--gap)) / var(--n)),
+    var(--s-max)
+  );
+
+  width: 100%;
+  margin: 0 auto;
+  overflow-x: hidden;
+  --pad-top: clamp(12px, 2.8vw, 28px);
+  --pad-bottom: clamp(4px, 1.2vw, 10px);
+  padding-block: var(--pad-top) var(--pad-bottom);
+  min-height: clamp(80px, 10vw, 150px);
+}
+
+/* 7) Ajustements mobile déjà présents: on les garde */
+@media (max-width: 900px) {
+  .hex-badges {
+    --s-min: 96px;
+    --s-max: 160px;
+    --gap: clamp(14px, 2vw, 24px);
+  }
+}
+@media (max-width: 640px) {
+  .hex-badges {
+    --s-min: 84px;
+    --s-max: 128px;
+    --gap: clamp(12px, 1.6vw, 18px);
+    --pad-top: clamp(10px, 3vw, 20px);
+    --pad-bottom: clamp(2px, 1vw, 8px);
+  }
+  .hex-badges .row {
+    margin-block: clamp(2px, 0.4vw, 6px) 0;
+  }
+}

@@ -1,0 +1,138 @@
+---
+const WP = (import.meta.env.WP_URL || "").replace(/\/+$/, "");
+
+async function getJSON(u: string) {
+  try {
+    const r = await fetch(u, { headers: { Accept: "application/json" } });
+    if (!r.ok) return [];
+    const j = await r.json();
+    return Array.isArray(j) ? j : [];
+  } catch {
+    return [];
+  }
+}
+
+function toRelative(url: string) {
+  try {
+    const u = new URL(url);
+    return u.pathname + u.search + u.hash;
+  } catch {
+    return url;
+  }
+}
+
+function normalizePath(p = "") {
+  // /abc/ -> /abc (sauf pour la racine)
+  if (!p) return "/";
+  try {
+    const u = new URL(p, "http://x"); // base fictive
+    let s = u.pathname || "/";
+    if (s.length > 1 && s.endsWith("/")) s = s.slice(0, -1);
+    return s;
+  } catch {
+    return p;
+  }
+}
+
+const endpoint = WP
+  ? `${WP}/wp-json/headless/v1/nav?slug=header-nav&allow_page_list=1`
+  : "";
+
+const rawLinks = endpoint ? await getJSON(endpoint) : [];
+const links = rawLinks
+  .map((l: any) => ({
+    label: String(l?.label || ""),
+    url: toRelative(String(l?.url || "#")),
+    opensInNewTab: !!l?.opensInNewTab,
+  }))
+  .filter((l: any) => l.label && l.url);
+
+// Active state (aria-current)
+const current = normalizePath(Astro.url.pathname);
+---
+
+<nav class="site-nav" aria-label="Navigation principale">
+  <ul class="nav">
+    {
+      links.length ? (
+        links.map((l: any) => {
+          const href = normalizePath(l.url);
+          const isActive =
+            href === "/"
+              ? current === "/"
+              : current === href || current.startsWith(href + "/");
+
+          return (
+            <li>
+              <a
+                href={l.url}
+                aria-current={isActive ? "page" : undefined}
+                target={l.opensInNewTab ? "_blank" : undefined}
+                rel={l.opensInNewTab ? "noopener" : undefined}
+                class={isActive ? "is-active" : undefined}
+              >
+                {l.label}
+              </a>
+            </li>
+          );
+        })
+      ) : (
+        // fallback si menu vide
+        <>
+          <li>
+            <a href="/" aria-current={current === "/" ? "page" : undefined}>
+              Accueil
+            </a>
+          </li>
+        </>
+      )
+    }
+  </ul>
+</nav>
+
+<style>
+  .nav {
+    display: flex;
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .nav li {
+    margin: 0;
+  }
+  .nav a {
+    text-decoration: none;
+    padding: 0.35rem 0.2rem;
+    border-radius: 0.25rem;
+    position: relative;
+  }
+  .nav a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.2rem;
+    height: 2px;
+    transform: scaleX(0);
+    transform-origin: left;
+    background: currentColor;
+    opacity: 0.85;
+    transition: transform 0.18s ease;
+  }
+  .nav a:hover::after,
+  .nav a:focus-visible::after {
+    transform: scaleX(1);
+  }
+  .nav a.is-active,
+  .nav a[aria-current="page"] {
+    color: var(--orange, #ff9900);
+  }
+  .nav a.is-active::after,
+  .nav a[aria-current="page"]::after {
+    transform: scaleX(1);
+    background: var(--orange, #ff9900);
+  }
+</style>

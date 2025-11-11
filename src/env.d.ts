@@ -1,3 +1,10 @@
 /// <reference types="astro/client" />
-/// <reference types="@astrojs/react/types" />
 
+interface ImportMetaEnv {
+  readonly WP_URL: string;
+  readonly VITE_WP_DISABLE?: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}

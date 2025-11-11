@@ -4,6 +4,7 @@ import { getServicesPage } from "@/lib/wp";
 import { normalizeServices } from "@/lib/services";
 import { linesToItems } from "@/helpers/text";
 
+import { pickFaq } from "@/content/faq";
 // CSS page shell
 import "@/styles/pages/services/index.css";
 
@@ -62,6 +63,31 @@ const svcFromAcf =
       accentRgb: hexToRgbValues(accent),
     };
   }) ?? [];
+
+  function stripHtml(html = "") {
+  return html.replace(/<[^>]+>/g, "").trim();
+}
+
+/* ✅ Liste FAQ à afficher :
+   - si ACF contient des FAQs -> on les utilise (fallback ponctuel)
+   - sinon on prend la source unique depuis faq.ts (surface: services)
+*/
+const faqFromAcf = (data?.faqs ?? [])
+  .map((x) => ({ q: stripHtml(x?.q || ""), a: stripHtml(x?.a || "") }))
+  .filter((x) => x.q && x.a);
+
+const faqAll = faqFromAcf.length ? faqFromAcf : pickFaq({ surface: "services" });
+
+/* ✅ JSON-LD aligné sur l’affichage réel */
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqAll.map(({ q, a }) => ({
+    "@type": "Question",
+    name: q,
+    acceptedAnswer: { "@type": "Answer", text: a },
+  })),
+};
 
 // Icônes inline (SVG)
 const cardIcons = [
@@ -225,7 +251,7 @@ const cardIcons = [
 
     <!-- Points clés -->
     {(data?.tips?.cwv || data?.tips?.access || data?.tips?.seo) && (
-      <section class="container section--halo halo-pulse-gentle" aria-labelledby="tips-title">
+      <section id="services-cles" class="container section--halo halo-pulse-gentle" aria-labelledby="tips-title">
         <header class="section-head"><h2 id="tips-title">Points clés</h2></header>
         <ul class="tips" role="list">
           {data?.tips?.cwv && (
@@ -244,17 +270,20 @@ const cardIcons = [
     )}
 
     <!-- FAQ -->
-    {(data?.faqs?.length ?? 0) > 0 && (
-      <section class="container section--halo halo-pulse-gentle" aria-labelledby="faq-title">
-        <header class="section-head"><h2 id="faq-title">FAQ</h2></header>
-        {data.faqs.map(({ q, a }: any) => (
-          <details class="faq">
-            {q && <summary>{q}</summary>}
-            {a && <div class="faq__answer" set:html={a} />}
-          </details>
-        ))}
-      </section>
-    )}
+ <!-- FAQ -->
+{faqAll.length > 0 && (
+  <section class="container section--halo halo-pulse-gentle" aria-labelledby="faq-title">
+    <header class="section-head"><h2 id="faq-title">FAQ</h2></header>
+
+    {faqAll.map(({ q, a }) => (
+      <details class="faq">
+        <summary>{q}</summary>
+        <p class="faq__answer">{a}</p>
+      </details>
+    ))}
+  </section>
+)}
+
 
     <!-- CTA final -->
     {(data?.cta?.title || data?.cta?.text || data?.cta?.btnLabel) && (
@@ -289,6 +318,21 @@ const cardIcons = [
     provider: { "@type": "Person", name: "Stéphanie Quibel" },
   })}
 />
+<!-- JSON-LD ProfessionalService : OK -->
+<script
+  type="application/ld+json"
+  set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    name: "Services WordPress — Stéphanie Quibel",
+    areaServed: "France",
+    serviceType: ["Création site vitrine", "Refonte", "Maintenance"],
+    provider: { "@type": "Person", name: "Stéphanie Quibel" },
+  })}
+/>
+
+<!-- ✅ JSON-LD FAQPage aligné avec l’affichage -->
+<script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
 
 <!-- Interaction des bulles -->
 <script type="module">

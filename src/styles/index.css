@@ -26,7 +26,7 @@
 
 /* 5) Visuels/UI */
 @import "@/styles/components/bubbles.css" layer(components);
-@import "@/styles/components/pointer.css" layer(components);
+@import "@/styles/components/pointer-cursor.css" layer(components);
 
 /* 6) Pages */
 @import "@/styles/pages/home.css" layer(pages);

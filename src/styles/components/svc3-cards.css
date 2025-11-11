@@ -50,9 +50,9 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
 
-  padding: clamp(14px, 2.2vw, 18px);
+  /* padding désormais sur __inner pour pouvoir clipper le halo */
+  padding: 0;
   border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--card-bd));
   border-radius: var(--r);
 
@@ -62,60 +62,61 @@
     var(--card-bg) 100%
   );
 
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
   isolation: isolate;
-  overflow: visible; /* important pour conserver la box-shadow */
+  overflow: visible; /* conserver l’ombre externe */
   transition: transform 0.24s cubic-bezier(0.2, 0.65, 0.3, 1), box-shadow 0.24s;
 }
 
-/* Halo confiné dans la card (clip arrondi) */
-.svc3-card::before {
-  content: "";
-  position: absolute;
-  inset: 0; /* on ne déborde plus : tout est confiné dans la card */
-  z-index: 0; /* sous le contenu, au-dessus du fond de la card */
-  pointer-events: none;
-
-  /* même matière que précédemment, mais confinée */
-  background: radial-gradient(
-      60% 60% at 50% 50%,
-      color-mix(in srgb, var(--accent) 26%, transparent),
-      transparent 70%
-    ),
-    conic-gradient(
-      from 0deg,
-      color-mix(in srgb, var(--accent) 42%, transparent),
-      transparent 60%
-    );
-
-  filter: blur(20px) saturate(115%);
-  opacity: 0.35;
-
-  /* clip arrondi = pas besoin d'overflow:hidden sur la card */
-  clip-path: inset(0 round var(--r));
-
-  /* léger décalage interne pour “respirer” */
-  transform: translateY(-12%) translateX(-4%);
-  transition: opacity 0.25s ease, transform 0.25s ease;
-}
-
-/* s'assurer que le contenu passe bien au-dessus du halo */
-.svc3-card > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* Hover */
 .svc3-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22);
-}
-.svc3-card:hover::before {
-  opacity: 0.55;
-  transform: translateY(-14%) translateX(-5%);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.22);
+  z-index: 3; /* passe au-dessus des voisines au survol */
 }
 
-/* Icone */
+/* Wrapper de contenu : clip arrondi + grid interne */
+.svc3-card__inner {
+  position: relative;
+  z-index: 0;
+  border-radius: var(--r);
+  padding: clamp(16px, 2.2vw, 20px);
+  overflow: hidden; /* ← clippe le halo flouté */
+  background: transparent;
+
+  display: grid;
+  grid-template-rows: auto auto 1fr auto; /* icône, titre, contenu, CTA */
+  row-gap: clamp(8px, 1.2vw, 12px);
+}
+
+/* HALO — désormais sur __inner (donc confiné), sans décalage */
+.svc3-card__inner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+
+  background: radial-gradient(
+      70% 70% at 50% 45%,
+      color-mix(in srgb, var(--accent) 38%, transparent) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      60% 60% at 65% 55%,
+      color-mix(in srgb, var(--accent) 28%, transparent) 0%,
+      transparent 70%
+    );
+  filter: blur(14px) saturate(112%);
+  opacity: 0.36;
+  transform: none; /* pas de décalage => pas de fuite */
+  transition: opacity 0.25s ease;
+}
+.svc3-card:hover .svc3-card__inner::before {
+  opacity: 0.68;
+}
+
+/* Icône */
 .svc3-card__icon {
   --size: 64px;
   width: var(--size);
@@ -128,6 +129,8 @@
   outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent);
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 0%, var(--card-bg)),
     0 0 0 6px color-mix(in srgb, var(--accent) 45%, transparent);
+
+  margin-bottom: clamp(10px, 1.2vw, 16px); /* espace sous l’icône */
   transition: background 0.25s ease, transform 0.25s ease;
 }
 .svc3-card:hover .svc3-card__icon {
@@ -138,7 +141,8 @@
 
 /* Titres / textes */
 .svc3-card__title {
-  margin: 0.25rem 0 0;
+  margin: 0; /* le grid gère les espacements */
+  line-height: 1.2;
   font-size: clamp(1.1rem, 1rem + 0.45vw, 1.35rem);
   letter-spacing: -0.005em;
 }
@@ -149,9 +153,42 @@
   max-width: 60ch;
 }
 
-/* CTA */
+/* Liste */
+.svc3-card__list {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: grid;
+  gap: 0.28rem;
+  color: var(--muted);
+  list-style: disc;
+}
+.svc3-card__list li::marker {
+  color: var(--accent);
+}
+
+@supports not (selector(li::marker)) {
+  .svc3-card__list {
+    list-style: none;
+    padding-left: 0;
+  }
+  .svc3-card__list li {
+    position: relative;
+    padding-left: 0.9rem;
+  }
+  .svc3-card__list li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    top: 0;
+    line-height: 1;
+    color: var(--accent);
+    font-weight: 700;
+  }
+}
+
+/* CTA : marge haute contrôlée (évite l’effet “tassé” bas) */
 .svc3-card__cta {
-  margin-top: auto;
+  margin-top: clamp(12px, 1.6vw, 18px);
 }
 .svc3-card .btn {
   display: inline-flex;
@@ -175,40 +212,6 @@
 .svc3-card .btn:focus-visible {
   outline: none;
   box-shadow: 0 0 0 3px #000, 0 0 0 5px var(--accent);
-}
-
-/* Liste */
-.svc3-card__list {
-  margin: 0.4rem 0 0;
-  padding-left: 1.25rem;
-  display: grid;
-  gap: 0.25rem;
-  color: var(--muted);
-  list-style: disc;
-}
-.svc3-card__list li::marker {
-  color: var(--accent);
-}
-
-/* Polyfill marqueur si besoin */
-@supports not (selector(li::marker)) {
-  .svc3-card__list {
-    list-style: none;
-    padding-left: 0;
-  }
-  .svc3-card__list li {
-    position: relative;
-    padding-left: 0.9rem;
-  }
-  .svc3-card__list li::before {
-    content: "•";
-    position: absolute;
-    left: 0;
-    top: 0;
-    line-height: 1;
-    color: var(--accent);
-    font-weight: 700;
-  }
 }
 
 /* ============ Règles spécifiques à la page services ============ */
@@ -241,9 +244,4 @@
 .section--halo {
   content-visibility: auto;
   contain-intrinsic-size: 480px;
-}
-
-/* Empilement hover (au-dessus des voisines si lift) */
-.svc3-card:hover {
-  z-index: 3;
 }

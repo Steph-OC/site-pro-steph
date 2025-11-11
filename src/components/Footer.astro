@@ -1,0 +1,538 @@
+---
+const WP = (import.meta.env.WP_URL || "").replace(/\/+$/, "");
+const IS_DEV = import.meta.env.DEV;
+
+async function getJSON(u) {
+  try {
+    const r = await fetch(u, { headers: { Accept: "application/json" } });
+    const text = await r.text();
+    let json = null;
+    try {
+      json = JSON.parse(text);
+    } catch {}
+    return { ok: r.ok, status: r.status, url: u, json, text };
+  } catch (e) {
+    return { ok: false, status: 0, url: u, err: String(e) };
+  }
+}
+
+function toRelative(url) {
+  try {
+    const u = new URL(url);
+    return u.pathname + u.search + u.hash;
+  } catch {
+    return url;
+  }
+}
+
+// --- actif souligné : helpers chemin courant
+function normalizePath(p = "") {
+  if (!p) return "/";
+  try {
+    const u = new URL(p, "http://x");
+    let s = u.pathname || "/";
+    if (s.length > 1 && s.endsWith("/")) s = s.slice(0, -1);
+    return s;
+  } catch {
+    return p;
+  }
+}
+const current = normalizePath(Astro.url.pathname);
+// ---
+
+const tried = [];
+let links = [];
+const info = { WP_URL: WP };
+
+if (WP) {
+  const u = `${WP}/wp-json/headless/v1/nav?slug=footer-nav&allow_page_list=0`;
+  tried.push(u);
+  const r = await getJSON(u);
+  info.endpoint = {
+    ok: r.ok,
+    status: r.status,
+    len: Array.isArray(r.json) ? r.json.length : 0,
+  };
+  if (r.ok && Array.isArray(r.json)) {
+    links = r.json
+      .map((l) => ({
+        label: String(l?.label || ""),
+        url: String(l?.url || "#"),
+        opensInNewTab: !!l?.opensInNewTab,
+      }))
+      .filter((l) => l.label && l.url);
+  }
+} else {
+  info.error = "WP_URL manquant dans .env";
+}
+
+const year = new Date().getFullYear();
+const business = {
+  name: "Stéphanie Quibel",
+  legalName: "Stéphanie Quibel",
+  logo: "/favicon.png",
+};
+---
+
+<footer class="footer" role="contentinfo">
+  <!-- CTA -->
+  <section class="footer__cta" aria-labelledby="cta-title">
+    <div class="container cta">
+      <h2 id="cta-title">Un projet en tête&nbsp;? On en discute&nbsp;!</h2>
+      {
+        /*
+      <p>
+        <a class="btn btn--ghost btn--cta" href="/contact" data-pointer>
+          Parler de votre projet
+        </a>
+      </p>
+      */
+      }
+    </div>
+  </section>
+
+  <!-- Grille principale -->
+  <div class="container foot">
+    <!-- 1) Accès rapides (SEO) -->
+    <nav class="footer__anchors" aria-label="Accès rapides (SEO)">
+      <h3 class="footer__section-title">Accès rapides</h3>
+      <ul class="footer__anchors-list">
+        <li><a href="/services#services">Création de site WordPress</a></li>
+        <li><a href="/services#services">Refonte WordPress</a></li>
+        <li><a href="/services#services">Maintenance & mises à jour</a></li>
+        <li><a href="/services#services">Optimisation des performances</a></li>
+        <li><a href="/services#services-cles">Accessibilité (RGAA)</a></li>
+        <li>
+          <a href="/services#services-cles">SEO — Référencement naturel</a>
+        </li>
+        <li>
+          <a href="/services#developpeuse-wordpress-beziers"
+            >Développeuse WordPress à Béziers</a
+          >
+        </li>
+      </ul>
+    </nav>
+
+    <!-- 2) Navigation (WP) -->
+    <nav class="footer__nav" aria-label="Navigation">
+      <h3 class="footer__section-title">Navigation</h3>
+      {
+        links.length ? (
+          <ul class="footer__list">
+            {links.map((l) => {
+              const href = toRelative(l.url);
+              const norm = normalizePath(href);
+              const isActive =
+                norm === "/"
+                  ? current === "/"
+                  : current === norm || current.startsWith(norm + "/");
+              return (
+                <li>
+                  <a
+                    href={href}
+                    aria-current={isActive ? "page" : undefined}
+                    class={isActive ? "is-active" : undefined}
+                    target={l.opensInNewTab ? "_blank" : undefined}
+                    rel={l.opensInNewTab ? "noopener" : undefined}
+                  >
+                    {l.label}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        ) : IS_DEV ? (
+          <details style="opacity:.85;margin:.25rem 0">
+            <summary>Aucun lien de menu reçu (DEV)</summary>
+            <pre style="max-width:100%;overflow:auto">
+              {JSON.stringify({ info, tried }, null, 2)}
+            </pre>
+          </details>
+        ) : null
+      }
+    </nav>
+
+    <!-- 3) Support -->
+    <nav class="footer__support" aria-label="Support">
+      <h3 class="footer__section-title">Support</h3>
+      <ul class="footer__list">
+        <li><a href="/contact#faq">FAQ</a></li>
+        <li><a href="/contact">Contactez-nous</a></li>
+      </ul>
+    </nav>
+
+    <!-- 4) Contact + (sociaux + marque alignés en bas sur la même ligne) -->
+    <div class="footer__contact">
+      <h3 class="footer__section-title">Contact</h3>
+      <ul class="footer__meta">
+        <li>
+          <a href="mailto:contact@stephaniequibel.fr"
+            >contact@stephaniequibel.fr</a
+          >
+        </li>
+        <li><a href="tel:+33620681392">06 20 68 13 92 Lun–Ven, 9h–18h</a></li>
+        <li><a href="/contact">Formulaire de contact</a></li>
+        <li>Béziers • Partout en France 🇫🇷</li>
+      </ul>
+
+      <!-- Ligne du bas : LinkedIn à gauche, logo+nom à droite -->
+      <div class="footer__contact-bottom">
+        <ul class="footer__social">
+          <li>
+            <a
+              href="https://www.linkedin.com/in/stephanie-quibel-developpeuse-web/"
+              target="_blank"
+              rel="noopener"
+              aria-label="LinkedIn"
+            >
+              <svg
+                width="34"
+                height="34"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  fill="currentColor"
+                  d="M4.98 3.5a2.5 2.5 0 11-.02 5.001A2.5 2.5 0 014.98 3.5zM3.5 8.98h2.95V21H3.5V8.98zM9.5 8.98h2.83v1.64h.04c.39-.74 1.35-1.53 2.78-1.53 2.98 0 3.53 1.96 3.53 4.51V21h-2.95v-5.38c0-1.28-.02-2.93-1.79-2.93-1.8 0-2.08 1.41-2.08 2.84V21H9.5V8.98z"
+                ></path>
+              </svg>
+              <span class="sr-only">LinkedIn</span>
+            </a>
+          </li>
+        </ul>
+
+        <a
+          class="footer__brand-bottom"
+          href="/"
+          aria-label={`${business.name}, retour à l’accueil`}
+        >
+          <img
+            src={business.logo}
+            alt=""
+            width="34"
+            height="34"
+            loading="lazy"
+            decoding="async"
+          />
+          <strong>{business.name}</strong>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Barre du bas -->
+<div class="footer__bottom">
+  <div class="container bar">
+    <span class="copyright">© {year} {business.legalName}</span>
+    <a class="backtop btn btn--ghost btn--sm" href="#top">Haut de page ↑</a>
+  </div>
+</div>
+<style is:global>
+  /* ===========================
+   Footer — styles compacts (clean)
+   =========================== */
+
+  /* Thème clair (défaut) */
+  :root {
+    --footer-bg: #0f0f17;
+    --footer-fg: #e9ebf4;
+    --footer-muted: #b7bdd1;
+    --footer-link: #d7dbff;
+    --footer-accent: var(--orange, #ff9900);
+    --footer-border: rgba(255, 255, 255, 0.08);
+    --footer-halo: color-mix(in oklab, var(--footer-accent) 10%, transparent);
+  }
+
+  /* Thème sombre (si utilisé) */
+  :root[data-theme="dark"] {
+    --footer-bg: #151521;
+    --footer-fg: #eef0f6;
+    --footer-muted: #cfd3e2;
+    --footer-link: #dfe3ff;
+    --footer-border: rgba(255, 255, 255, 0.1);
+    --footer-halo: color-mix(in oklab, var(--footer-accent) 12%, transparent);
+  }
+
+  /* Fond + halo */
+  .footer {
+    position: relative;
+    margin-top: 4rem;
+    color: var(--footer-fg);
+    background: radial-gradient(
+        1100px 420px at 70% -10%,
+        var(--footer-halo),
+        transparent 60%
+      ),
+      var(--footer-bg);
+    border-top: 1px solid var(--footer-border);
+  }
+
+  /* Conteneur large (4 colonnes) */
+  .footer .container {
+    max-width: 1400px;
+    margin-inline: auto;
+    padding-inline: clamp(16px, 3vw, 28px);
+  }
+
+  /* Grille principale (avec espace sous les colonnes) */
+  .footer .foot {
+    display: grid;
+    align-items: start;
+    gap: 1.2rem 2rem;
+    padding-block: 1.25rem 2.2rem; /* ← espace sous la grille */
+    grid-template-columns:
+      minmax(240px, 1.05fr) /* Accès rapides */
+      minmax(200px, 0.95fr) /* Navigation */
+      minmax(200px, 0.95fr) /* Support */
+      minmax(260px, 1fr); /* Contact */
+  }
+
+  /* 4 → 3 colonnes */
+  @media (max-width: 1180px) {
+    .footer .foot {
+      grid-template-columns:
+        minmax(260px, 1.1fr)
+        minmax(220px, 0.95fr)
+        minmax(250px, 1fr);
+    }
+  }
+
+  /* 3 → 2 colonnes */
+  @media (max-width: 980px) {
+    .footer .foot {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  /* 2 → 1 colonne */
+  @media (max-width: 640px) {
+    .footer .foot {
+      grid-template-columns: 1fr;
+      gap: 1.1rem;
+    }
+  }
+
+  /* Titres de colonnes (même style) */
+  .footer :is(.footer__title, .footer__section-title, .footer__anchors-title) {
+    font-size: 1.05rem;
+    line-height: 1.2;
+    font-weight: 700;
+    margin: 0 0 0.55rem;
+    color: var(--footer-fg);
+  }
+
+  /* Accès rapides (ancres SEO) */
+  .footer__anchors-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  /* Listes Nav / Support */
+  .footer__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  /* Liens + souligné animé */
+  .footer a {
+    color: var(--footer-link);
+    text-decoration: none;
+    position: relative;
+    transition: color 0.18s ease;
+  }
+  .footer a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.2rem;
+    height: 2px;
+    transform: scaleX(0);
+    transform-origin: left;
+    background: currentColor;
+    opacity: 0.9;
+    transition: transform 0.18s ease;
+  }
+  .footer a:hover::after,
+  .footer a:focus-visible::after {
+    transform: scaleX(1);
+  }
+  .footer a.is-active,
+  .footer a[aria-current="page"] {
+    color: var(--footer-accent);
+  }
+  .footer a.is-active::after,
+  .footer a[aria-current="page"]::after {
+    transform: scaleX(1);
+    background: var(--footer-accent);
+  }
+
+  /* Contact & social */
+  .footer__meta {
+    list-style: none;
+    margin: 0.2rem 0 0.6rem;
+    padding: 0;
+    display: grid;
+    gap: 0.35rem;
+    color: var(--footer-muted);
+  }
+  .footer__meta a {
+    color: var(--footer-link);
+  }
+  .footer__meta a:hover {
+    text-decoration: underline;
+  }
+
+  /* Colonne Contact en flex pour épingler la marque en bas */
+  .footer__contact {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .footer__contact-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* LinkedIn à gauche, marque à droite */
+    gap: 0.9rem;
+    margin-top: 0.8rem;
+    flex-wrap: nowrap; /* reste sur une seule ligne */
+    width: 100%;
+    min-width: 0; /* évite les débordements */
+  }
+  /* Réseaux (LinkedIn) */
+  .footer__social {
+    list-style: none;
+    margin: 0; /* marge neutre */
+    padding: 0;
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: nowrap;
+  }
+  .footer__social a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 0.6rem;
+    background: color-mix(in oklab, var(--footer-fg) 6%, transparent);
+  }
+  .footer__social a:hover {
+    background: color-mix(in oklab, var(--footer-accent) 18%, transparent);
+    color: var(--footer-accent);
+  }
+
+  /* Marque en bas à droite */
+  .footer__brand-bottom {
+    margin-left: auto; /* pousse la marque complètement à droite */
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    text-decoration: none;
+    color: inherit;
+    white-space: nowrap; /* évite le retour à la ligne du nom */
+    opacity: 0.98;
+  }
+  .footer__brand-bottom img {
+    width: 34px;
+    height: 34px;
+    border-radius: 0.6rem;
+    vertical-align: middle;
+  }
+  .footer__brand-bottom:hover {
+    opacity: 1;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* Lien utilitaire (si utilisé) */
+  .footer__legal {
+    margin: 0.6rem 0 0;
+    color: var(--footer-muted);
+  }
+  .footer__legal .sep {
+    margin: 0 0.5rem;
+    opacity: 0.5;
+  }
+
+  /* Barre du bas */
+  .footer__bottom {
+    border-top: 1px solid var(--footer-border);
+  }
+  .bar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.95rem 0;
+    padding-bottom: calc(0.95rem + env(safe-area-inset-bottom, 0px));
+  }
+  .copyright {
+    justify-self: center;
+    color: var(--footer-muted);
+    white-space: nowrap;
+  }
+  .backtop {
+    justify-self: end;
+    padding: 0.5rem 0.8rem;
+    border-radius: 999px;
+    border: 1px solid var(--footer-border);
+    background: color-mix(in oklab, var(--footer-fg) 4%, transparent);
+    color: var(--footer-link);
+  }
+  .backtop:hover,
+  .backtop:focus-visible {
+    filter: brightness(1.04);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* CTA (titre + espace sous le bandeau) */
+  .footer__cta .cta {
+    padding-block: 1.2rem 2.2rem;
+  }
+  @media (min-width: 900px) {
+    .footer__cta .cta {
+      padding-block: 1.4rem 2.6rem;
+    }
+  }
+  .footer__cta :is(h2, #cta-title) {
+    font-size: clamp(1.45rem, 2vw + 0.55rem, 2.15rem);
+    line-height: 1.15;
+    margin: 0 0 0.8rem;
+  }
+
+  /* Accessibilité */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  /* Sécurité sur très petits écrans : autoriser le retour à la ligne si nécessaire */
+  @media (max-width: 420px) {
+    .footer__contact-bottom {
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      gap: 0.6rem 1rem;
+    }
+    .footer__brand-bottom {
+      margin-left: 0;
+      order: 2; /* passe la marque après LinkedIn si ça wrap */
+    }
+  }
+</style>

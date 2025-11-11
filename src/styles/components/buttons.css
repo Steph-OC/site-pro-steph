@@ -64,3 +64,63 @@
     border-color: color-mix(in srgb, var(--fg) 35%, var(--border));
   }
 }
+/* --- Améliorations globales --- */
+.btn {
+  min-height: 40px; /* meilleure zone cliquable */
+  cursor: pointer;
+}
+.btn svg {
+  /* icônes alignées */
+  width: 1em;
+  height: 1em;
+}
+
+/* Ghost : un hover un peu plus lisible */
+.btn--ghost:hover {
+  background: color-mix(in srgb, var(--fg) 8%, transparent);
+  border-color: color-mix(in srgb, var(--fg) 22%, var(--border));
+}
+
+/* Accent : petit relief en hover */
+.btn--accent:hover {
+  filter: brightness(1.02) saturate(1.02);
+}
+
+/* --- CTA footer : déclinaison du ghost avec l'orange --- */
+.btn--cta {
+  /* utilisé par le footer */
+  border-color: var(--orange);
+  color: var(--orange);
+  background: transparent;
+}
+.btn--cta:hover {
+  background: color-mix(in srgb, var(--orange) 15%, transparent);
+}
+.btn--cta:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--orange) 60%, #fff 40%);
+  outline-offset: 2px;
+}
+
+/* Icône seule (si tu en as besoin) */
+.btn--icon-only {
+  padding: 0.6rem;
+  width: 40px;
+  height: 40px;
+}
+
+/* Larges écrans : un peu plus d'ampleur */
+@media (min-width: 1100px) {
+  .btn {
+    padding: 0.68rem 1rem;
+  }
+  .btn--lg {
+    padding: 0.95rem 1.25rem;
+  }
+}
+
+/* Réduction animations si demandé */
+@media (prefers-reduced-motion: reduce) {
+  .btn {
+    transition: none;
+  }
+}

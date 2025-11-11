@@ -1,0 +1,27 @@
+---
+import SiteLayout from "@/layouts/SiteLayout.astro";
+import "@/styles/wp-content.css";
+
+const WP = (import.meta.env.WP_URL || "").replace(/\/+$/, "");
+
+let page = null;
+if (WP) {
+  const r = await fetch(
+    `${WP}/wp-json/wp/v2/pages?slug=privacy-policy&_fields=title,content,slug`
+  );
+  if (r.ok) {
+    const arr = await r.json();
+    page = Array.isArray(arr) ? arr[0] : null;
+  }
+}
+
+const title = page?.title?.rendered || "Politique de confidentialité";
+const html = page?.content?.rendered || "<p>Contenu à venir.</p>";
+---
+
+<SiteLayout title={title}>
+  <article class="wp-content">
+    <h1 set:html={title} />
+    <div class="entry" set:html={html} />
+  </article>
+</SiteLayout>

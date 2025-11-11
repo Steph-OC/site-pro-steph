@@ -5,6 +5,9 @@ const {
   description = "",
 } = Astro.props;
 
+import HeaderNav from "@/components/HeaderNav.astro";
+import Footer from "@/components/Footer.astro";
+
 /* styles globaux */
 import "@/styles/base.css";
 import "@/styles/layout.css";
@@ -80,51 +83,8 @@ import "@/styles/components/pointer-cursor.css";
           />
         </a>
 
-        <nav aria-label="Navigation principale">
-          <ul>
-            <li>
-              <a
-                href="/"
-                aria-current={Astro.url.pathname === "/" ? "page" : undefined}
-                >Accueil</a
-              >
-            </li>
-            <li>
-              <a
-                href="/services"
-                aria-current={Astro.url.pathname.startsWith("/services")
-                  ? "page"
-                  : undefined}>Services</a
-              >
-            </li>
-            <li>
-              <a
-                href="/realisations"
-                aria-current={Astro.url.pathname.startsWith("/realisations")
-                  ? "page"
-                  : undefined}>Réalisations</a
-              >
-            </li>
-            <li>
-              <a
-                href="/blog"
-                aria-current={Astro.url.pathname.startsWith("/blog")
-                  ? "page"
-                  : undefined}>Parlons web</a
-              >
-            </li>
-            <li><a href="/#a-propos">À propos</a></li>
-            <li>
-              <a
-                href="/contact"
-                class="btn btn--ghost"
-                aria-current={Astro.url.pathname.startsWith("/contact")
-                  ? "page"
-                  : undefined}>Contact</a
-              >
-            </li>
-          </ul>
-        </nav>
+        {/* 👇 navigation principale depuis WordPress */}
+        <HeaderNav />
 
         <button
           id="theme-toggle"
@@ -175,12 +135,8 @@ import "@/styles/components/pointer-cursor.css";
     <slot name="hero" />
     <main class="container"><slot /></main>
 
-    <footer>
-      <div class="container foot">
-        <span>© {new Date().getFullYear()} Stéphanie Quibel</span>
-        <span><a href="/mentions-legales">Mentions légales</a></span>
-      </div>
-    </footer>
+    {/* Footer dynamique depuis WordPress */}
+    <Footer />
 
     <script is:inline>
       (function () {
@@ -216,23 +172,41 @@ import "@/styles/components/pointer-cursor.css";
       (function () {
         const KEY = "theme-pref";
         const btn = document.getElementById("theme-toggle");
+
+        function labelFor(pref) {
+          return pref === "dark"
+            ? "Activer le thème clair"
+            : "Activer le thème sombre";
+        }
         function apply(pref) {
           document.documentElement.dataset.theme = pref;
           try {
             localStorage.setItem(KEY, pref);
           } catch {}
+          if (btn) {
+            btn.setAttribute("aria-pressed", String(pref === "dark"));
+            btn.setAttribute("aria-label", labelFor(pref));
+            btn.title = labelFor(pref);
+          }
         }
+        // toggle correct
         function next(pref) {
           return pref === "light" ? "dark" : "light";
         }
+
+        // init: localStorage > dataset > media query
         const saved =
           localStorage.getItem(KEY) ||
           document.documentElement.dataset.theme ||
-          "light";
+          (matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light");
         apply(saved);
-        btn?.addEventListener("click", () =>
-          apply(next(localStorage.getItem(KEY) || "light"))
-        );
+
+        btn?.addEventListener("click", () => {
+          const cur = localStorage.getItem(KEY) || saved;
+          apply(next(cur));
+        });
       })();
     </script>
   </body>
