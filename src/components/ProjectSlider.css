@@ -1,4 +1,3 @@
-/* ===== ProjectSlider — base ===== */
 .ps-card,
 .ps-card *,
 .ps-card *::before,
@@ -13,14 +12,13 @@
   --pad: clamp(16px, 3vw, 28px);
   position: relative;
   background: var(--ps-bg);
-  border: 1px solid var(--ps-border);
+  border: 1px solid color-mix(in srgb, var(--border) 85%, transparent);
   border-radius: 24px;
-  box-shadow: var(--shadow);
-  overflow: hidden; /* rien ne dépasse */
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
   padding: var(--pad);
 }
 
-/* ===== Layout interne ===== */
 .ps-inner {
   display: grid;
   grid-template-columns: 280px 1fr;
@@ -33,22 +31,20 @@
   }
 }
 
-/* Empêche tout débordement grid */
 .ps-media,
 .ps-content {
   min-width: 0;
 }
 
-/* ===== Media ===== */
 .ps-media {
   position: relative;
   width: min(280px, 100%);
   height: 360px;
   border-radius: 20px;
-  background: linear-gradient(147deg, #fe8a39 0%, var(--ps-accent) 74%);
   overflow: hidden;
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18),
-    0 28px 80px color-mix(in srgb, var(--ps-accent) 28%, transparent),
+  background: linear-gradient(147deg, #fe8a39 0%, var(--ps-accent) 74%);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.16),
+    0 24px 64px color-mix(in srgb, var(--ps-accent) 24%, transparent),
     0 0 0 1px color-mix(in srgb, #000 6%, transparent) inset;
 }
 .ps-media::after {
@@ -57,31 +53,22 @@
   inset: -10% -14%;
   border-radius: 28px;
   pointer-events: none;
-  z-index: -1;
   background: radial-gradient(
     60% 50% at 35% 50%,
     color-mix(in srgb, var(--ps-accent) 28%, transparent) 0%,
     transparent 70%
   );
   opacity: 0.75;
-  filter: saturate(110%) contrast(105%);
 }
-:root[data-theme="dark"] .ps-media {
-  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.28),
-    0 36px 110px color-mix(in srgb, var(--ps-accent) 38%, transparent),
-    0 0 0 1px color-mix(in srgb, #fff 10%, transparent) inset;
-}
-:root[data-theme="dark"] .ps-media::after {
-  opacity: 0.9;
-}
-
 .ps-media img,
 .ps-media .ps-media__ph {
-  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 16px;
+}
+.ps-media img {
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
 }
 @media (max-width: 768px) {
   .ps-media {
@@ -89,11 +76,20 @@
   }
 }
 
-/* ===== Contenu ===== */
+/* Retire le fond quand il y a une image (sinon double layer) */
+.ps-media:has(img) {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.ps-media:has(img)::after {
+  display: none !important;
+}
+
+/* Contenu */
 .ps-content {
   position: relative;
   display: grid;
-  grid-template-columns: 1fr 28px; /* <- colonne fixe pour les dots */
+  grid-template-columns: 1fr 28px; /* colonne pour les dots */
   column-gap: 16px;
   grid-template-rows: auto auto 1fr auto auto;
   grid-template-areas:
@@ -101,18 +97,19 @@
     "title    dots"
     "text     dots"
     "controls dots"
-    "cta      dots";
+    "cta      cta";
   gap: 10px;
   min-block-size: 320px;
-  padding-inline-end: 0; /* plus besoin de padding pour les dots */
   padding-block-end: 12px;
 }
-@media (max-width: 768px) {
-  .ps-content {
-    padding-inline-end: 0;
-  }
-}
 
+.ps-copy {
+  display: grid;
+  grid-template-areas: "meta" "title" "text";
+  gap: 6px;
+  align-content: start;
+  min-width: 0;
+}
 .ps-meta {
   grid-area: meta;
   color: #7b7992;
@@ -129,6 +126,10 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
 }
 .ps-text {
   grid-area: text;
@@ -146,13 +147,11 @@
   }
 }
 
-/* ===== CTA en bas ===== */
 .ps-ctaRow {
   grid-area: cta;
   align-self: end;
   display: flex;
   gap: 12px;
-  justify-content: flex-start;
   margin-top: 10px;
   flex-wrap: nowrap;
 }
@@ -168,7 +167,6 @@
   text-decoration: none;
   font-weight: 600;
   border: 1px solid transparent;
-  box-shadow: var(--shadow);
   white-space: nowrap;
 }
 .ps-btn:hover {
@@ -182,21 +180,8 @@
   background: transparent;
   color: var(--fg);
   border: 1px solid var(--border);
-  box-shadow: none;
-}
-.ps-btn.ps-btn--ghost:hover {
-  background: color-mix(in srgb, var(--card) 85%, var(--fg) 15%);
-}
-@media (max-width: 480px) {
-  .ps-ctaRow {
-    flex-wrap: wrap;
-  }
-  .ps-ctaRow .ps-btn {
-    flex: 1 1 auto;
-  }
 }
 
-/* ===== Contrôles ===== */
 .ps-controls {
   grid-area: controls;
   display: flex;
@@ -222,55 +207,50 @@
   font-weight: 700;
 }
 
-/* ===== Dots (visibles, actives allongées) ===== */
+/* Dots dans la colonne dédiée */
 .ps-dots {
-  position: static; /* <- plus d'absolu */
-  transform: none;
-  grid-column: 2;
-  grid-row: 1 / -1;
+  grid-area: dots;
   align-self: center;
   justify-self: center;
   display: grid;
   gap: 10px;
   z-index: 1;
 }
-.ps-card .ps-dots .ps-dot {
+.ps-dot {
   width: 10px;
   height: 10px;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.45);
-  background: #caced8; /* gris inactives */
+  background: #cfd3db;
   opacity: 0.8;
   transition: 0.25s;
-  box-shadow: none;
-}
-.ps-card .ps-dots .ps-dot.is-active {
-  opacity: 1;
-  background: var(--ps-accent);
-  height: 28px; /* allongée (vertical) en desktop */
-  width: 10px;
-  box-shadow: 0 0 20px color-mix(in oklab, var(--ps-accent) 35%, transparent);
-}
-@media (max-width: 768px) {
-  .ps-dots {
-    position: static;
-    transform: none;
-    display: flex;
-    gap: 8px;
-    margin-top: 12px;
-  }
-  .ps-card .ps-dots .ps-dot.is-active {
-    height: 10px;
-    width: 28px;
-  } /* allongée horizontalement */
 }
 
-/* ===== Grille “Derniers projets” (HOME) ===== */
+@media (max-width: 768px) {
+  .ps-content {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "meta"
+      "title"
+      "text"
+      "controls"
+      "dots"
+      "cta";
+  }
+  .ps-dots {
+    display: flex;
+    gap: 8px;
+    justify-self: start;
+    margin-top: 12px;
+  }
+}
+
 #home .projects-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: clamp(32px, 3.5vw, 48px);
   align-items: start;
+  margin-block-start: clamp(22px, 5vw, 84px);
 }
 @media (max-width: 980px) {
   #home .projects-grid {
@@ -285,56 +265,11 @@
 }
 #home .project-card .ps-card {
   height: 100%;
-}
-
-/* Stabilité */
-.project-card {
-  display: grid;
-  position: relative;
-  isolation: isolate;
-}
-.project-card > .card__body {
-  display: grid;
-  gap: 10px;
-  align-content: start;
-}
-.projects-grid .project-card .ps-card {
   min-block-size: 380px;
 }
-@media (max-width: 768px) {
-  .projects-grid .project-card .ps-card {
-    min-block-size: 380px;
-  }
-}
 
-/* Halo home un peu contenu */
-#home .project-card::before {
-  inset: -6% -4%;
-}
-/* ===========================
-   PUNCH — habillage accentué
-   =========================== */
-
-/* Ruban/badge optionnel */
-.ps-card .ps-badge {
-  position: absolute;
-  top: 10px;
-  left: 12px;
-  z-index: 4;
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-weight: 700;
-  font-size: 0.75rem;
-  letter-spacing: 0.02em;
-  color: #111;
-  background: color-mix(in oklab, var(--ps-accent) 88%, #fff 12%);
-  border: 1px solid color-mix(in oklab, var(--ps-accent), #000 18%);
-  box-shadow: 0 8px 18px color-mix(in oklab, var(--ps-accent) 26%, transparent);
-}
-
-/* Bordure dégradée + halo interne */
+/* Version punchy (optionnelle) */
 .ps-card.is-punchy {
-  position: relative;
   border: 1px solid transparent;
   background: radial-gradient(
         80% 120% at 50% 0%,
@@ -343,7 +278,6 @@
       )
       border-box,
     var(--ps-bg);
-  border-radius: 24px;
   box-shadow: 0 16px 40px color-mix(in oklab, var(--ps-accent) 14%, transparent),
     var(--shadow);
 }
@@ -359,209 +293,81 @@
     transparent 60%
   );
   opacity: 0.45;
-  filter: saturate(110%);
 }
-
-@media (hover: hover) {
-  .ps-card.is-punchy:hover {
-    box-shadow: 0 22px 60px
-        color-mix(in oklab, var(--ps-accent) 20%, transparent),
-      var(--shadow);
-  }
-}
-
-/* Média plus vibrant + balayage */
-.ps-card.is-punchy .ps-media {
-  background: conic-gradient(
-    from 200deg at 20% 0%,
-    color-mix(in oklab, var(--ps-accent) 38%, #fe8a39 22%) 0 25%,
-    color-mix(in oklab, var(--ps-accent) 36%, #22d3ee 24%) 25% 50%,
-    color-mix(in oklab, var(--ps-accent) 34%, #8b5cf6 22%) 50% 75%,
-    var(--ps-accent) 75% 100%
-  );
-}
-.ps-card.is-punchy .ps-media::before {
-  content: "";
+.ps-badge {
   position: absolute;
-  inset: -20% -40%;
-  transform: translateX(-30%) skewX(-14deg);
-  background: linear-gradient(
-    100deg,
-    transparent 0%,
-    color-mix(in oklab, #fff 28%, transparent) 48%,
-    transparent 62%
-  );
-  border-radius: 28px;
-  mix-blend-mode: screen;
-  opacity: 0;
-  pointer-events: none;
-}
-@media (hover: hover) {
-  .ps-card.is-punchy:hover .ps-media::before {
-    animation: psSweep 1.4s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
-  }
-}
-@keyframes psSweep {
-  0% {
-    transform: translateX(-30%) skewX(-14deg);
-    opacity: 0;
-  }
-  10% {
-    opacity: 0.45;
-  }
-  70% {
-    opacity: 0.35;
-  }
-  100% {
-    transform: translateX(120%) skewX(-14deg);
-    opacity: 0;
-  }
-}
-
-/* Dots néon */
-.ps-card.is-punchy .ps-dots .ps-dot {
-  border-color: color-mix(in oklab, #fff 55%, transparent);
-  background: #cfd3db;
-}
-.ps-card.is-punchy .ps-dots .ps-dot.is-active {
-  background: var(--ps-accent);
-  box-shadow: 0 0 22px color-mix(in oklab, var(--ps-accent) 40%, transparent);
-}
-
-/* Contrôles ton sur ton */
-.ps-card.is-punchy .ps-arrow {
-  background: color-mix(in oklab, var(--ps-accent) 18%, transparent);
-  border: 1px solid color-mix(in oklab, var(--ps-accent) 28%, #000 72%);
-}
-.ps-card.is-punchy .ps-track {
-  background: color-mix(in oklab, var(--ps-accent) 20%, var(--border));
-}
-
-/* CTA assortis à l’accent */
-.ps-card.is-punchy .ps-btn {
-  background: linear-gradient(
-    180deg,
-    color-mix(in oklab, var(--ps-accent) 85%, #fff 15%),
-    color-mix(in oklab, var(--ps-accent) 70%, #000 10%)
-  );
+  top: 10px;
+  left: 12px;
+  z-index: 4;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.75rem;
   color: #111;
-  border: 1px solid color-mix(in oklab, var(--ps-accent), #000 16%);
-  box-shadow: 0 12px 24px color-mix(in oklab, var(--ps-accent) 30%, transparent),
-    0 0 0 1px color-mix(in oklab, #000 10%, transparent) inset;
+  background: color-mix(in oklab, var(--ps-accent) 88%, #fff 12%);
+  border: 1px solid color-mix(in oklab, var(--ps-accent), #000 18%);
 }
-.ps-card.is-punchy .ps-btn:hover {
-  filter: saturate(1.05) brightness(1.02);
+/* --- make project cards use full width in the grid --- */
+.projects-grid,
+.project-card,
+.project-card .card__body,
+.project-card .ps-card {
+  min-width: 0; /* allow children to shrink instead of overflow */
 }
-.ps-card.is-punchy .ps-btn.ps-btn--ghost {
-  background: transparent;
-  color: color-mix(in oklab, var(--ps-accent) 86%, #fff 14%);
-  border-color: color-mix(in oklab, var(--ps-accent) 50%, var(--border));
-}
-.ps-card.is-punchy .ps-btn.ps-btn--ghost:hover {
-  background: color-mix(in oklab, var(--ps-accent) 12%, transparent);
-}
-/* ==== 1) Pas de fond sous les images ==== */
-/* si un <img> est présent, on enlève le dégradé et le halo */
-.ps-media:has(img) {
-  background: transparent !important;
-  box-shadow: none !important;
-}
-.ps-media:has(img)::after {
-  display: none !important;
+.project-card .ps-card {
+  width: 100%; /* stretch the slider card */
 }
 
-/* on garde le fond dégradé SEULEMENT pour le placeholder */
-.ps-media:has(.ps-media__ph) {
-  background: linear-gradient(147deg, #fe8a39 0%, var(--ps-accent) 74%);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.16),
-    0 24px 64px color-mix(in srgb, var(--ps-accent) 24%, transparent),
-    0 0 0 1px color-mix(in srgb, #000 6%, transparent) inset;
-}
-.ps-media:has(.ps-media__ph)::after {
-  opacity: 0.75;
+/* --- give more room to the text column (was too tight) --- */
+.ps-inner {
+  /* old: grid-template-columns: 280px 1fr; */
+  grid-template-columns: clamp(240px, 32%, 300px) 1fr;
 }
 
-/* petit relief discret sur la photo elle-même (optionnel) */
-.ps-media img {
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
-}
-
-/* ==== 2) Cartes moins flashy (glow & contrast adoucis) ==== */
-.ps-card {
-  border-color: color-mix(in srgb, var(--border) 85%, transparent);
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12); /* avant: plus fort */
-  background: color-mix(in srgb, var(--card) 96%, transparent);
-}
-:root[data-theme="dark"] .ps-card {
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28);
-}
-
-/* Dots actifs : halo plus doux */
-.ps-card .ps-dots .ps-dot.is-active {
-  box-shadow: 0 0 10px color-mix(in oklab, var(--ps-accent) 22%, transparent);
-}
-
-/* Boutons moins « glossy » */
-.ps-btn {
-  box-shadow: none;
-  filter: saturate(98%);
-}
-.ps-btn:hover {
-  filter: brightness(1.03) saturate(100%);
-}
-@media (max-width: 768px) {
-  .ps-content {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "meta"
-      "title"
-      "text"
-      "controls"
-      "cta";
-  }
-  .ps-dots {
-    grid-column: auto;
-    grid-row: auto;
-    position: static;
-    transform: none;
-    display: flex;
-    gap: 8px;
-    margin-top: 12px;
-    justify-self: start;
-  }
-}
-/* 1) Donne une colonne dots et exclue la rangée CTA */
+/* --- the content grid reserved space for dots which reduces text area.
+       Keep the dots but don't starve the copy column. --- */
 .ps-content {
-  display: grid;
-  grid-template-columns: 1fr 28px; /* colonne dédiée aux dots */
-  column-gap: 16px;
-  grid-template-rows: auto auto 1fr auto auto; /* meta, title, text, controls, cta */
-  grid-template-areas:
-    "meta     dots"
-    "title    dots"
-    "text     dots"
-    "controls dots"
-    "cta      cta"; /* ⟵ cta ne partage pas la colonne dots */
-  gap: 10px;
-  padding-inline-end: 0; /* plus besoin du padding pour les dots */
+  /* old: grid-template-columns: 1fr 28px; */
+  grid-template-columns: 1fr minmax(24px, 28px);
 }
 
-/* 2) Place correctement les dots et annule l'absolu du JSX */
-.ps-dots {
-  grid-area: dots;
-  position: static !important;
-  right: auto !important;
-  bottom: auto !important;
-  transform: none !important;
-  align-self: center; /* centrées sur la hauteur meta→controls */
-  justify-self: center;
-  display: grid;
-  gap: 10px;
-  z-index: 1;
+/* --- prevent the title from “chopping” words and getting weird breaks --- */
+.ps-title {
+  overflow-wrap: break-word; /* instead of anywhere (less aggressive) */
+  word-break: normal;
 }
 
-/* 3) Mobile : repasse en 1 colonne et insère les dots avant les CTA */
+/* --- ensure the whole card doesn't get visually smaller in tall viewports --- */
+.projects-grid .project-card .ps-card {
+  /* keep height but avoid implicit shrinking visuals */
+  min-block-size: 420px; /* was 380px; tweak if you prefer */
+}
+
+/* --- on medium screens, relax the media width a little so the text breathes --- */
+@media (max-width: 1200px) and (min-width: 981px) {
+  .ps-inner {
+    grid-template-columns: clamp(220px, 30%, 280px) 1fr;
+  }
+}
+/* ===== Fix responsive uniquement mobile (≤768px) ===== */
 @media (max-width: 768px) {
+  /* 1) L'image doit prendre toute la largeur, pas 280px */
+  .ps-media {
+    width: 100% !important; /* override le width:min(280px,100%) */
+    max-width: none !important;
+    height: clamp(220px, 56vw, 300px); /* hauteur fluide (garde ton look) */
+  }
+  .ps-media img,
+  .ps-media .ps-media__ph {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* 2) Une seule colonne pour le contenu */
+  .ps-inner {
+    grid-template-columns: 1fr;
+  }
   .ps-content {
     grid-template-columns: 1fr;
     grid-template-areas:
@@ -571,93 +377,60 @@
       "controls"
       "dots"
       "cta";
+    min-block-size: auto;
   }
-  .ps-dots {
-    justify-self: start;
+
+  /* 3) Contrôles : rangée horizontale, pas d’empilement */
+  .ps-controls {
     display: flex;
-    gap: 8px;
-    margin-top: 12px;
+    align-items: center;
+    justify-content: space-between; /* flèche ← — barre — → */
+    gap: 12px;
+    margin-top: 10px;
+    min-block-size: 48px;
   }
-}
-/* Pile interne du bloc textuel */
-.ps-copy {
-  display: grid;
-  grid-template-areas:
-    "meta"
-    "title"
-    "text";
-  gap: 6px;
-  align-content: start;
-  min-width: 0; /* empêche la boîte de déborder */
-}
-
-/* Les zones redeviennent explicites, mais au sein de .ps-copy */
-.ps-meta {
-  grid-area: meta;
-}
-.ps-title {
-  grid-area: title;
-  line-height: 1.15; /* évite l’écrasement */
-  overflow: hidden; /* sécurité */
-  display: -webkit-box;
-  -webkit-line-clamp: 2; /* reste à 2 lignes */
-  -webkit-box-orient: vertical;
-  overflow-wrap: anywhere; /* casse les longs mots/URLs */
-  word-break: break-word;
-  hyphens: auto;
-  /* optionnel: borne dure équivalente à 2 lignes */
-  max-height: calc(1.15em * 2 + 2px);
-}
-.ps-text {
-  grid-area: text;
-  margin-top: 2px;
-}
-
-@media (max-width: 768px) {
-  .ps-title {
-    -webkit-line-clamp: 3;
-    max-height: none;
+  .ps-arrow {
+    flex: 0 0 auto; /* empêche le wrap vertical */
+    inline-size: 42px;
+    block-size: 42px;
+    border-radius: 12px;
   }
-}
-
-#home .projects-grid {
-  margin-block-start: clamp(22px, 5vw, 84px); /* ↑ avant c’était ~0 */
-}
-
-/* Si chaque colonne a un petit titre + paragraphe au-dessus de la card,
-   on ajoute aussi un souffle sous ces éléments */
-#home .projects-grid :where(h3, h4, .subhead, p) + .ps-card {
-  margin-block-start: clamp(12px, 13vw, 54px);
-}
-/* ——— Dots horizontaux SEULEMENT en mobile ——— */
-@media (max-width: 768px) {
-  /* La zone texte repasse en 1 colonne et expose une rangée "dots" */
-  .ps-content {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "meta"
-      "title"
-      "text"
-      "controls"
-      "dots" /* ⬅︎ les dots viennent ici */
-      "cta";
+  .ps-track {
+    display: block; /* garde la barre… */
+    flex: 1 1 auto; /* …et elle pousse correctement */
+    min-width: 120px; /* évite qu’elle “s’écrase” */
   }
 
-  /* Les dots deviennent une ligne horizontale */
+  /* 4) Dots centrés sous les contrôles */
   .ps-dots {
-    grid-area: dots;
-    position: static !important;
-    transform: none !important;
-    display: flex !important;
-    flex-direction: row;
+    display: flex;
+    justify-self: center; /* au centre, pas collés à gauche */
     gap: 8px;
-    justify-self: start; /* ou center si tu préfères */
-    margin-top: 12px;
+    margin-top: 10px;
   }
 
-  /* Actif = pastille allongée horizontalement */
-  .ps-card .ps-dots .ps-dot.is-active {
-    width: 28px;
-    height: 10px;
+  /* 5) CTA flexibles (2 colonnes, puis 1 si très étroit) */
+  .ps-ctaRow {
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .ps-ctaRow .ps-btn {
+    flex: 1 1 44%;
+    min-width: 44%;
+  }
+  @media (max-width: 380px) {
+    .ps-ctaRow .ps-btn {
+      flex-basis: 100%;
+      min-width: 100%;
+    }
+  }
+  /* Espace entre le titre "Mes derniers projets" et les cards */
+  section[aria-labelledby="dern-projets"] .section-head {
+    margin-bottom: clamp(18px, 3.5vw, 40px);
+  }
+
+  /* ceinture + bretelles si un reset annule le margin-bottom */
+  section[aria-labelledby="dern-projets"] .section-head + .projects-grid {
+    margin-top: clamp(18px, 3.5vw, 40px);
   }
 }

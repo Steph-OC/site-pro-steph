@@ -189,12 +189,8 @@ import "@/styles/components/pointer-cursor.css";
             btn.title = labelFor(pref);
           }
         }
-        // toggle correct
-        function next(pref) {
-          return pref === "light" ? "dark" : "light";
-        }
+        const next = (pref) => (pref === "light" ? "dark" : "light");
 
-        // init: localStorage > dataset > media query
         const saved =
           localStorage.getItem(KEY) ||
           document.documentElement.dataset.theme ||

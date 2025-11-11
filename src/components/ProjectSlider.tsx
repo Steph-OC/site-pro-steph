@@ -16,8 +16,8 @@ export type ProjectSliderProps = {
   className?: string;
   siteUrl?: string; // URL externe
   detailsUrl?: string; // URL interne "détails"
-  punch?: boolean; // 🔧 active le style “punchy” (défaut: true)
-  badge?: string; // 🔧 petit ruban (ex: "Nouveau", "Case study")
+  punch?: boolean; // style “punchy”
+  badge?: string; // ruban
 };
 
 export default function ProjectSlider({
@@ -41,7 +41,6 @@ export default function ProjectSlider({
       }))
     : [];
 
-  // Fallback si aucune slide
   if (list.length === 0) {
     return (
       <section
@@ -55,7 +54,7 @@ export default function ProjectSlider({
             <div className="ps-media__ph" />
           </div>
           <div className="ps-content">
-            <div>
+            <div className="ps-copy">
               <span className="ps-meta">À venir</span>
               <h3 className="ps-title">Contenu en cours</h3>
               <p className="ps-text">
@@ -87,14 +86,12 @@ export default function ProjectSlider({
     );
   }
 
-  // État & helpers
   const [index, setIndex] = React.useState(0);
   const len = list.length;
   const safe = (i: number) => ((i % len) + len) % len;
   const go = (dir: 1 | -1) => setIndex((i) => safe(i + dir));
   const set = (i: number) => setIndex(safe(i));
 
-  // Molette
   const wheelRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
     const el = wheelRef.current;
@@ -113,20 +110,17 @@ export default function ProjectSlider({
     return () => el.removeEventListener("wheel", onWheel as any);
   }, [len]);
 
-  // Auto-play
   React.useEffect(() => {
     if (reduce || len <= 1) return;
     const id = window.setInterval(() => go(1), 4500);
     return () => window.clearInterval(id);
   }, [reduce, len]);
 
-  // Clavier
   const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "ArrowLeft") go(-1);
     if (e.key === "ArrowRight") go(1);
   };
 
-  // Active: vertical en desktop, horizontal en mobile
   const [isMobile, setIsMobile] = React.useState(false);
   React.useEffect(() => {
     const m = window.matchMedia("(max-width: 768px)");
@@ -145,7 +139,6 @@ export default function ProjectSlider({
     exit: { opacity: 0, y: -16, scale: 0.98 },
   };
 
-  // Dots styles (JS, pour gérer le mode mobile vs desktop)
   const dotBase: React.CSSProperties = {
     display: "block",
     width: 10,
@@ -232,7 +225,6 @@ export default function ProjectSlider({
             </motion.div>
           </AnimatePresence>
 
-          {/* Contrôles */}
           {len > 1 && (
             <div className="ps-controls">
               <button
@@ -253,7 +245,6 @@ export default function ProjectSlider({
             </div>
           )}
 
-          {/* CTA */}
           {(href || detailsUrl) && (
             <div className="ps-ctaRow">
               {href && (
@@ -279,23 +270,8 @@ export default function ProjectSlider({
             </div>
           )}
 
-          {/* DOTS */}
           {len > 1 && (
-            <div
-              className="ps-dots"
-              role="tablist"
-              aria-label="Pagination"
-              style={{
-                position: "absolute",
-                right: 12,
-                bottom: 12,
-                display: "grid",
-                gap: 10,
-                justifyItems: "center",
-                alignContent: "center",
-                zIndex: 5,
-              }}
-            >
+            <div className="ps-dots" role="tablist" aria-label="Pagination">
               {list.map((_, i) => (
                 <button
                   key={i}

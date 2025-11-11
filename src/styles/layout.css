@@ -1,46 +1,52 @@
-/* src/styles/layout.css — GLOBAL CLEAN */
 @layer layout {
-  /* === Rythme vertical GLOBAL (toutes pages) === */
+  /* === Gabarits de conteneur GLOBAUX (toutes pages) === */
   :root {
-    /* Espace ENTRE sections */
+    /* largeur commune pour header, main, sections… */
+    --container: clamp(1120px, 96vw, 1440px);
+    --container-xl: clamp(1200px, 96vw, 1536px);
+    --container-pad: 20px;
+    /* Rythme vertical global */
     --section-gap: clamp(64px, 8vw, 120px);
-    /* Padding INTERNE de chaque section */
     --section-pad: clamp(24px, 3.5vw, 40px);
   }
 
-  /* Sections (directes / dans un wrapper) */
+  .container {
+    max-width: var(--container);
+    margin-inline: auto;
+    padding-inline: var(--container-pad);
+  }
+  .container--xl {
+    max-width: var(--container-xl);
+  }
+
+  /* === Rythme vertical GLOBAL (toutes pages) === */
   main > section,
   main > * > section {
-    position: relative; /* base neutre */
+    position: relative;
     z-index: 0;
     margin: 0;
     padding-block: var(--section-pad);
-    background: transparent; /* évite les “bandes” opaques */
-    border: 0; /* supprime lignes fantômes */
-    overflow: visible; /* ne coupe rien (halos, ombres…) */
+    background: transparent;
+    border: 0;
+    overflow: visible;
   }
 
-  /* Espace entre sections sœurs */
+  /* Espacement entre sections / wrappers */
   main > section + section,
-  main > * > section + section {
-    margin-top: var(--section-gap);
-  }
-
-  /* Espace entre wrappers frères éventuels */
+  main > * > section + section,
   main > * + * {
     margin-top: var(--section-gap);
   }
 
-  /* --- Sections avec halo (z-index propre, pas de clipping) --- */
+  /* --- Sections avec halo --- */
   .section--halo {
     position: relative;
-    z-index: 2; /* au-dessus d’une section “normale” précédente */
-    isolation: isolate; /* le ::before reste dans son contexte */
+    z-index: 2;
+    isolation: isolate;
     overflow: visible;
   }
   .section--halo::before {
-    /* dimensions/teintes/animations définies dans halos.css */
-    z-index: 0; /* IMPORTANT : pas de -1 */
+    z-index: 0;
     pointer-events: none;
     -webkit-mask-image: radial-gradient(
       120% 110% at 50% 55%,
@@ -55,10 +61,10 @@
   }
   .section--halo > * {
     position: relative;
-    z-index: 1; /* contenu au-dessus de son halo */
+    z-index: 1;
   }
 
-  /* Variants sans décor éventuel */
+  /* Variantes sans décor */
   .section--alt,
   .section--stripe,
   .section--cut,
@@ -73,7 +79,7 @@
     content: none !important;
   }
 
-  /* Panic button si un wrapper clippe malgré tout */
+  /* Anti-clipping agressif si besoin */
   .no-section-bg,
   .no-section-bg * {
     overflow: visible !important;
@@ -97,25 +103,9 @@
     content: none !important;
     background: none !important;
   }
-  /* layout.css */
-  /* espace entre le hero et la 1ʳᵉ section */
-  main#home > section:first-of-type,
+
+  /* Marge spécifique avant la 1ʳᵉ section de la Home */
   #home > section:first-of-type {
     margin-top: clamp(60px, 10vw, 200px);
   }
-  /* Rythme global */
-  main > section,
-  main > * > section {
-    margin: 0;
-    padding-block: var(--section-pad);
-  }
-
-  main > section + section,
-  main > * > section + section,
-  main > * + * {
-    margin-top: var(--section-gap);
-  }
-
-  /* Supprime la règle énorme : */
-  /* main#home > section:first-of-type, #home > section:first-of-type { ... } */
 }

@@ -191,8 +191,8 @@ export function normalizeProjet(item: WPItem): NormalizedProjet {
 
 export async function getProjets({ per_page = 12, page = 1 } = {}) {
   const items = await wpFetchJSON<WPItem[]>(
-    `/projets?per_page=${per_page}&page=${page}&_embed=1`
-  );
+   `/projets?per_page=${limit}&_fields=${fields}&_embed=1&acf_format=standard`
+ );
   return (Array.isArray(items) ? items : []).map(normalizeProjet);
 }
 
@@ -311,9 +311,9 @@ export async function getProjetBySlugWithACF(slug: string) {
     ]),
   ].join(",");
 
-  const arr = await wpFetchJSON<WPItem[]>(
-    `/projets?slug=${encodeURIComponent(slug)}&_fields=${fields}&_embed=1`
-  );
+ const arr = await wpFetchJSON<WPItem[]>(
+   `/projets?slug=${encodeURIComponent(slug)}&_fields=${fields}&_embed=1&acf_format=standard`
+ );
   const item = Array.isArray(arr) ? arr[0] : undefined;
   if (!item) return undefined;
 
