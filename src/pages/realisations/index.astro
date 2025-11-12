@@ -83,7 +83,7 @@ function haloVarsFromSlug(slug, accent) {
 ---
 
 <SiteLayout {title} {description}>
-  <main class="halo-desync halo-page realisations-page">
+  <main class="halo-desync halo-page realisations realisations-page">
     <!-- entête visuel -->
     <section
       class="section--halo halo-pulse-gentle"
@@ -139,36 +139,6 @@ function haloVarsFromSlug(slug, accent) {
             </div>
           )
         }
-
-        <nav
-          class="pagination"
-          aria-label="Pagination"
-          style="margin-top: var(--space-6, 32px);"
-        >
-          <span class="pagination__count"
-            >{total} projets · page {page}/{pages}</span
-          >
-          <div class="pagination__actions">
-            {
-              page > 1 ? (
-                <a href={`${basePath}?page=${page - 1}`} rel="prev">
-                  ← Précédent
-                </a>
-              ) : (
-                <span aria-disabled="true">← Précédent</span>
-              )
-            }
-            {
-              page < pages ? (
-                <a href={`${basePath}?page=${page + 1}`} rel="next">
-                  Suivant →
-                </a>
-              ) : (
-                <span aria-disabled="true">Suivant →</span>
-              )
-            }
-          </div>
-        </nav>
       </div>
     </section>
   </main>

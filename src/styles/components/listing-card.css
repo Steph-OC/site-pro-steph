@@ -332,3 +332,145 @@ main.realisations .projects-grid {
   box-shadow: 0 18px 36px rgba(0, 0, 0, 0.28),
     0 0 0 1px color-mix(in srgb, #fff 10%, transparent) inset;
 }
+/* ===== ListingCard — Mobile only (≤ 768px) ===== */
+@media (max-width: 768px) {
+  .listingCard {
+    --pad: 14px;
+    --gap: 14px;
+    border-radius: 18px;
+    padding: var(--pad);
+  }
+
+  /* Empilement simple : IMG au-dessus, contenu dessous */
+  .listingCard__inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--gap);
+    align-items: start;
+  }
+
+  /* Media 100% largeur, hauteur via ratio (plus fiable que tailles fixes) */
+  .listingCard__imgWrap {
+    width: 100%;
+    aspect-ratio: 4 / 5; /* adapte à 3/4 si tu préfères */
+    height: auto; /* suit le ratio */
+    margin: 0;
+    transform: none;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .listingCard__img,
+  .listingCard__img.ph {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 16px;
+  }
+
+  /* Contenu compact, pas de padding réservé pour un footer absolu */
+  .listingCard__content {
+    padding: 0;
+    align-content: start;
+    row-gap: 8px;
+  }
+  .listingCard__title {
+    font-size: clamp(18px, 5.2vw, 20px);
+    margin: 2px 0 6px;
+    letter-spacing: 0;
+  }
+  .listingCard__text {
+    font-size: clamp(14px, 4.2vw, 15px);
+    line-height: 1.45;
+  }
+
+  /* Footer en ligne, mais souple et sans position:absolute */
+  .listingCard__footer {
+    position: static;
+    display: grid;
+    grid-template-columns: 1fr auto; /* flèches+piste | CTA */
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .listingCard__controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .listingCard__track {
+    flex: 1 1 auto; /* piste s’étire naturellement */
+    width: auto;
+  }
+  .listingCard__button {
+    padding: 10px 16px;
+    min-height: 40px;
+    border-radius: 999px;
+  }
+
+  /* Dots centrés sous le bloc, pas en colonne droite */
+  .listingCard__dots {
+    position: static;
+    transform: none;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+    right: auto;
+    top: auto;
+  }
+  .dot {
+    inline-size: 10px;
+    block-size: 10px;
+  }
+  .dot.is-active {
+    inline-size: 28px;
+    block-size: 10px;
+  }
+}
+
+/* ===== Ultra-petits écrans (≤ 380px) : CTA sur toute la largeur ===== */
+@media (max-width: 380px) {
+  .listingCard__footer {
+    grid-template-columns: 1fr; /* flèches+piste puis CTA en dessous */
+    gap: 8px;
+  }
+  .listingCard__actions {
+    display: flex;
+  }
+  .listingCard__button {
+    width: 100%;
+  }
+  .listingCard__inner {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr; /* 1: image, 2: contenu */
+  }
+  .listingCard__imgWrap {
+    grid-column: 1;
+    grid-row: 1; /* image d'abord */
+  }
+  .listingCard__content {
+    grid-column: 1;
+    grid-row: 2; /* texte ensuite */
+  }
+}
+/* ===== Espacement entre cartes (desktop + mobile) ===== */
+
+/* grille: plus d'air entre les items */
+.realisations-page .projects-grid {
+  row-gap: clamp(64px, 7vw, 140px) !important; /* ↑ avant: 40–80px */
+}
+
+/* chaque carte garde un petit matelas vertical (au-delà du gap) */
+.listingCard {
+  margin-block: clamp(16px, 3.5vw, 32px);
+}
+
+/* Mobile : resserré mais lisible */
+@media (max-width: 768px) {
+  .realisations-page .projects-grid {
+    row-gap: clamp(28px, 6vw, 48px) !important;
+  }
+  .listingCard {
+    margin-block: clamp(12px, 4vw, 18px);
+  }
+}
