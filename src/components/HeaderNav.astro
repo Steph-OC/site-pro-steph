@@ -1,14 +1,16 @@
 ---
+type Link = { label: string; url: string; opensInNewTab?: boolean };
+
 const WP = (import.meta.env.WP_URL || "").replace(/\/+$/, "");
 
 async function getJSON(u: string) {
   try {
     const r = await fetch(u, { headers: { Accept: "application/json" } });
-    if (!r.ok) return [];
+    if (!r.ok) return [] as Link[];
     const j = await r.json();
-    return Array.isArray(j) ? j : [];
+    return Array.isArray(j) ? (j as Link[]) : ([] as Link[]);
   } catch {
-    return [];
+    return [] as Link[];
   }
 }
 
@@ -22,10 +24,9 @@ function toRelative(url: string) {
 }
 
 function normalizePath(p = "") {
-  // /abc/ -> /abc (sauf pour la racine)
   if (!p) return "/";
   try {
-    const u = new URL(p, "http://x"); // base fictive
+    const u = new URL(p, "http://x");
     let s = u.pathname || "/";
     if (s.length > 1 && s.endsWith("/")) s = s.slice(0, -1);
     return s;
@@ -38,77 +39,82 @@ const endpoint = WP
   ? `${WP}/wp-json/headless/v1/nav?slug=header-nav&allow_page_list=1`
   : "";
 
+/** Fallback local, typé correctement */
+const fallbackLinks: Link[] = [
+  { label: "Accueil", url: "/" },
+  { label: "Services", url: "/services/" },
+  { label: "Réalisations", url: "/realisations/" },
+  { label: "Parlons Web", url: "/parlons-web/" },
+  { label: "Contact", url: "/contact/" },
+];
+
 const rawLinks = endpoint ? await getJSON(endpoint) : [];
-const links = rawLinks
-  .map((l: any) => ({
+const links: Link[] = (rawLinks as any[])
+  .map((l) => ({
     label: String(l?.label || ""),
     url: toRelative(String(l?.url || "#")),
     opensInNewTab: !!l?.opensInNewTab,
   }))
-  .filter((l: any) => l.label && l.url);
+  .filter((l) => l.label && l.url);
 
-// Active state (aria-current)
 const current = normalizePath(Astro.url.pathname);
+const list = links.length ? links : fallbackLinks;
 ---
 
-<nav class="site-nav" aria-label="Navigation principale">
-  <ul class="nav">
-    {
-      links.length ? (
-        links.map((l: any) => {
-          const href = normalizePath(l.url);
-          const isActive =
-            href === "/"
-              ? current === "/"
-              : current === href || current.startsWith(href + "/");
-
-          return (
-            <li>
-              <a
-                href={l.url}
-                aria-current={isActive ? "page" : undefined}
-                target={l.opensInNewTab ? "_blank" : undefined}
-                rel={l.opensInNewTab ? "noopener" : undefined}
-                class={isActive ? "is-active" : undefined}
-              >
-                {l.label}
-              </a>
-            </li>
-          );
-        })
-      ) : (
-        // fallback si menu vide
-        <>
-          <li>
-            <a href="/" aria-current={current === "/" ? "page" : undefined}>
-              Accueil
-            </a>
-          </li>
-        </>
-      )
-    }
-  </ul>
-</nav>
+<!-- IMPORTANT: ne pas encapsuler dans <nav> ici.
+     SiteLayout fournit déjà <nav id="site-nav" class="site-nav"> -->
+<ul class="nav">
+  {
+    list.map((l) => {
+      const href = normalizePath(l.url);
+      const isActive =
+        href === "/"
+          ? current === "/"
+          : current === href || current.startsWith(href + "/");
+      return (
+        <li>
+          <a
+            href={l.url}
+            aria-current={isActive ? "page" : undefined}
+            target={l.opensInNewTab ? "_blank" : undefined}
+            rel={l.opensInNewTab ? "noopener" : undefined}
+            class={isActive ? "is-active" : undefined}
+          >
+            {l.label}
+          </a>
+        </li>
+      );
+    })
+  }
+</ul>
 
 <style>
   .nav {
     display: flex;
-    gap: 1rem;
+    gap: clamp(12px, 2.2vw, 24px);
     list-style: none;
     margin: 0;
     padding: 0;
-    flex-wrap: wrap;
     align-items: center;
+
+    /* >>> forcer le centrage et éviter les retours */
+    justify-content: center;
+    flex-wrap: nowrap;
+    width: max-content; /* la UL mesure son contenu */
+    margin-inline: auto; /* et se centre dans .site-nav si besoin */
   }
+
   .nav li {
     margin: 0;
   }
+
   .nav a {
     text-decoration: none;
     padding: 0.35rem 0.2rem;
     border-radius: 0.25rem;
     position: relative;
   }
+
   .nav a::after {
     content: "";
     position: absolute;
@@ -122,14 +128,17 @@ const current = normalizePath(Astro.url.pathname);
     opacity: 0.85;
     transition: transform 0.18s ease;
   }
+
   .nav a:hover::after,
   .nav a:focus-visible::after {
     transform: scaleX(1);
   }
+
   .nav a.is-active,
   .nav a[aria-current="page"] {
     color: var(--orange, #ff9900);
   }
+
   .nav a.is-active::after,
   .nav a[aria-current="page"]::after {
     transform: scaleX(1);

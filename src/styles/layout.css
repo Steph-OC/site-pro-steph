@@ -1,15 +1,13 @@
 @layer layout {
-  /* === Gabarits de conteneur GLOBAUX (toutes pages) === */
+  /* ========== BASE LAYOUT (inchangé) ========== */
   :root {
-    /* largeur commune pour header, main, sections… */
     --container: clamp(1120px, 96vw, 1440px);
     --container-xl: clamp(1200px, 96vw, 1536px);
     --container-pad: 20px;
-    /* Rythme vertical global */
     --section-gap: clamp(64px, 8vw, 120px);
     --section-pad: clamp(24px, 3.5vw, 40px);
+    --header-h: 64px;
   }
-
   .container {
     max-width: var(--container);
     margin-inline: auto;
@@ -18,8 +16,6 @@
   .container--xl {
     max-width: var(--container-xl);
   }
-
-  /* === Rythme vertical GLOBAL (toutes pages) === */
   main > section,
   main > * > section {
     position: relative;
@@ -30,15 +26,14 @@
     border: 0;
     overflow: visible;
   }
-
-  /* Espacement entre sections / wrappers */
   main > section + section,
   main > * > section + section,
   main > * + * {
     margin-top: var(--section-gap);
   }
-
-  /* --- Sections avec halo --- */
+  #home > section:first-of-type {
+    margin-top: clamp(60px, 10vw, 200px);
+  }
   .section--halo {
     position: relative;
     z-index: 2;
@@ -63,8 +58,6 @@
     position: relative;
     z-index: 1;
   }
-
-  /* Variantes sans décor */
   .section--alt,
   .section--stripe,
   .section--cut,
@@ -78,12 +71,26 @@
   .section--aurora-corners::after {
     content: none !important;
   }
-
-  /* Anti-clipping agressif si besoin */
-  .no-section-bg,
-  .no-section-bg * {
+  .no-section-bg {
     overflow: visible !important;
   }
+
+  /* Never force overflow on replaced elements (Chromium bug/quirk) */
+  .no-section-bg :where(img, video, canvas, svg) {
+    overflow: clip !important; /* or hidden if clip unsupported */
+  }
+  .ps-card .ps-media {
+    overflow: hidden !important;
+  }
+  .ps-card .ps-media > img {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    object-fit: cover !important;
+    overflow: clip !important; /* don’t let the image paint outside */
+  }
+
   .no-section-bg > section,
   .no-section-bg > * > section,
   .no-section-bg > section > .container,
@@ -104,8 +111,290 @@
     background: none !important;
   }
 
-  /* Marge spécifique avant la 1ʳᵉ section de la Home */
-  #home > section:first-of-type {
-    margin-top: clamp(60px, 10vw, 200px);
+  /* ========== HEADER / NAV ========== */
+
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: var(--bg, transparent);
+  }
+
+  /* --- Burger button (style commun, caché en desktop) --- */
+  .burger {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: 42px;
+    block-size: 42px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: color-mix(in srgb, var(--card) 85%, transparent);
+    color: var(--orange);
+  }
+  .burger__box {
+    position: relative;
+    inline-size: 18px;
+    block-size: 12px;
+  }
+  .burger__bar,
+  .burger__bar::before,
+  .burger__bar::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    border-radius: 2px;
+    background: currentColor;
+    transition: transform 0.25s ease, opacity 0.2s ease;
+  }
+  .burger__bar {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .burger__bar::before {
+    top: -6px;
+  }
+  .burger__bar::after {
+    top: 6px;
+  }
+  .burger[aria-expanded="true"] .burger__bar {
+    transform: translateY(-50%) rotate(45deg);
+  }
+  .burger[aria-expanded="true"] .burger__bar::before {
+    opacity: 0;
+    transform: rotate(-90deg) translateX(-6px);
+  }
+  .burger[aria-expanded="true"] .burger__bar::after {
+    transform: rotate(-90deg) translateX(6px);
+  }
+
+  /* --- Overlay sous le panneau --- */
+  .nav-overlay {
+    position: fixed;
+    inset: 0;
+    background: color-mix(in srgb, #000 40%, transparent);
+    backdrop-filter: blur(2px);
+    z-index: 600;
+  }
+  .nav-overlay[hidden] {
+    display: none !important;
+  }
+
+  /* ===== Desktop (≥881px) : logo | NAV CENTRÉE | thème ===== */
+  @media (min-width: 881px) {
+    .site-header .container.nav {
+      display: grid;
+      grid-template-columns: auto 1fr auto; /* logo | nav | theme */
+      align-items: center;
+      gap: 16px;
+    }
+    .brand {
+      grid-column: 1;
+      justify-self: start;
+    }
+    #theme-toggle {
+      grid-column: 3;
+      justify-self: end;
+    }
+
+    /* le conteneur de nav n'occupe que ses liens et est centré */
+    .site-nav {
+      grid-column: 2;
+      justify-self: center;
+      width: max-content;
+      min-width: 0;
+    }
+    .site-nav .nav,
+    .site-nav ul {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(12px, 2.2vw, 24px);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+    }
+
+    .burger {
+      display: none !important;
+    }
+  }
+
+  /* ===== Mobile (≤880px) : grille 3 colonnes + panneau haut ===== */
+  @media (max-width: 880px) {
+    .site-header .container.nav {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+    .brand {
+      grid-column: 1;
+    }
+    .burger {
+      display: inline-flex;
+      grid-column: 2;
+      justify-self: center;
+    }
+    #theme-toggle {
+      grid-column: 3;
+      justify-self: end;
+    }
+
+    /* cacher la nav inline : elle vit dans le panneau */
+    .site-nav .nav {
+      display: none;
+    }
+
+    /* panneau qui descend du haut */
+    #site-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: var(--header-h, 64px);
+      width: 100vw;
+      max-height: calc(100dvh - var(--header-h, 64px));
+      overflow: auto;
+      padding: 12px clamp(16px, 4vw, 22px) 18px;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+      transform: translateY(-8%);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.2s ease;
+      z-index: 700; /* > overlay, < header (header reste au-dessus du contenu) */
+    }
+    #site-nav[data-state="open"] {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #site-nav .nav,
+    #site-nav ul {
+      display: grid !important;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    #site-nav a {
+      display: block;
+      padding: 12px 10px;
+      border-radius: 10px;
+      text-decoration: none;
+      border: 1px solid transparent;
+      text-align: left;
+    }
+    #site-nav a:hover,
+    #site-nav a:focus-visible {
+      background: color-mix(in srgb, var(--card) 70%, var(--fg) 30%);
+      border-color: var(--border);
+    }
+  }
+
+  /* pas de scroll quand le panneau est ouvert */
+  .no-scroll {
+    overflow: hidden;
+  }
+
+  /* si un <aside> sticky existe, qu’il reste bas dans la pile */
+  aside[style*="position:fixed"],
+  aside.is-fixed {
+    z-index: 10 !important;
+  }
+
+  .theme-icon {
+    display: block;
+  }
+  /* --- ProjectSlider: verrouiller l'image dans son cadre --- */
+  .ps-card .ps-media {
+    overflow: hidden; /* coupe ce qui dépasse */
+    border-radius: 20px;
+  }
+
+  /* neutralise les règles globales (height:auto, max-width, etc.) */
+  .ps-card .ps-media > img {
+    display: block;
+    inline-size: 100%;
+    block-size: 100% !important; /* reprend la main sur height */
+    max-inline-size: none; /* évite un rétrécissement imprévu */
+    object-fit: cover; /* remplissage propre */
+    border-radius: 16px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+  }
+
+  /* Mobile : utiliser un ratio au lieu d'une hauteur figée */
+  @media (max-width: 768px) {
+    .ps-card .ps-media {
+      aspect-ratio: 16 / 10; /* adapte si tu préfères 4/3, 3/2, etc. */
+      block-size: auto; /* la hauteur suit le ratio */
+    }
+    .ps-card .ps-media > img {
+      block-size: 100% !important; /* garde le cover dans le ratio */
+    }
+  }
+  /* ==== ProjectSlider — reset fort et fiable ==== */
+
+  /* Grille interne identique à l'origine */
+  .ps-card .ps-inner {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: clamp(14px, 2.4vw, 22px);
+    align-items: center;
+  }
+  @media (max-width: 768px) {
+    .ps-card .ps-inner {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Le cadre média retrouve une hauteur fixe (pas de ratio en mobile) */
+  .ps-card .ps-media {
+    position: relative;
+    width: min(280px, 100%);
+    height: 360px; /* desktop/tablette */
+    border-radius: 20px;
+    overflow: hidden;
+  }
+  @media (max-width: 980px) {
+    .ps-card .ps-media {
+      height: 300px;
+    }
+  }
+  @media (max-width: 768px) {
+    .ps-card .ps-media {
+      height: 240px;
+    } /* mobile compact */
+  }
+
+  /* L’image remplit le cadre, quoi qu’il arrive */
+  .ps-card .ps-media > img {
+    display: block;
+    width: 100% !important;
+    height: 100% !important; /* reprend la main sur les reset globaux */
+    max-width: none !important;
+    object-fit: cover !important;
+    object-position: center;
+    border-radius: 16px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+  }
+
+  /* Sécurité : pas d’arrière-plan si une image est présente */
+  .ps-card .ps-media:has(img) {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  /* Colonnes texte : empêchent les débordements */
+  .ps-card .ps-media,
+  .ps-card .ps-content {
+    min-width: 0;
   }
 }

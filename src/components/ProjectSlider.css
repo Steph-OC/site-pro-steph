@@ -424,13 +424,13 @@
       min-width: 100%;
     }
   }
-  /* Espace entre le titre "Mes derniers projets" et les cards */
-  section[aria-labelledby="dern-projets"] .section-head {
-    margin-bottom: clamp(18px, 3.5vw, 40px);
-  }
+}
+/* Espace entre le titre "Mes derniers projets" et les cards */
+section[aria-labelledby="dern-projets"] .section-head {
+  margin-bottom: clamp(18px, 3.5vw, 40px);
+}
 
-  /* ceinture + bretelles si un reset annule le margin-bottom */
-  section[aria-labelledby="dern-projets"] .section-head + .projects-grid {
-    margin-top: clamp(18px, 3.5vw, 40px);
-  }
+/* ceinture + bretelles si un reset annule le margin-bottom */
+section[aria-labelledby="dern-projets"] .section-head + .projects-grid {
+  margin-top: clamp(18px, 3.5vw, 40px);
 }

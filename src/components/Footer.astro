@@ -535,4 +535,98 @@ const business = {
       order: 2; /* passe la marque après LinkedIn si ça wrap */
     }
   }
+  /* ===== Footer — compact mobile ===== */
+  @media (max-width: 768px) {
+    .site-footer {
+      padding-block: clamp(16px, 4vw, 24px); /* ↓ hauteur */
+      border-top: 1px solid var(--border);
+      background: var(--card);
+    }
+
+    /* grille principale : 1 colonne + petits espacements */
+    .site-footer .footer-grid {
+      display: grid;
+      grid-template-columns: 1fr !important;
+      gap: clamp(10px, 3.5vw, 16px);
+    }
+
+    /* titres de colonnes plus petits */
+    .site-footer h4,
+    .site-footer .footer-title {
+      font-size: clamp(13px, 3.6vw, 15px);
+      line-height: 1.2;
+      margin: 0 0 6px;
+    }
+
+    /* listes + liens compacts */
+    .site-footer ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 6px; /* ↓ spacing items */
+    }
+    .site-footer a {
+      font-size: clamp(13px, 3.6vw, 15px);
+      line-height: 1.35;
+    }
+
+    /* blocs “contact / adresse / horaires” plus aérés mais courts */
+    .site-footer .footer-meta,
+    .site-footer address,
+    .site-footer .footer-quicklinks {
+      font-size: clamp(13px, 3.6vw, 15px);
+      line-height: 1.35;
+      margin: 0;
+    }
+
+    /* CTA éventuels dans le footer */
+    .site-footer .btn,
+    .site-footer .wp-block-button__link {
+      padding: 10px 14px;
+      font-size: 14px;
+      border-radius: 10px;
+    }
+
+    /* bandeau du bas */
+    .site-footer .footer-bottom,
+    .site-footer .footnote {
+      margin-top: clamp(10px, 3vw, 14px);
+      padding-top: clamp(10px, 3vw, 14px);
+      border-top: 1px dashed color-mix(in srgb, var(--border) 80%, transparent);
+      display: grid;
+      gap: 6px;
+      text-align: center; /* tout centré sur mobile */
+    }
+    .site-footer .footer-bottom small,
+    .site-footer .footnote small {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+
+    /* rangées de liens légaux / sociaux -> wrap propre */
+    .site-footer .footer-inline,
+    .site-footer .legal,
+    .site-footer .social {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px 14px;
+    }
+
+    /* images/logos dans le footer */
+    .site-footer img,
+    .site-footer .logo {
+      max-height: 28px;
+    }
+
+    /* tuer les marges verticales héritées des blocs WP */
+    .site-footer .wp-block-group,
+    .site-footer .wp-block-columns {
+      margin: 0 !important;
+    }
+    .site-footer .wp-block-column + .wp-block-column {
+      margin-top: 0 !important;
+    }
+  }
 </style>
