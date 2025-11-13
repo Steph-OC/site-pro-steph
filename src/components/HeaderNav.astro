@@ -3,12 +3,22 @@ type Link = { label: string; url: string; opensInNewTab?: boolean };
 
 const WP = (import.meta.env.WP_URL || "").replace(/\/+$/, "");
 
+// On tente de lire un tableau depuis l’API headless (ou [] si erreur)
 async function getJSON(u: string) {
   try {
     const r = await fetch(u, { headers: { Accept: "application/json" } });
     if (!r.ok) return [] as Link[];
     const j = await r.json();
-    return Array.isArray(j) ? (j as Link[]) : ([] as Link[]);
+
+    // Cas 1 : l’API renvoie directement un tableau
+    if (Array.isArray(j)) return j as Link[];
+
+    // Cas 2 : certains endpoints renvoient { json: [...] } ou { items: [...] }
+    // → on essaie d’en tirer un tableau
+    if (Array.isArray((j as any).json)) return (j as any).json as Link[];
+    if (Array.isArray((j as any).items)) return (j as any).items as Link[];
+
+    return [] as Link[];
   } catch {
     return [] as Link[];
   }
@@ -35,6 +45,7 @@ function normalizePath(p = "") {
   }
 }
 
+// slug du menu WP côté headless : adapte si besoin (header-nav / navigation-principale, etc.)
 const endpoint = WP
   ? `${WP}/wp-json/headless/v1/nav?slug=header-nav&allow_page_list=1`
   : "";
@@ -44,12 +55,16 @@ const fallbackLinks: Link[] = [
   { label: "Accueil", url: "/" },
   { label: "Services", url: "/services/" },
   { label: "Réalisations", url: "/realisations/" },
+  { label: "Qui suis-je ?", url: "/a-propos/" },
   { label: "Parlons Web", url: "/parlons-web/" },
   { label: "Contact", url: "/contact/" },
 ];
 
+// 1) on tente de récupérer le menu WP
 const rawLinks = endpoint ? await getJSON(endpoint) : [];
-const links: Link[] = (rawLinks as any[])
+
+// 2) normalisation des liens
+let links: Link[] = (rawLinks as any[])
   .map((l) => ({
     label: String(l?.label || ""),
     url: toRelative(String(l?.url || "#")),
@@ -57,12 +72,24 @@ const links: Link[] = (rawLinks as any[])
   }))
   .filter((l) => l.label && l.url);
 
+// 3) si l’API ne renvoie rien, on prend ton fallback
+if (!links.length) {
+  links = fallbackLinks;
+}
+
+// 4) Patch : forcer le label "Qui suis-je ?" pour /a-propos/
+links = links.map((l) => {
+  const path = normalizePath(l.url);
+  if (path === "/a-propos") {
+    return { ...l, label: "Qui suis-je ?" };
+  }
+  return l;
+});
+
 const current = normalizePath(Astro.url.pathname);
-const list = links.length ? links : fallbackLinks;
+const list = links;
 ---
 
-<!-- IMPORTANT: ne pas encapsuler dans <nav> ici.
-     SiteLayout fournit déjà <nav id="site-nav" class="site-nav"> -->
 <ul class="nav">
   {
     list.map((l) => {
@@ -96,8 +123,6 @@ const list = links.length ? links : fallbackLinks;
     margin: 0;
     padding: 0;
     align-items: center;
-
-    /* >>> forcer le centrage et éviter les retours */
     justify-content: center;
     flex-wrap: nowrap;
     width: max-content; /* la UL mesure son contenu */
