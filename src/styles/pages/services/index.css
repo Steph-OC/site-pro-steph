@@ -27,3 +27,163 @@
   content-visibility: auto;
   contain-intrinsic-size: 480px;
 }
+/* ===========================
+   Section "Points clés" (services)
+   =========================== */
+/* ===========================
+   Section "Points clés" (services)
+   =========================== */
+
+#services-cles {
+  margin-top: clamp(32px, 5vw, 56px);
+  margin-bottom: clamp(24px, 4vw, 56px);
+}
+
+/* grille de cartes */
+#services-cles .tips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: clamp(16px, 2.4vw, 22px);
+}
+
+/* valeurs par défaut, surchargées par les variantes */
+#services-cles .tips__item {
+  --acc: var(--orange, #ff9d57);
+}
+
+/* variantes couleur */
+#services-cles .tips__item--cwv {
+  --acc: #f97316; /* orange vif */
+}
+#services-cles .tips__item--access {
+  --acc: #22c55e; /* vert */
+}
+#services-cles .tips__item--seo {
+  --acc: #8b5cf6; /* violet */
+}
+
+/* carte */
+#services-cles .tips__item {
+  position: relative;
+  border-radius: 18px;
+  padding: 14px 16px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--border, #3a3a4f) 70%, transparent);
+  background: radial-gradient(
+      120% 180% at 0% 0%,
+      color-mix(in oklab, var(--acc) 20%, transparent),
+      transparent 55%
+    ),
+    radial-gradient(
+      120% 160% at 100% 100%,
+      color-mix(in oklab, var(--acc) 12%, transparent),
+      transparent 60%
+    ),
+    color-mix(in srgb, var(--card, rgba(15, 15, 30, 0.96)) 88%, transparent);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.26),
+    0 0 0 1px color-mix(in srgb, var(--border, #3a3a4f) 40%, transparent) inset;
+}
+
+/* léger halo autour de la carte */
+#services-cles .tips__item::before {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(
+    circle at 10% 0%,
+    color-mix(in oklab, var(--acc) 32%, transparent),
+    transparent 55%
+  );
+  opacity: 0.4;
+  filter: blur(18px);
+  pointer-events: none;
+}
+
+/* layout interne : icône + texte */
+#services-cles .tips__inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px 12px;
+  align-items: center;
+  z-index: 1;
+}
+
+/* badge icône rond */
+#services-cles .tips__icon {
+  inline-size: 38px;
+  block-size: 38px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--acc) 22%, var(--card) 78%);
+  color: color-mix(in srgb, var(--acc) 86%, #000 14%);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--acc) 35%, transparent),
+    0 8px 18px color-mix(in oklab, var(--acc) 30%, transparent);
+}
+
+/* texte */
+#services-cles .tips__text {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.6;
+  color: var(--fg, #f5f6fb);
+}
+
+#services-cles .tips__text strong {
+  font-weight: 700;
+}
+
+#services-cles .tips__text abbr {
+  text-decoration-style: dotted;
+  cursor: help;
+}
+
+/* Hover un peu fun mais sobre */
+@media (hover: hover) {
+  #services-cles .tips__item {
+    transition: transform 0.18s ease, box-shadow 0.18s ease,
+      border-color 0.18s ease, background 0.18s ease;
+  }
+  #services-cles .tips__item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.3),
+      0 0 32px color-mix(in oklab, var(--acc) 20%, transparent);
+    border-color: color-mix(in srgb, var(--acc) 35%, var(--border));
+  }
+}
+
+/* mode clair : cartes un peu plus “papier” */
+:root[data-theme="light"] #services-cles .tips__item {
+  background: radial-gradient(
+      120% 160% at 0% 0%,
+      color-mix(in oklab, var(--acc) 15%, transparent),
+      transparent 55%
+    ),
+    #ffffff;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.08),
+    0 0 0 1px color-mix(in srgb, #1a1a1a 12%, transparent) inset;
+}
+/* Centrage de la grille quand il n'y a qu'une colonne */
+#services-cles .tips {
+  justify-content: center; /* centre les colonnes si elles sont plus étroites que le container */
+}
+
+/* Vue tablette / mobile : une seule colonne, centrée et limitée en largeur */
+@media (max-width: 900px) {
+  #services-cles .tips {
+    grid-template-columns: minmax(0, 1fr); /* une seule carte par ligne */
+    max-width: 680px; /* largeur max du bloc de cartes */
+    margin-inline: auto; /* et on centre ce bloc */
+  }
+}
+
+@media (max-width: 560px) {
+  #services-cles .tips {
+    max-width: 480px; /* un peu plus compact sur tout petits écrans */
+  }
+}

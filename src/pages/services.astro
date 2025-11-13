@@ -251,25 +251,108 @@ const cardIcons = [
 
     <!-- Points clés -->
     {(data?.tips?.cwv || data?.tips?.access || data?.tips?.seo) && (
-      <section id="services-cles" class="container section--halo halo-pulse-gentle" aria-labelledby="tips-title">
-        <header class="section-head"><h2 id="tips-title">Points clés</h2></header>
+      <section
+        id="services-cles"
+        class="container section--halo halo-pulse-gentle"
+        aria-labelledby="tips-title"
+      >
+        <header class="section-head">
+          <h2 id="tips-title">Points clés</h2>
+        </header>
+
         <ul class="tips" role="list">
           {data?.tips?.cwv && (
-            <li>
-              <strong>
-                <abbr title="Core Web Vitals = indicateurs Google sur la vitesse et la stabilité visuelle d’une page.">
-                  Core Web Vitals
-                </abbr>
-              </strong>{" — "}{data.tips.cwv}
+            <li class="tips__item tips__item--cwv">
+              <div class="tips__inner">
+                <span class="tips__icon" aria-hidden="true">
+                  {/* Icône “activité / performance” */}
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="20"
+                    height="20"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.9"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                  </svg>
+                </span>
+                <p class="tips__text">
+                  <strong>
+                    <abbr
+                      title="Core Web Vitals = indicateurs Google sur la vitesse et la stabilité visuelle d’une page."
+                    >
+                      Core Web Vitals
+                    </abbr>
+                  </strong>{" "}
+                  — {data.tips.cwv}
+                </p>
+              </div>
             </li>
           )}
-          {data?.tips?.access && (<li><strong>Accessibilité</strong>{" — "}{data.tips.access}</li>)}
-          {data?.tips?.seo && (<li><strong>SEO</strong>{" — "}{data.tips.seo}</li>)}
+
+          {data?.tips?.access && (
+            <li class="tips__item tips__item--access">
+              <div class="tips__inner">
+                <span class="tips__icon" aria-hidden="true">
+                  {/* Icône “accessibilité / personne” */}
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="20"
+                    height="20"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.9"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <circle cx="12" cy="4" r="1.7" />
+                    <path d="M7 8.5h10" />
+                    <path d="M9 21l1.5-8.5" />
+                    <path d="M15 21L13.5 12.5" />
+                    <path d="M6 11.5l3.5-1.5" />
+                    <path d="M18 11.5l-3.5-1.5" />
+                  </svg>
+                </span>
+                <p class="tips__text">
+                  <strong>Accessibilité</strong> — {data.tips.access}
+                </p>
+              </div>
+            </li>
+          )}
+
+          {data?.tips?.seo && (
+            <li class="tips__item tips__item--seo">
+              <div class="tips__inner">
+                <span class="tips__icon" aria-hidden="true">
+                  {/* Icône “loupe / SEO” */}
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="20"
+                    height="20"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.9"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <circle cx="11" cy="11" r="5.5" />
+                    <path d="m16 16 4 4" />
+                  </svg>
+                </span>
+                <p class="tips__text">
+                  <strong>SEO</strong> — {data.tips.seo}
+                </p>
+              </div>
+            </li>
+          )}
         </ul>
       </section>
     )}
 
-    <!-- FAQ -->
+
  <!-- FAQ -->
 {faqAll.length > 0 && (
   <section class="container section--halo halo-pulse-gentle" aria-labelledby="faq-title">
