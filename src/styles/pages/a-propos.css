@@ -1,0 +1,788 @@
+/* =======================================
+   THEME TOKENS (dark & light compatibles)
+   ======================================= */
+:root {
+  --acc-1: var(--orange, #ff9d57);
+  --acc-2: var(--violet, #7c4dff);
+
+  --card-bg: color-mix(
+    in srgb,
+    var(--surface-2, rgba(255, 255, 255, 0.06)) 98%,
+    transparent
+  );
+  --card-stroke: color-mix(in srgb, var(--border, #aab) 80%, transparent);
+  --card-shadow: rgba(0, 0, 0, 0.18);
+
+  --pill-bg: color-mix(
+    in srgb,
+    var(--surface-2, rgba(255, 255, 255, 0.06)) 94%,
+    transparent
+  );
+  --pill-stroke: color-mix(in srgb, var(--border, #aab) 72%, transparent);
+
+  --text-subtle: color-mix(in srgb, var(--fg, #fff) 75%, transparent);
+  --dot-glow: color-mix(in oklab, var(--acc-1) 40%, transparent);
+
+  /* largeur max de ton container XL (utilisée pour recaler le fond) */
+  --container-xl: 1200px;
+}
+:root[data-theme="light"],
+:root:not([data-theme="dark"]) {
+  --card-bg: color-mix(in srgb, #fff 75%, transparent);
+  --card-stroke: color-mix(in srgb, #1a1a1a 16%, transparent);
+  --card-shadow: rgba(10, 12, 20, 0.08);
+  --pill-bg: color-mix(in srgb, #fff 82%, transparent);
+  --pill-stroke: color-mix(in srgb, #1a1a1a 14%, transparent);
+  --text-subtle: color-mix(in srgb, #111 60%, transparent);
+}
+#about {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+/* =========================
+   Portrait — anneau lumineux
+   ========================= */
+.portrait-ring {
+  --size: 320px;
+  --thickness: 6px;
+  --blur: 10px;
+  --c1: color-mix(in oklab, var(--acc-1) 65%, transparent);
+  --c2: color-mix(in oklab, var(--acc-2) 70%, transparent);
+  width: var(--size);
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  position: relative;
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+}
+.portrait-ring::before,
+.portrait-ring::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 220deg,
+    var(--c1) 0 28%,
+    var(--c2) 28% 62%,
+    transparent 62% 100%
+  );
+  -webkit-mask: radial-gradient(
+    closest-side,
+    transparent calc(100% - var(--thickness)),
+    #000 calc(100% - var(--thickness) + 0.5px)
+  );
+  mask: radial-gradient(
+    closest-side,
+    transparent calc(100% - var(--thickness)),
+    #000 calc(100% - var(--thickness) + 0.5px)
+  );
+}
+.portrait-ring::before {
+  filter: blur(var(--blur)) saturate(115%);
+  opacity: 0.78;
+}
+.portrait-ring::after {
+  -webkit-mask: radial-gradient(
+    closest-side,
+    transparent calc(100% - var(--thickness)),
+    #000 calc(100% - var(--thickness))
+  );
+  mask: radial-gradient(
+    closest-side,
+    transparent calc(100% - var(--thickness)),
+    #000 calc(100% - var(--thickness))
+  );
+  opacity: 0.96;
+}
+.portrait-ring img {
+  width: calc(100% - var(--thickness) * 2);
+  height: calc(100% - var(--thickness) * 2);
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  transform: translateY(2px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  z-index: 2;
+}
+@media (hover: hover) {
+  .portrait-ring:hover img {
+    transform: none;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+  }
+}
+@media (max-width: 640px) {
+  .portrait-ring {
+    --size: 260px;
+    --thickness: 5px;
+  }
+}
+/* ======= Bio : grille portrait + texte ======= */
+.bio-grid {
+  display: grid;
+  gap: clamp(20px, 4vw, 48px);
+  align-items: center;
+  grid-template-columns: 1fr 1.4fr;
+}
+
+/* Mobile : portrait au-dessus, texte en dessous */
+@media (max-width: 768px) {
+  .bio-grid {
+    grid-template-columns: 1fr;
+    justify-items: center; /* centre la photo */
+    text-align: left; /* texte normal */
+  }
+
+  .bio-grid > div {
+    max-width: 40rem;
+  }
+
+  .bio-grid .portrait-ring {
+    margin-inline: auto;
+  }
+}
+
+/* =====================
+   Section Stack & outils
+   ===================== */
+.stack-head {
+  text-align: center;
+  max-width: 70ch;
+  margin: 0 auto clamp(14px, 2.4vw, 22px);
+}
+.stack-head p {
+  margin: 0.4rem auto 0;
+  opacity: 0.92;
+  line-height: 1.6;
+}
+
+.stack-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(22px, 3.2vw, 38px);
+  margin-top: clamp(24px, 3.8vw, 44px);
+}
+
+/* Carte */
+.s-card {
+  --acc: var(--border);
+  position: relative;
+  border-radius: 16px;
+  padding: clamp(18px, 2.4vw, 24px);
+  background: radial-gradient(
+      120% 140% at 10% 0%,
+      color-mix(in oklab, var(--acc-1) 6%, transparent),
+      transparent 45%
+    ),
+    radial-gradient(
+      120% 140% at 90% 0%,
+      color-mix(in oklab, var(--acc-2) 7%, transparent),
+      transparent 50%
+    ),
+    var(--card-bg);
+  border: 1px solid var(--card-stroke);
+  box-shadow: 0 18px 36px var(--card-shadow),
+    0 0 0 1px color-mix(in srgb, var(--card-stroke) 16%, transparent) inset;
+  overflow: hidden;
+  transition: transform 0.18s ease, box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+.s-card {
+  border-color: color-mix(in srgb, var(--acc) 60%, var(--card-stroke));
+  box-shadow: 0 18px 36px var(--card-shadow),
+    0 0 0 1px color-mix(in srgb, var(--acc) 30%, transparent) inset;
+}
+.s-card::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: 0 0 24px 6px color-mix(in oklab, var(--acc) 45%, transparent);
+  opacity: 0.45;
+}
+@media (hover: hover) {
+  .s-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 22px 46px var(--card-shadow),
+      0 0 0 1px color-mix(in srgb, var(--card-stroke) 35%, transparent) inset;
+  }
+  .s-card:hover::after {
+    box-shadow: 0 0 28px 10px color-mix(in oklab, var(--acc) 55%, transparent);
+    opacity: 0.6;
+  }
+}
+:root[data-theme="light"] .s-card::after {
+  opacity: 0.35;
+}
+.s-card--orange {
+  --acc: var(--acc-1);
+}
+.s-card--cyan {
+  --acc: #22d3ee;
+}
+.s-card--violet {
+  --acc: var(--acc-2);
+}
+
+.s-card__head {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 0.8rem;
+}
+.s-card__head h3 {
+  margin: 0;
+  font-size: clamp(1.08rem, 0.9rem + 0.55vw, 1.24rem);
+  letter-spacing: 0.2px;
+}
+
+.s-badge {
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 0.28rem 0.6rem;
+  border-radius: 0.7rem;
+  border: 1px solid color-mix(in oklab, var(--acc-1) 55%, transparent);
+  background: color-mix(in oklab, var(--acc-1) 26%, transparent);
+  box-shadow: 0 0 14px color-mix(in oklab, var(--acc-1) 22%, transparent);
+}
+.s-badge--cyan {
+  border-color: color-mix(in oklab, #22d3ee 58%, transparent);
+  background: color-mix(in oklab, #22d3ee 26%, transparent);
+  box-shadow: 0 0 14px color-mix(in oklab, #22d3ee 22%, transparent);
+}
+.s-badge--violet {
+  border-color: color-mix(in oklab, var(--acc-2) 58%, transparent);
+  background: color-mix(in oklab, var(--acc-2) 26%, transparent);
+  box-shadow: 0 0 14px color-mix(in oklab, var(--acc-2) 22%, transparent);
+}
+
+.s-list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.s-list li {
+  display: grid;
+  grid-template-columns: 16px 1fr;
+  column-gap: 0.65rem;
+  align-items: start;
+  padding: 0.3rem 0.4rem;
+  border-radius: 0.65rem;
+  line-height: 1.72;
+  transition: background 0.15s ease;
+}
+.s-list li:hover {
+  background: color-mix(in srgb, var(--pill-bg) 70%, transparent);
+}
+.s-dot {
+  width: 0.58rem;
+  height: 0.58rem;
+  border-radius: 999px;
+  margin-top: 0.58rem;
+  flex: 0 0 0.58rem;
+  background: radial-gradient(
+    circle at 45% 45%,
+    color-mix(in oklab, var(--acc-1) 70%, transparent),
+    transparent 62%
+  );
+  box-shadow: 0 0 12px var(--dot-glow);
+}
+
+.s-list code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono",
+    monospace;
+  font-size: 0.92em;
+  padding: 0.12rem 0.44rem;
+  border-radius: 0.4rem;
+  white-space: nowrap;
+  background: color-mix(in srgb, var(--pill-bg) 90%, transparent);
+  border: 1px solid color-mix(in srgb, var(--pill-stroke) 90%, transparent);
+}
+
+.s-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+  padding: 0;
+  list-style: none;
+}
+.s-pills li {
+  font-size: 0.95rem;
+  line-height: 1;
+  padding: 0.55rem 0.8rem;
+  border-radius: 1rem;
+  border: 1px solid var(--pill-stroke);
+  background: var(--pill-bg);
+  transition: transform 0.15s ease, box-shadow 0.15s ease,
+    border-color 0.15s ease;
+}
+@media (hover: hover) {
+  .s-pills li:hover {
+    transform: translateY(-1px);
+    border-color: color-mix(in oklab, var(--acc-2) 36%, var(--pill-stroke));
+    box-shadow: 0 8px 20px var(--card-shadow),
+      0 0 0 1px color-mix(in oklab, var(--acc-2) 20%, transparent);
+  }
+}
+
+.stack-note {
+  text-align: center;
+  opacity: 0.85;
+  margin-top: clamp(22px, 3.2vw, 38px);
+  color: var(--text-subtle);
+}
+
+/* Responsive grille */
+@media (max-width: 1100px) {
+  .stack-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 760px) {
+  .stack-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 860px) {
+  .s-card {
+    padding: clamp(16px, 3.2vw, 20px);
+  }
+  .s-list {
+    gap: 0.65rem;
+  }
+  .s-list li {
+    line-height: 1.66;
+  }
+}
+
+/* =========================
+   Rythme vertical global
+   ========================= */
+:where(.section) {
+  padding-block: clamp(48px, 8vw, 120px);
+}
+:where(.section) + :where(.section) {
+  margin-top: clamp(24px, 6vw, 72px);
+}
+:where(.section-head) {
+  margin-bottom: clamp(18px, 3vw, 40px);
+}
+
+.section--tight-bottom {
+  padding-bottom: clamp(16px, 3vw, 32px);
+}
+.section--tight-bottom .stack-note {
+  margin-bottom: clamp(6px, 1.2vw, 12px);
+}
+.section--tight-bottom + .cta-final {
+  margin-top: 0;
+  padding-top: clamp(18px, 3vw, 34px);
+}
+
+/* =========================
+   CTA final
+   ========================= */
+.section.cta-final {
+  padding-top: clamp(16px, 3vw, 32px);
+  padding-bottom: clamp(8px, 2vw, 16px);
+  margin-bottom: 0;
+}
+.cta-box {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  border-radius: 1.25rem;
+  padding: clamp(14px, 3.5vw, 28px) clamp(20px, 4vw, 40px)
+    clamp(10px, 2vw, 16px);
+  background: radial-gradient(
+    120% 120% at 50% 0%,
+    color-mix(in srgb, rgba(255, 255, 255, 0.06) 100%, transparent),
+    transparent 60%
+  );
+}
+.cta-box h2 {
+  margin: 0 0 0.35rem;
+}
+.cta-box p {
+  margin: 0 0 0.8rem;
+}
+.cta-actions {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0;
+}
+main > .section.cta-final:last-child {
+  padding-bottom: clamp(6px, 1.5vw, 12px);
+}
+
+/* =========================================================
+   HERO "À propos" — hero type blog avec bulles
+   ========================================================= */
+
+/* Layout du hero (identique au blog) */
+.hbix {
+  position: relative;
+  isolation: isolate;
+  padding: clamp(42px, 7vw, 84px) 0 clamp(56px, 6vw, 84px);
+  margin-bottom: clamp(24px, 5vw, 72px);
+}
+
+.hbix__inner {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: min(6vw, 48px);
+  align-items: center;
+}
+@media (max-width: 900px) {
+  .hbix__inner {
+    grid-template-columns: 1fr;
+  }
+  .hbix__stage {
+    order: -1;
+    min-height: 240px;
+  }
+}
+
+.hbix__text {
+  max-width: 820px;
+}
+
+.kicker {
+  margin: 0 0 0.45rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.82rem;
+  color: var(--muted, #cfd0e6);
+}
+.title {
+  margin: 0 0 0.5rem;
+  font-family: var(
+    --font-head,
+    "Josefin Sans",
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    Ubuntu,
+    Cantarell,
+    Noto Sans,
+    "Helvetica Neue",
+    Arial
+  );
+  font-size: clamp(1.8rem, 1.25rem + 2.2vw, 3rem);
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+.lead {
+  margin: 0;
+  color: var(--muted, #cfd0e6);
+  max-width: 70ch;
+  font-size: clamp(1rem, 0.96rem + 0.3vw, 1.15rem);
+  line-height: 1.55;
+}
+.actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: clamp(12px, 1.2vw, 16px);
+}
+
+/* STAGE : halo local + bulles */
+.hbix__stage {
+  position: relative;
+  isolation: isolate;
+  min-height: 320px;
+  overflow: visible;
+  background: transparent;
+}
+.hbix__stage::before {
+  content: "";
+  position: absolute;
+  inset: -8% -6% -18% -6%;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+      42% 40% at 25% 35%,
+      rgba(106, 168, 255, 0.2),
+      transparent 65%
+    ),
+    radial-gradient(
+      38% 36% at 75% 30%,
+      rgba(185, 132, 246, 0.18),
+      transparent 70%
+    ),
+    radial-gradient(
+      42% 40% at 55% 65%,
+      rgba(255, 209, 102, 0.14),
+      transparent 70%
+    ),
+    radial-gradient(
+      36% 34% at 68% 58%,
+      rgba(92, 199, 160, 0.18),
+      transparent 70%
+    ),
+    radial-gradient(
+      30% 28% at 48% 38%,
+      rgba(213, 17, 17, 0.16),
+      transparent 70%
+    );
+  filter: blur(22px) saturate(120%);
+  opacity: 0.75;
+}
+
+.hbix__chips {
+  position: absolute;
+  inset: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* CHIPS → BULLES */
+.chip {
+  --c: rgba(59, 57, 80, 0.85);
+  --cO: rgba(255, 255, 255, 0.22);
+  --cG: rgba(0, 0, 0, 0);
+  --ink: #fff;
+  --size: 82px;
+
+  position: absolute;
+  inset: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: var(--size);
+  height: var(--size);
+  padding: 0;
+
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--ink);
+  text-align: center;
+  line-height: 1.2;
+  white-space: normal;
+
+  background: radial-gradient(
+      circle at 30% 20%,
+      rgba(255, 255, 255, 0.32),
+      transparent 55%
+    ),
+    radial-gradient(circle at 75% 80%, rgba(0, 0, 0, 0.22), transparent 60%),
+    var(--c);
+  outline: 1px solid var(--cO);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35),
+    0 0 0 1px color-mix(in srgb, var(--cO) 60%, transparent);
+
+  user-select: none;
+  cursor: grab;
+  pointer-events: auto;
+
+  transition: filter 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+.chip span {
+  padding-inline: 10px;
+}
+.chip:hover {
+  filter: saturate(1.06) brightness(1.03);
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.4),
+    0 0 0 1px color-mix(in srgb, var(--cO) 85%, transparent);
+  transform: translateY(-1px);
+}
+.chip:active {
+  cursor: grabbing;
+}
+
+/* Palette pour les tags de la page À propos */
+/* Palette pour les tags de la page À propos – 1 couleur par bulle */
+.chip[data-tag="html"] {
+  --c: rgba(248, 113, 37, 0.96); /* orange HTML */
+  --cO: rgba(248, 113, 37, 0.78);
+}
+
+.chip[data-tag="css"] {
+  --c: rgba(56, 189, 248, 0.96); /* bleu clair CSS */
+  --cO: rgba(56, 189, 248, 0.8);
+}
+
+.chip[data-tag="php"] {
+  --c: rgba(129, 140, 248, 0.96); /* indigo PHP */
+  --cO: rgba(129, 140, 248, 0.82);
+}
+
+.chip[data-tag="javascript"] {
+  --c: rgba(250, 204, 21, 0.96); /* jaune JS */
+  --cO: rgba(250, 204, 21, 0.86);
+}
+
+.chip[data-tag="sass"] {
+  --c: rgba(236, 72, 153, 0.96); /* rose Sass */
+  --cO: rgba(236, 72, 153, 0.82);
+}
+
+.chip[data-tag="react"] {
+  --c: rgba(45, 212, 191, 0.96); /* turquoise React */
+  --cO: rgba(45, 212, 191, 0.82);
+}
+
+.chip[data-tag="astro"] {
+  --c: rgba(147, 51, 234, 0.96); /* violet Astro */
+  --cO: rgba(147, 51, 234, 0.82);
+}
+
+.chip[data-tag="git github"] {
+  --c: rgba(22, 163, 74, 0.96); /* vert Git/GitHub */
+  --cO: rgba(22, 163, 74, 0.82);
+}
+
+.chip[data-tag="wordpress"] {
+  --c: rgba(37, 99, 235, 0.96); /* bleu WP */
+  --cO: rgba(37, 99, 235, 0.82);
+}
+
+.chip[data-tag="gimp"] {
+  --c: rgba(202, 138, 4, 0.96); /* doré / brun GIMP */
+  --cO: rgba(202, 138, 4, 0.82);
+}
+
+.chip[data-tag="figma"] {
+  --c: rgba(244, 63, 94, 0.96); /* rouge/rose Figma */
+  --cO: rgba(244, 63, 94, 0.82);
+}
+
+.chip[data-tag="devtools"] {
+  --c: rgba(34, 197, 235, 0.96); /* bleu cyan DevTools */
+  --cO: rgba(34, 197, 235, 0.82);
+}
+
+/* Fallback par index : juste les tailles (on laisse les couleurs ci-dessus) */
+.chip:nth-child(1) {
+  --size: 96px;
+}
+.chip:nth-child(2) {
+  --size: 82px;
+}
+.chip:nth-child(3) {
+  --size: 88px;
+}
+.chip:nth-child(4) {
+  --size: 80px;
+}
+.chip:nth-child(5) {
+  --size: 90px;
+}
+.chip:nth-child(6) {
+  --size: 84px;
+}
+.chip:nth-child(7) {
+  --size: 86px;
+}
+.chip:nth-child(8) {
+  --size: 78px;
+}
+.chip:nth-child(9) {
+  --size: 92px;
+}
+.chip:nth-child(10) {
+  --size: 80px;
+}
+.chip:nth-child(11) {
+  --size: 82px;
+}
+.chip:nth-child(12) {
+  --size: 76px;
+}
+
+/* Motion réduite : bulles statiques en grille */
+@media (prefers-reduced-motion: reduce) {
+  .hbix__stage::before {
+    animation: none !important;
+  }
+  .hbix__chips {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 14px;
+  }
+  .chip {
+    position: relative;
+    inset: auto;
+    transform: none !important;
+    cursor: default;
+  }
+}
+.chip {
+  display: flex;
+  flex-direction: column; /* icône au-dessus, texte dessous */
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding-inline: 8px;
+}
+
+.chip__icon {
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chip__icon i {
+  font-size: 1.7rem; /* 🔥 taille de l’icône */
+  line-height: 1;
+}
+.chip__label {
+  font-size: 0.7rem;
+  line-height: 1.2;
+  text-align: center;
+}
+/* =========================
+   Ajustements mobile des bulles
+   ========================= */
+@media (max-width: 640px) {
+  .hbix__stage {
+    min-height: 220px;
+  }
+
+  /* on écrase toutes les tailles nth-child pour les rendre plus petites */
+  .hbix__chips .chip:nth-child(n) {
+    --size: 54px;
+    gap: 4px;
+  }
+
+  .chip__icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .chip__icon i {
+    font-size: 1.4rem;
+  }
+
+  .chip__label {
+    font-size: 0.55rem;
+  }
+}
+/* Section Approche : un peu d'air de chaque côté */
+#approche.approach-stagger > .container {
+  max-width: 1400px; /* largeur confortable */
+  padding-inline: clamp(24px, 4vw, 60px); /* marges internes gauche/droite */
+  margin-inline: auto; /* bien centrée */
+}

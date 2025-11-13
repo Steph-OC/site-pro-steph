@@ -1,13 +1,15 @@
 @layer layout {
   /* ========== BASE LAYOUT (inchangé) ========== */
   :root {
-    --container: clamp(1120px, 96vw, 1440px);
-    --container-xl: clamp(1200px, 96vw, 1536px);
+    /* min pour mobile, max = 1400px */
+    --container: clamp(320px, 96vw, 1400px);
+    --container-xl: clamp(360px, 96vw, 1400px);
     --container-pad: 20px;
     --section-gap: clamp(64px, 8vw, 120px);
     --section-pad: clamp(24px, 3.5vw, 40px);
     --header-h: 64px;
   }
+
   .container {
     max-width: var(--container);
     margin-inline: auto;
@@ -256,7 +258,7 @@
       left: 0;
       right: 0;
       top: var(--header-h, 64px);
-      width: 100vw;
+      width: 100%; /* au lieu de 100vw */
       max-height: calc(100dvh - var(--header-h, 64px));
       overflow: auto;
       padding: 12px clamp(16px, 4vw, 22px) 18px;
@@ -268,8 +270,9 @@
       pointer-events: none;
       transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
         opacity 0.2s ease;
-      z-index: 700; /* > overlay, < header (header reste au-dessus du contenu) */
+      z-index: 700;
     }
+
     #site-nav[data-state="open"] {
       transform: translateY(0);
       opacity: 1;

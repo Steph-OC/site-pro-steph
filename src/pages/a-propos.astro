@@ -1,0 +1,534 @@
+---
+import SiteLayout from "@/layouts/SiteLayout.astro";
+import ApproachStagger from "@/components/ApproachStagger.tsx";
+import "@/styles/pages/a-propos.css";
+import "@/styles/background.css";
+
+const meta = {
+  title:
+    "À propos — Stéphanie Quibel, développeuse WordPress (sites rapides & accessibles)",
+  description:
+    "Je conçois des sites WordPress rapides, accessibles et sobres. Découvrez ma philosophie de travail, mon approche et les outils que j’utilise.",
+};
+
+// Tags pour les bulles du hero
+const tags = [
+  "HTML",
+  "CSS",
+  "PHP",
+  "JavaScript",
+  "Sass",
+  "React",
+  "Astro",
+  "Git GitHub",
+  "WordPress",
+  "GIMP",
+  "Figma",
+  "DevTools",
+];
+
+// normalisation simple pour matcher les couleurs par libellé
+const tagKey = (s: string) =>
+  s
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase()
+    .trim();
+---
+
+<SiteLayout {meta}>
+  <main id="about">
+    <!-- HERO type "blog" avec bulles -->
+    <header
+      class="section--halo halo-pulse-gentle hbix hbix--localbg about-hero"
+      aria-labelledby="about-hero-title"
+    >
+      <div class="hbix__inner container container--xl">
+        <!-- Colonne texte -->
+        <div class="hbix__text">
+          <p class="kicker">À propos</p>
+          <h1 id="about-hero-title" class="title">
+            <span class="text-accent">Stéphanie Quibel</span> — développeuse web
+            spécialisée WordPress sur Béziers
+          </h1>
+          <p class="lead">
+            Je crée des sites <strong>rapides</strong>,
+            <strong>accessibles</strong> et
+            <strong>faciles à faire évoluer</strong>, avec une attention
+            particulière à la sobriété numérique.
+          </p>
+          <div class="actions">
+            <a class="btn btn--accent" href="/contact/">
+              Parler de votre projet
+            </a>
+            <a class="btn btn--ghost" href="/realisations/">
+              Voir mes réalisations
+            </a>
+          </div>
+        </div>
+
+        <!-- Colonne visuelle : bulles DOM -->
+        <div class="hbix__stage" id="hbix-stage" aria-hidden="true">
+          <ul class="hbix__chips" id="hbix-chips">
+            {
+              tags.slice(0, 12).map((t, i) => {
+                const key = tagKey(t);
+                return (
+                  <li class="chip" data-tag={key} style={`--i:${i}`}>
+                    <span class="chip__icon" aria-hidden="true">
+                      {key === "html" && <i class="fab fa-html5" />}
+                      {key === "css" && <i class="fab fa-css3-alt" />}
+                      {key === "javascript" && <i class="fab fa-js" />}
+                      {key === "php" && <i class="fab fa-php" />}
+                      {key === "react" && <i class="fab fa-react" />}
+                      {key === "git github" && <i class="fab fa-git-alt" />}
+                      {key === "wordpress" && (
+                        <i class="fab fa-wordpress-simple" />
+                      )}
+                      {key === "gimp" && <i class="fa-solid fa-image" />}
+                      {key === "figma" && <i class="fa-brands fa-figma" />}
+                      {key === "astro" && (
+                        <i class="fa-solid fa-star-half-stroke" />
+                      )}
+                      {key === "sass" && <i class="fa-brands fa-sass" />}
+                      {key === "devtools" && (
+                        <i class="fa-solid fa-screwdriver-wrench" />
+                      )}
+                    </span>
+
+                    <span class="chip__label">{t}</span>
+                  </li>
+                );
+              })
+            }
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <!-- BIO courte + portrait -->
+    <section class="section section--halo" aria-labelledby="bio-title">
+      <div class="container container--xl bio-grid">
+        <figure class="portrait-ring">
+          <img
+            src="/images/photo-presentation.webp"
+            alt="Portrait de Stéphanie Quibel"
+            loading="lazy"
+            decoding="async"
+          />
+        </figure>
+
+        <div>
+          <h2 id="bio-title">Qui je suis</h2>
+          <p>
+            Je m'appelle Stéphanie Quibel, je suis développeuse web passionnée
+            installée dans la région de Béziers.<br />
+            Après quelques années d'autoformation, j'ai eu envie de structurer mes
+            connaissances en suivant une formation de webmestre au CNAM de Montpellier
+            en 2014-2015. Depuis, je suis aussi diplômée en tant que développeuse
+            intégratrice web.<br />
+            J'accorde beaucoup d'importance à l'humain et à l'échange, c'est pourquoi
+            je privilégie une communication transparente et chaleureuse avec mes
+            clients.<br />
+            Mon objectif est de vous offrir un service personnalisé et adapté à vos
+            besoins, en vous accompagnant dans toutes les phases de votre projet
+            web, de la conception à la mise en ligne. Travailler avec moi, c'est
+            opter pour une approche humaine, professionnelle et attentionnée.<br
+            />
+            N'hésitez pas à me contacter pour discuter de votre projet et de vos
+            envies!
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- APPROCHE détaillée -->
+    <ApproachStagger id="approche" variant="full" client:visible />
+
+    <!-- STACK / outils -->
+    <section
+      class="section section--tight-bottom"
+      aria-labelledby="stack-title"
+    >
+      <div class="container container--xl">
+        <header class="section-head stack-head">
+          <h2 id="stack-title">Stack &amp; outils</h2>
+          <p>
+            Mon objectif&nbsp;: créer des sites WordPress rapides, accessibles
+            et faciles à mettre à jour. Je privilégie des choix techniques
+            simples, fiables et durables.
+          </p>
+        </header>
+
+        <div class="stack-grid">
+          <article class="s-card s-card--orange">
+            <div class="s-card__head">
+              <span class="s-badge">Stack</span>
+              <h3>Production</h3>
+            </div>
+            <ul class="s-list">
+              <li>
+                <span class="s-dot" aria-hidden="true"></span>HTML propre
+                (structure claire)
+              </li>
+              <li>
+                <span class="s-dot" aria-hidden="true"></span>CSS moderne &amp;
+                Sass (Flex, animations légères)
+              </li>
+              <li>
+                <span class="s-dot" aria-hidden="true"></span>JavaScript léger
+              </li>
+              <li>
+                <span class="s-dot" aria-hidden="true"></span>WordPress (thème
+                sur mesure)
+              </li>
+              <li>
+                <span class="s-dot" aria-hidden="true"></span>Images
+                optimisées&nbsp;: WebP/AVIF (si dispo), lazy-loading
+              </li>
+              <li>
+                <span class="s-dot" aria-hidden="true"></span>Qualité du
+                code&nbsp;: ESLint / Prettier
+              </li>
+            </ul>
+          </article>
+
+          <article class="s-card s-card--cyan">
+            <div class="s-card__head">
+              <span class="s-badge s-badge--cyan">Outils</span>
+              <h3>Design &amp; réalisation</h3>
+            </div>
+            <ul class="s-list">
+              <li>
+                <span class="s-dot" aria-hidden="true"></span>
+                <div class="s-inline">
+                  <strong class="nowrap">Figma</strong><span class="sep">•</span
+                  ><strong class="nowrap">Penpot</strong>
+                  <span class="muted">(maquettes &amp; prototypage)</span>
+                </div>
+              </li>
+              <li>
+                <span class="s-dot" aria-hidden="true"></span>
+                <div class="s-inline">
+                  <strong class="nowrap">GIMP</strong><span class="muted"
+                    >(retouche)</span
+                  >
+                  <span class="sep">•</span><strong class="nowrap"
+                    >Inkscape</strong
+                  ><span class="muted">(SVG)</span>
+                </div>
+              </li>
+              <li>
+                <span class="s-dot" aria-hidden="true"></span>Lighthouse,
+                WebPageTest (performance)
+              </li>
+              <li>
+                <span class="s-dot" aria-hidden="true"></span>axe DevTools /
+                WAVE (accessibilité)
+              </li>
+              <li>
+                <span class="s-dot" aria-hidden="true"></span>Git / GitHub
+              </li>
+              <li>
+                <span class="s-dot" aria-hidden="true"></span>Hébergeur au choix
+                du client — Cloudflare en option
+              </li>
+              <li>
+                <span class="s-dot" aria-hidden="true"></span>Matomo (analytic
+                sobre)
+              </li>
+            </ul>
+          </article>
+
+          <article class="s-card s-card--violet">
+            <div class="s-card__head">
+              <span class="s-badge s-badge--violet">Principes</span>
+              <h3>Lignes directrices</h3>
+            </div>
+            <ul class="s-pills">
+              <li>Accessibilité par défaut</li>
+              <li>Vitesse réelle</li>
+              <li>SEO technique</li>
+              <li>Simplicité des outils</li>
+              <li>Code maintenable</li>
+              <li>Documentation claire</li>
+            </ul>
+          </article>
+        </div>
+
+        <p class="stack-note">
+          Je choisis l’outil le plus simple qui fait le travail.
+        </p>
+      </div>
+    </section>
+
+    <!-- CTA final -->
+    <section class="section cta-final">
+      <div
+        class="container container--xl cta-box"
+        style="display:grid;place-items:center;text-align:center;border-radius:1.25rem;padding:clamp(24px,6vw,48px);background:radial-gradient(120% 120% at 50% 0%, rgba(255,255,255,.06), transparent 60%);"
+      >
+        <h2>On en discute&nbsp;?</h2>
+        <p>Réponse rapide. Brief court, devis transparent.</p>
+        <div
+          style="display:flex;gap:.8rem;flex-wrap:wrap;justify-content:center;"
+        >
+          <a class="btn btn--accent" href="/contact/">Démarrer un projet</a>
+          <a class="btn btn--accent" href="/services/">Voir mes services</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- JSON-LD Person -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Stéphanie Quibel",
+      "jobTitle": "Développeuse WordPress",
+      "url": "https://stephaniequibel.fr/",
+      "image": "https://stephaniequibel.fr/images/stephanie.jpg",
+      "sameAs": [
+        "https://www.linkedin.com/in/stephaniequibel/",
+        "https://github.com/stephaniequibel"
+      ],
+      "knowsAbout": [
+        "WordPress",
+        "Accessibilité web",
+        "Performance web",
+        "Astro",
+        "React"
+      ]
+    }
+  </script>
+
+  <!-- Script physique pour les bulles (DOM) -->
+  <script type="module">
+    const stage = document.getElementById("hbix-stage");
+    const list = document.getElementById("hbix-chips");
+    const CAN_ANIM = matchMedia(
+      "(prefers-reduced-motion: no-preference)"
+    ).matches;
+
+    if (stage && list && CAN_ANIM) {
+      const chips = Array.from(list.children);
+
+      // Réglages
+      const R = 110; // rayon d’influence du pointeur
+      const FORCE = 900; // répulsion pointeur
+      const DAMP = 0.94; // amortissement linéaire
+      const DAMP_ROT = 0.94; // amortissement angulaire
+      const SPRING = 0.02; // rappel bords
+      const WANDER = 4; // errance (px/s)
+      const WSPIN = 8; // rotation autonome (deg/s)
+      const BOUNCE = 0.5; // restitution à l’impact (0..1)
+
+      const state = new Map(); // chip -> {x,y,vx,vy,w,h,a,av,t,r}
+      const bounds = { w: 0, h: 0 };
+      let mx = -9999,
+        my = -9999,
+        dragging = null,
+        raf = 0,
+        lastTs = performance.now();
+
+      new ResizeObserver(updateBounds).observe(stage);
+      updateBounds();
+
+      // positions initiales
+      chips.forEach((el, i) => {
+        const w = el.offsetWidth || 120;
+        const h = el.offsetHeight || 38;
+        const cols = 3;
+        const cx = (i % cols) + 0.5;
+        const cy = Math.floor(i / cols) + 0.6;
+        const x = (cx / cols) * (bounds.w - w) + 8;
+        const y = (cy / Math.ceil(chips.length / cols)) * (bounds.h - h) + 8;
+
+        const r = Math.max(h * 0.55, 18);
+
+        const t = Math.random() * Math.PI * 2;
+        state.set(el, {
+          x,
+          y,
+          vx: 0,
+          vy: 0,
+          w,
+          h,
+          r,
+          a: 0,
+          av: 0,
+          t,
+          dragAng: null,
+        });
+        el.style.transform = `translate(${x}px, ${y}px) rotate(0deg)`;
+      });
+
+      stage.addEventListener("pointermove", (e) => {
+        const r = stage.getBoundingClientRect();
+        mx = e.clientX - r.left;
+        my = e.clientY - r.top;
+
+        if (dragging) {
+          const s = state.get(dragging);
+          const cx = s.x + s.w / 2,
+            cy = s.y + s.h / 2;
+          const ang = Math.atan2(my - cy, mx - cx);
+          if (s.dragAng !== null) {
+            const d = normalizeAngle(ang - s.dragAng);
+            const deg = d * (180 / Math.PI);
+            s.a += deg * 4;
+            s.av += deg * 12;
+          }
+          s.dragAng = ang;
+        }
+      });
+
+      stage.addEventListener("pointerleave", () => {
+        mx = my = -9999;
+      });
+
+      chips.forEach((el) => {
+        el.addEventListener("pointerdown", (e) => {
+          dragging = el;
+          const s = state.get(el);
+          s.dragAng = null;
+          el.setPointerCapture(e.pointerId);
+        });
+        el.addEventListener("pointerup", () => {
+          const s = state.get(el);
+          if (s) s.dragAng = null;
+          dragging = null;
+        });
+      });
+
+      function updateBounds() {
+        const r = stage.getBoundingClientRect();
+        bounds.w = r.width;
+        bounds.h = r.height;
+      }
+
+      function step(ts) {
+        const dt = Math.min(0.032, (ts - lastTs) / 1000);
+        lastTs = ts;
+
+        chips.forEach((el) => {
+          const s = state.get(el);
+          if (!s) return;
+
+          s.t += dt;
+          s.vx += Math.cos(s.t * (0.9 + (s.w % 7) / 10)) * WANDER * dt;
+          s.vy += Math.sin(s.t * (1.1 + (s.h % 5) / 10)) * WANDER * dt;
+          s.av += Math.sin(s.t * 1.3) * (WSPIN * dt);
+
+          const cx = s.x + s.w / 2,
+            cy = s.y + s.h / 2;
+          const dx = cx - mx,
+            dy = cy - my;
+          const dist2 = dx * dx + dy * dy;
+          if (dist2 < R * R) {
+            const dist = Math.max(12, Math.sqrt(dist2));
+            const f = FORCE / (dist * dist);
+            s.vx += (dx / dist) * f * dt;
+            s.vy += (dy / dist) * f * dt;
+          }
+
+          if (dragging === el) {
+            s.vx += (mx - cx) * 4 * dt;
+            s.vy += (my - cy) * 4 * dt;
+          }
+
+          const pad = 8;
+          const maxX = bounds.w - s.w - pad,
+            maxY = bounds.h - s.h - pad;
+          if (s.x < pad) s.vx += (pad - s.x) * SPRING;
+          if (s.y < pad) s.vy += (pad - s.y) * SPRING;
+          if (s.x > maxX) s.vx += (maxX - s.x) * SPRING;
+          if (s.y > maxY) s.vy += (maxY - s.y) * SPRING;
+
+          s.vx *= Math.pow(DAMP, 60 * dt);
+          s.vy *= Math.pow(DAMP, 60 * dt);
+          s.x += s.vx;
+          s.y += s.vy;
+
+          s.av *= Math.pow(DAMP_ROT, 60 * dt);
+          s.a += s.av * dt;
+        });
+
+        for (let i = 0; i < chips.length; i++) {
+          const ei = chips[i],
+            si = state.get(ei);
+          const cxi = si.x + si.w / 2,
+            cyi = si.y + si.h / 2;
+
+          for (let j = i + 1; j < chips.length; j++) {
+            const ej = chips[j],
+              sj = state.get(ej);
+            const cxj = sj.x + sj.w / 2,
+              cyj = sj.y + sj.h / 2;
+
+            let dx = cxj - cxi;
+            let dy = cyj - cyi;
+            let dist = Math.hypot(dx, dy) || 0.0001;
+            const minDist = si.r + sj.r;
+
+            if (dist < minDist) {
+              const nx = dx / dist,
+                ny = dy / dist;
+              const overlap = minDist - dist;
+
+              const m1 = dragging === ei ? 0.1 : 0.5;
+              const m2 = dragging === ej ? 0.1 : 0.5;
+
+              si.x -= nx * overlap * m1;
+              si.y -= ny * overlap * m1;
+              sj.x += nx * overlap * m2;
+              sj.y += ny * overlap * m2;
+
+              const rvx = sj.vx - si.vx;
+              const rvy = sj.vy - si.vy;
+              const relVelNorm = rvx * nx + rvy * ny;
+
+              const impulse = -(1 + BOUNCE) * relVelNorm * 0.5;
+              si.vx -= impulse * nx;
+              si.vy -= impulse * ny;
+              sj.vx += impulse * nx;
+              sj.vy += impulse * ny;
+            }
+          }
+        }
+
+        const pad = 8;
+        chips.forEach((el) => {
+          const s = state.get(el);
+          const maxX = bounds.w - s.w - pad,
+            maxY = bounds.h - s.h - pad;
+          s.x = Math.max(pad, Math.min(maxX, s.x));
+          s.y = Math.max(pad, Math.min(maxY, s.y));
+          el.style.transform = `translate(${s.x}px, ${s.y}px) rotate(${s.a}deg)`;
+        });
+
+        raf = requestAnimationFrame(step);
+      }
+
+      raf = requestAnimationFrame(step);
+      document.addEventListener(
+        "visibilitychange",
+        () => {
+          if (document.hidden) cancelAnimationFrame(raf);
+          else {
+            lastTs = performance.now();
+            raf = requestAnimationFrame(step);
+          }
+        },
+        { passive: true }
+      );
+    }
+
+    function normalizeAngle(a) {
+      while (a > Math.PI) a -= Math.PI * 2;
+      while (a < -Math.PI) a += Math.PI * 2;
+      return a;
+    }
+  </script>
+</SiteLayout>

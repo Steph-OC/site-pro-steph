@@ -258,7 +258,66 @@ const safeTemoins = (temoins ?? []).map((t) => ({
       aria-labelledby="approach-title"
     >
       <div class="container container--xl">
-        <ApproachStagger client:visible />
+        <ApproachStagger variant="teaser" id="approach" client:visible />
+        <style is:global>
+          /* ===== TEASER — affichage garanti (icône + titre + snippet) ===== */
+          .approach-stagger--teaser .stagger {
+            display: grid !important;
+            grid-template-columns: repeat(
+              auto-fit,
+              minmax(220px, 1fr)
+            ) !important;
+            gap: clamp(12px, 2vw, 20px) !important;
+            padding: 0 !important;
+            padding-inline: clamp(24px, 4vw, 64px) !important; /* bord safe */
+            overflow: visible !important;
+          }
+
+          .approach-stagger--teaser .stagger__rail,
+          .approach-stagger--teaser .stagger__dot,
+          .approach-stagger--teaser .stagger__card::after {
+            display: none !important; /* pas de timeline en teaser */
+          }
+
+          .approach-stagger--teaser .stagger__item,
+          .approach-stagger--teaser .stagger__item::after {
+            opacity: 1 !important;
+            transform: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            height: auto !important;
+          }
+
+          .approach-stagger--teaser .stagger__card {
+            position: relative !important;
+            left: auto !important;
+            right: auto !important;
+            top: auto !important;
+            bottom: auto !important;
+            transform: none !important;
+            opacity: 1 !important;
+            width: min(var(--card-max, 520px), 100%) !important;
+            text-align: center;
+            padding: 14px 16px;
+          }
+
+          /* mini-accroche sous le titre (1 ligne max) */
+          .approach-stagger--teaser .stagger__snippet {
+            margin-top: 4px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            opacity: 0.85;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+          }
+        </style>
+        <p class="approach-cta">
+          <a class="btn btn--accent" href="/a-propos/#approche"
+            >Voir l’approche complète</a
+          >
+        </p>
       </div>
     </section>
 

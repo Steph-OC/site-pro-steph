@@ -78,10 +78,10 @@
     background: linear-gradient(
       90deg,
       transparent 0 46%,
-      color-mix(in oklab, #fff 16%, transparent) 50%,
+      color-mix(in oklab, #fff 36%, transparent) 50%,
       transparent 54% 100%
     );
-    opacity: 0.45;
+    opacity: 0.75;
     transform: translateX(-100%);
     animation: rail-sheen 3.8s cubic-bezier(0.22, 0.8, 0.2, 1) infinite;
   }
@@ -149,7 +149,7 @@
 .approach-stagger .stagger__card {
   position: absolute;
   left: 50%;
-  width: var(--card-max);
+  width: min(var(--card-max), 100%);
   background: linear-gradient(
     180deg,
     color-mix(in srgb, var(--card) 96%, transparent),
@@ -581,6 +581,12 @@
     opacity: 1 !important;
     transform: none !important;
   }
+  /* Section Approche : pas d'effet "lumière qui glisse" */
+  #approche.approach-stagger .stagger__rail::after,
+  #approche.approach-stagger .stagger::after {
+    display: none !important;
+    content: "" !important;
+  }
 }
 /* Boost the rail & sheen in LIGHT mode */
 :root[data-theme="light"] .approach-stagger .stagger::before {
@@ -629,4 +635,236 @@
     mix-blend-mode: overlay;
     filter: saturate(110%) contrast(110%);
   }
+}
+/* ===== Variante TEASER (Home) ===== */
+.approach-stagger--teaser .stagger {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: clamp(14px, 2vw, 22px);
+  padding: 0;
+}
+.approach-stagger--teaser .stagger__item {
+  opacity: 1;
+  transform: none;
+  padding: 0;
+}
+.approach-stagger--teaser .stagger__card {
+  position: relative;
+  width: auto;
+  transform: none;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.14);
+}
+.approach-stagger--teaser .stagger__rail,
+.approach-stagger--teaser .stagger__dot,
+.approach-stagger--teaser .stagger__card::after {
+  display: none !important;
+}
+
+.approach-cta {
+  text-align: center;
+  margin-top: 1rem;
+}
+/* Inset latéral safe pour la timeline (évite les cards coupées) */
+.approach-stagger {
+  --edge: clamp(24px, 4vw, 64px);
+} /* valeur unique à régler */
+.approach-stagger .stagger {
+  padding-inline: var(--edge);
+} /* décale les cards vers l'intérieur */
+.approach-stagger .stagger__rail {
+  left: calc(-1 * var(--edge)); /* rail conserve la même largeur visuelle */
+  right: calc(-1 * var(--edge));
+}
+/* --- Sécurité largeur : ne jamais dépasser la colonne --- */
+.approach-stagger .stagger__card {
+  width: min(var(--card-max));
+}
+
+/* --- TEASER (Home) : icône + titre, pas de rail/dot, pas d'absolu --- */
+.approach-stagger--teaser::before {
+  content: none !important;
+}
+
+.approach-stagger--teaser .stagger {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+  gap: clamp(14px, 2vw, 22px) !important;
+  padding: 0 !important;
+  padding-inline: var(
+    --edge,
+    clamp(24px, 4vw, 64px)
+  ) !important; /* air latéral */
+  overflow: visible !important;
+}
+
+.approach-stagger--teaser .stagger__rail,
+.approach-stagger--teaser .stagger__dot,
+.approach-stagger--teaser .stagger__card::after {
+  display: none !important;
+}
+
+.approach-stagger--teaser .stagger__item,
+.approach-stagger--teaser .stagger__item::after {
+  opacity: 1 !important;
+  transform: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  height: auto !important;
+}
+
+.approach-stagger--teaser .stagger__card {
+  position: relative !important;
+  left: auto !important;
+  right: auto !important;
+  top: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  text-align: center;
+  padding: 14px 16px;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.14);
+}
+
+.approach-stagger--teaser .stagger__text {
+  display: none !important;
+}
+.approach-stagger--teaser .stagger__icon {
+  width: 38px;
+  height: 38px;
+  margin: 0 auto 8px;
+}
+.approach-stagger--teaser .stagger__title {
+  margin-bottom: 0;
+}
+.approach-stagger--teaser .stagger__snippet {
+  margin-top: 4px;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  opacity: 0.85;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+/* Espace sous la grille (teaser) */
+.approach-stagger--teaser .stagger {
+  margin-bottom: clamp(16px, 3vw, 36px);
+}
+
+/* Si le CTA est DANS la section */
+.approach-stagger--teaser .approach-cta {
+  text-align: center;
+  margin-top: clamp(14px, 2.5vw, 28px);
+}
+
+/* Si le CTA est APRÈS la section (sibling) */
+.approach-stagger--teaser + .approach-cta,
+#approach.approach-stagger--teaser + .approach-cta {
+  display: block;
+  text-align: center;
+  margin-top: clamp(14px, 2.5vw, 28px);
+}
+/* ===== TEASER — rail horizontal doux derrière la grille ===== */
+.approach-stagger--teaser .stagger {
+  position: relative;
+}
+.approach-stagger--teaser .stagger::before {
+  content: "";
+  position: absolute;
+  left: clamp(24px, 4vw, 64px);
+  right: clamp(24px, 4vw, 64px);
+  top: 50%;
+  height: 4px;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--border) 65%, transparent),
+    color-mix(in oklab, var(--orange) 28%, transparent),
+    color-mix(in srgb, var(--border) 65%, transparent)
+  );
+  pointer-events: none;
+  z-index: 0; /* cartes au-dessus */
+}
+/* un peu plus marqué en mode clair */
+:root[data-theme="light"] .approach-stagger--teaser .stagger::before {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--border) 85%, #000 10%),
+    color-mix(in oklab, var(--orange) 45%, #000 6%),
+    color-mix(in srgb, var(--border) 85%, #000 10%)
+  );
+}
+
+/* ===== TEASER — cartes plus lumineuses (glow assorti à --acc) ===== */
+.approach-stagger--teaser .stagger__card {
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--card) 96%, transparent),
+    color-mix(in srgb, var(--card) 90%, #000 10%) 60%
+  );
+  border: 1px solid
+    color-mix(in srgb, var(--acc, var(--orange)) 28%, var(--border));
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12),
+    0 0 24px color-mix(in oklab, var(--acc, var(--orange)) 16%, transparent);
+  transition: transform 0.18s ease, box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+.approach-stagger--teaser .stagger__card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  z-index: -1;
+  background: linear-gradient(
+    140deg,
+    color-mix(in oklab, var(--acc, var(--orange)) 55%, transparent),
+    transparent 40% 60%,
+    color-mix(in oklab, var(--acc, var(--orange)) 28%, transparent)
+  );
+  filter: blur(14px);
+  opacity: 0.32;
+}
+
+/* hover/focus un peu plus “punch” */
+.approach-stagger--teaser .stagger__card:hover,
+.approach-stagger--teaser .stagger__card:focus-visible {
+  transform: translateY(-2px);
+  border-color: color-mix(
+    in srgb,
+    var(--acc, var(--orange)) 36%,
+    var(--border)
+  );
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.16),
+    0 0 30px color-mix(in oklab, var(--acc, var(--orange)) 20%, transparent);
+  outline: none;
+}
+
+/* icône plus vive */
+.approach-stagger--teaser .stagger__icon {
+  background: color-mix(
+    in srgb,
+    var(--acc, var(--orange)) 18%,
+    var(--card) 82%
+  );
+  color: color-mix(in srgb, var(--acc, var(--orange)) 86%, #000 14%);
+  border: 1px solid
+    color-mix(in srgb, var(--acc, var(--orange)) 45%, transparent);
+  box-shadow: 0 8px 18px
+    color-mix(in oklab, var(--acc, var(--orange)) 22%, transparent);
+}
+
+/* Palette par carte (si pas déjà défini quelque part) */
+#approach .c-1 {
+  --acc: var(--green);
+}
+#approach .c-2 {
+  --acc: #22d3ee;
+}
+#approach .c-3 {
+  --acc: var(--orange);
+}
+#approach .c-4 {
+  --acc: #8b5cf6;
 }
