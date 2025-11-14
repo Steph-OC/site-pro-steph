@@ -1,0 +1,244 @@
+/* ============================
+   HERO CONTACT – LAYOUT
+   ============================ */
+
+.hero--contact {
+  padding-block: clamp(72px, 13vh, 110px);
+  margin-bottom: clamp(32px, 6vh, 56px); /* espace avant le formulaire */
+}
+
+.hero-contact {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: clamp(24px, 5vw, 56px);
+}
+
+.hero-contact__text {
+  flex: 1 1 420px;
+  max-width: 500px;
+}
+
+.hero-contact__text h1 {
+  margin-bottom: 0.5rem;
+}
+
+/* Colonne visuelle (bulle + ondes) */
+.hero-contact__visu {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: clamp(16px, 3vw, 32px);
+}
+
+/* ============================
+   BULLE PRINCIPALE
+   ============================ */
+
+.contact-bubble {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+}
+
+.contact-bubble--main {
+  /* taille de la bulle */
+  width: clamp(4rem, 20vw, 22rem);
+  height: clamp(4rem, 20vw, 22rem);
+
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.75);
+
+  position: relative;
+  z-index: 1;
+
+  /* entrée "depuis le loin" */
+  opacity: 0;
+  transform-origin: center;
+  transform: translate3d(0, 16px, -120px) scale(0.3);
+  filter: blur(6px);
+
+  animation: contact-bubble-intro 900ms cubic-bezier(0.16, 1, 0.3, 1) forwards,
+    contact-bubble-float 6.5s ease-in-out infinite 900ms;
+}
+
+.contact-bubble__icon {
+  font-size: clamp(1.4rem, 13vw, 18rem);
+}
+
+/* Effet hover léger (desktop) */
+@media (hover: hover) and (pointer: fine) {
+  .contact-bubble--main:hover {
+    transform: translate3d(0, -4px, 8px) scale(1.06);
+    box-shadow: 0 22px 55px rgba(15, 23, 42, 0.9);
+    transition: transform 160ms ease-out, box-shadow 160ms ease-out;
+  }
+}
+
+/* ============================
+   ONDES AUTOUR DE LA BULLE
+   ============================ */
+
+.contact-bubble--main::before,
+.contact-bubble--main::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 2px solid rgba(255, 255, 255, 0.22);
+  opacity: 0;
+  transform: scale(1);
+  pointer-events: none;
+  animation: contact-wave 3.2s ease-out infinite;
+}
+
+/* 2ᵉ onde décalée dans le temps */
+.contact-bubble--main::after {
+  animation-delay: 1.6s;
+}
+
+/* ============================
+   ANIMATIONS
+   ============================ */
+
+/* Arrivée depuis le "loin" */
+@keyframes contact-bubble-intro {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 16px, -140px) scale(0.3);
+    filter: blur(6px);
+  }
+  70% {
+    opacity: 1;
+    transform: translate3d(0, -4px, 10px) scale(1.05);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* Flottement doux de la bulle */
+@keyframes contact-bubble-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(0, -6px, 6px) scale(1.03);
+  }
+}
+
+/* Ondes concentriques */
+@keyframes contact-wave {
+  0% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  70% {
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+
+/* ============================
+   RESPONSIVE & ACCESSIBILITÉ
+   ============================ */
+@media (max-width: 768px) {
+  /* Hero plus compact en mobile */
+  .hero--contact {
+    padding-block: 40px 24px; /* moins de haut/bas */
+    margin-bottom: 12px; /* moins d’espace avant le formulaire */
+  }
+
+  .hero-contact {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+  }
+
+  .hero-contact__visu {
+    order: -1;
+    align-self: center;
+    padding-left: 0;
+  }
+
+  /* Bulle un peu plus raisonnable en hauteur */
+  .contact-bubble--main {
+    width: clamp(8rem, 40vw, 10rem);
+    height: clamp(8rem, 40vw, 10rem);
+  }
+
+  .contact-bubble__icon {
+    font-size: clamp(3rem, 12vw, 4rem);
+  }
+
+  .hero-contact__text {
+    max-width: 100%;
+    flex: 1 1 auto;
+  }
+  .hero.hero--contact {
+    padding-top: 32px;
+    padding-bottom: 12px;
+    margin-bottom: 0;
+  }
+
+  /* Section avec le formulaire : on enlève le top */
+  section.container.section.two-col {
+    padding-top: 0;
+    margin-top: 0;
+  }
+
+  /* Au cas où tu as une règle .section + .section qui ajoute de la marge */
+  .hero.hero--contact + .section.two-col,
+  .hero.hero--contact + section.container.section.two-col {
+    margin-top: 0;
+  }
+  /* On neutralise le padding vertical du container du hero contact */
+  .hero.hero--contact > .container.hero-contact {
+    padding-top: 24px; /* tu peux descendre à 16px si tu veux */
+    padding-bottom: 80px; /* très peu d'espace sous le sous-titre */
+  }
+
+  /* On évite de rajouter de l'espace après le hero */
+  .hero.hero--contact {
+    margin-bottom: 0;
+  }
+
+  /* On annule le min-height global du hero pour cette page */
+  .hero.hero--contact {
+    min-height: auto;
+    height: auto;
+    padding-top: 32px;
+    padding-bottom: 12px;
+    margin-bottom: 0;
+  }
+
+  /* Hero en colonne icône puis texte, mais compact */
+  .hero-contact {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+  }
+
+  .hero-contact__visu {
+    order: -1;
+    align-self: center;
+    padding-left: 0;
+  }
+
+  .hero-contact__text {
+    max-width: 100%;
+  }
+
+  /* On s'assure que la section du formulaire ne rajoute pas de marge en plus */
+  .hero.hero--contact + section.container.section.two-col {
+    margin-top: 0;
+  }
+}

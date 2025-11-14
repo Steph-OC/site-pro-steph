@@ -1,0 +1,275 @@
+/* ============================
+   HERO RÉALISATIONS (FLEX)
+   ============================ */
+
+/* --- Layout global (desktop) --- */
+
+.realisations-page .real-hero {
+  padding-block: clamp(56px, 12vh, 96px);
+}
+
+.realisations-page .real-hero__grid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(32px, 6vw, 72px);
+}
+
+.realisations-page .real-hero__text {
+  flex: 0 1 520px;
+  max-width: 560px;
+}
+
+.realisations-page .real-hero__visu {
+  flex: 0 1 420px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 260px;
+}
+
+/* ============================
+   BLOC 3D (identique desktop)
+   ============================ */
+
+.real-hero__cards3d {
+  --hero-plane-static: rotateY(325deg) rotateZ(14deg) rotateX(77deg)
+    translateX(-2.5rem);
+  --hero-plane-pos-a: -10rem;
+  --hero-plane-pos-b: -1rem;
+
+  --hero-plane-height: 30rem;
+  --hero-plane-width: 30rem;
+  --hero-item-size: 19rem;
+
+  --hero-stacked-items: 0;
+  --hero-card-perspective: rotateY(35deg) skewY(14deg);
+
+  position: relative;
+  transform: scale(1);
+  transform-origin: center;
+  margin-top: 2.5rem;
+}
+
+.cards3d__wrapper {
+  position: relative;
+  display: flex;
+}
+
+/* socle coloré derrière les cartes */
+.cards3d__wrapper::after {
+  content: "";
+  position: absolute;
+  opacity: 0;
+  top: -2rem;
+  left: -2rem;
+  background-image: linear-gradient(
+    rgb(255, 0, 249) 0%,
+    rgb(241, 109, 14) 33%,
+    rgb(255, 0, 249) 66%,
+    rgb(241, 109, 14) 100%
+  );
+  background-size: 100% 300%;
+  animation: real-gradient-scroll 3s linear infinite,
+    real-plane-appear 1600ms ease forwards;
+  transform: translateZ(var(--hero-plane-pos-b));
+  height: var(--hero-plane-height);
+  width: var(--hero-plane-width);
+  border-radius: 2rem;
+}
+
+/* cartes */
+.cards3d__item {
+  --hero-item: 0;
+  --hero-item-hover: -7.5rem;
+  opacity: 0;
+  height: 420px;
+  position: relative;
+  user-select: none;
+  margin-left: -8rem;
+  transform: translateX(var(--hero-stacked-items)) translateY(var(--hero-item))
+    var(--hero-card-perspective);
+  transition: transform 300ms ease;
+  animation: real-image-drop 500ms calc(var(--stagger) * 450ms) ease-out
+    forwards;
+}
+
+.cards3d__item:hover {
+  --hero-item: var(--hero-item-hover) !important;
+}
+
+.cards3d__item:first-child {
+  z-index: 5;
+}
+
+.cards3d__item:nth-child(2) {
+  z-index: 4;
+  --hero-item: -1.5rem;
+  --hero-item-hover: -8.5rem;
+}
+
+.cards3d__item:nth-child(3) {
+  z-index: 3;
+  --hero-item: -3rem;
+  --hero-item-hover: -9.5rem;
+}
+
+/* Container squelette */
+.cards3d__container {
+  border-radius: 14px;
+  width: var(--hero-item-size);
+  height: calc(var(--hero-item-size) * 0.7);
+  border: 3px dashed rgba(128, 128, 128, 1);
+  background-color: rgba(128, 128, 128, 0.12);
+  padding: 0.85rem;
+  animation: real-skeleton-remove 1700ms calc(var(--stagger) * 350ms)
+    cubic-bezier(0.95, 0, 0, 0.99) forwards;
+}
+
+/* Carte + image */
+.cards3d__card {
+  width: 100%;
+  min-height: 13rem;
+  height: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 28px rgba(0, 0, 0, 0.8);
+  transform: scale(0);
+  position: relative;
+  animation: real-card-appear 1700ms calc(var(--stagger) * 350ms)
+    cubic-bezier(0.95, 0, 0, 0.99) forwards;
+}
+
+.cards3d__card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* dégradés de secours */
+.cards3d__card--reflexion {
+  background: linear-gradient(135deg, #22c55e, #0ea5e9);
+}
+.cards3d__card--wireframe {
+  background: linear-gradient(135deg, #fb7185, #f97316);
+}
+.cards3d__card--site {
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+}
+
+/* ===== Animations existantes (inchangées) ===== */
+
+@keyframes real-plane-appear {
+  0% {
+    transform: var(--hero-plane-static) translateZ(var(--hero-plane-pos-a));
+    opacity: 0;
+  }
+  100% {
+    transform: var(--hero-plane-static) translateZ(var(--hero-plane-pos-b));
+    opacity: 1;
+  }
+}
+
+@keyframes real-image-drop {
+  0% {
+    top: -6rem;
+    opacity: 0;
+  }
+  100% {
+    top: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes real-card-appear {
+  55% {
+    transform: scale(0);
+    filter: blur(20px);
+  }
+  100% {
+    transform: scale(1.025);
+    filter: blur(0);
+  }
+}
+
+@keyframes real-skeleton-remove {
+  65% {
+    border-color: rgba(128, 128, 128, 1);
+    background-color: rgba(128, 128, 128, 0.12);
+  }
+  100% {
+    border-color: rgba(128, 128, 128, 0);
+    background-color: rgba(128, 128, 128, 0);
+  }
+}
+
+@keyframes real-gradient-scroll {
+  0% {
+    background-position-y: 100%;
+  }
+  100% {
+    background-position-y: 0%;
+  }
+}
+
+/* ============================
+   MOBILE (flex colonne + zoom)
+   ============================ */
+@media (max-width: 900px) {
+  /* un peu plus d'air entre le header et le visuel */
+  .realisations-page .real-hero {
+    padding-block: 60px 16px; /* haut | bas */
+  }
+
+  .realisations-page .real-hero__grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem; /* petit espace visuel / texte, on va encore le réduire avec la margin négative */
+  }
+
+  /* VISUEL : en haut, centré, avec marge négative pour remonter le texte */
+  .realisations-page .real-hero__visu {
+    order: -1;
+    width: 100%;
+    max-width: 420px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /* 🟠 c'est ÇA qui marche chez toi, on l'assume proprement */
+    margin: 0 0 -200px; /* tu ajustes -180 / -220 selon ce que tu veux */
+  }
+
+  /* bloc 3D : même config que desktop, juste zoomé et recentré */
+  .real-hero__cards3d {
+    --hero-plane-static: rotateY(325deg) rotateZ(14deg) rotateX(77deg)
+      translateX(0); /* on annule le décalage horizontal du desktop */
+
+    transform-origin: center top;
+    transform: scale(0.35); /* taille du visuel sur mobile */
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .cards3d__wrapper {
+    display: flex;
+    justify-content: center;
+  }
+
+  /* TEXTE : centré, plus collé au visuel grâce à la margin négative du bloc au-dessus */
+  .realisations-page .real-hero__text {
+    margin-top: 0;
+    text-align: center;
+    max-width: 32rem;
+    margin-inline: auto;
+  }
+
+  .realisations-page .real-hero__text .section-sub {
+    margin-inline: auto;
+  }
+}
+@media (max-width: 1400px) {
+}

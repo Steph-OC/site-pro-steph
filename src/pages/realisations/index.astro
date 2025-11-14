@@ -1,6 +1,7 @@
 ---
 import SiteLayout from "@/layouts/SiteLayout.astro";
 import ListingProjectCard from "@/components/ListingProjectCard";
+import "@/styles/pages/realisations.css";
 import "@/styles/background.css";
 import { Reveal } from "@/components/Scroll";
 import {
@@ -44,12 +45,17 @@ const cards = await Promise.all(
 );
 
 /** Halo vars stables par slug (JS pur) */
-function hexToRgbTuple(hex) {
+function hexToRgbTuple(hex?: string): [number, number, number] | null {
+  if (!hex) return null;
   const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   if (!m) return null;
   return [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)];
 }
-function haloVarsFromSlug(slug, accent) {
+
+function haloVarsFromSlug(
+  slug: string,
+  accent?: string
+): Record<string, string> {
   let h = 7;
   for (const ch of slug) h = (h * 31 + ch.charCodeAt(0)) % 100000;
 
@@ -84,16 +90,74 @@ function haloVarsFromSlug(slug, accent) {
 
 <SiteLayout {title} {description}>
   <main class="halo-desync halo-page realisations realisations-page">
-    <!-- entête visuel -->
+    <!-- HERO avec cube 3D -->
     <section
-      class="section--halo halo-pulse-gentle"
+      class="section--halo halo-pulse-gentle real-hero"
       aria-labelledby="realisations-title"
     >
-      <div class="container container--xl">
-        <header class="section-head">
-          <h1 id="realisations-title" class="h2">{title}</h1>
-          <p class="section-sub">{description}</p>
-        </header>
+      <div class="container container--xl real-hero__grid">
+        <div class="real-hero__text">
+          <p class="kicker">Portfolio</p>
+          <h1 id="realisations-title" class="h2">
+            Des sites WordPress pensés pour durer
+          </h1>
+          <p class="section-sub">
+            {description}
+          </p>
+        </div>
+
+        <div class="real-hero__visu" aria-hidden="true">
+          <div class="real-hero__cards3d">
+            <div class="cards3d__wrapper">
+              <div class="cards3d__item" style="--stagger: 3">
+                <div class="cards3d__container">
+                  <div class="cards3d__card cards3d__card--reflexion">
+                    <img
+                      class="cards3d__img"
+                      src="/images/wirefarmes.webp"
+                      alt="Réflexion : atelier avec croquis et post-its"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="cards3d__item" style="--stagger: 2">
+                <div class="cards3d__container">
+                  <div class="cards3d__card cards3d__card--wireframe">
+                    <img
+                      class="cards3d__img"
+                      src="/images/coder.webp"
+                      alt="Wireframe : maquette en noir et blanc d’une page"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="cards3d__item" style="--stagger: 1">
+                <div class="cards3d__container">
+                  <div class="cards3d__card cards3d__card--site">
+                    <img
+                      class="cards3d__img"
+                      src="/images/site-termine.webp"
+                      alt="Site final affiché sur un écran"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p class="sr-only">
+            Illustration des trois étapes de réalisation : réflexion, wireframe
+            et site en ligne.
+          </p>
+        </div>
       </div>
     </section>
 
@@ -114,7 +178,6 @@ function haloVarsFromSlug(slug, accent) {
                   direction={idx % 2 === 0 ? "left" : "right"}
                   delay={idx * 0.04}
                 >
-                  {/* style = variables de halo seedées par le slug */}
                   <article
                     id={c.slug}
                     class="card project-card"

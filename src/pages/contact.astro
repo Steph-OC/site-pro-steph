@@ -3,6 +3,7 @@ import SiteLayout from "@/layouts/SiteLayout.astro";
 import { pickFaq } from "@/content/faq";
 import "@/styles/components/faq.css";
 import "@/styles/background.css";
+import "@/styles/pages/contact.css";
 
 /* Helpers locaux (pour ne PAS modifier src/lib/wp.ts) */
 const WP = (import.meta.env.WP_URL || "").replace(/\/$/, "");
@@ -55,17 +56,27 @@ const contactFaqJsonLd = {
 
 <SiteLayout {title} {description}>
   <!-- HERO -->
+  <!-- HERO -->
   <Fragment slot="hero">
-    <section class="hero">
-      <div class="container">
-        <h1>Contact</h1>
-        {
-          introHtml ? (
-            <div class="muted" set:html={introHtml} />
-          ) : (
-            <p class="muted">{help}</p>
-          )
-        }
+    <section class="hero hero--contact" aria-labelledby="contact-title">
+      <div class="container hero-contact">
+        <!-- Container 1 : titre + texte -->
+        <div class="hero-contact__text">
+          <h1 id="contact-title">Contact</h1>
+
+          {
+            introHtml ? (
+              <div class="muted" set:html={introHtml} />
+            ) : (
+              <p class="muted">{help}</p>
+            )
+          }
+        </div>
+        <div class="hero-contact__visu" aria-hidden="true">
+          <div class="contact-bubble contact-bubble--main">
+            <span class="contact-bubble__icon fa-solid fa-comment-dots"></span>
+          </div>
+        </div>
       </div>
     </section>
   </Fragment>
