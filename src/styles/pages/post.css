@@ -286,29 +286,33 @@
 }
 
 /* ===== Couverture avec parallax doux (centrée) ===== */
+/* ===== Couverture simple (centrée, sans parallax) ===== */
 .post-cover {
   width: min(1100px, 92vw);
   margin: clamp(12px, 2.4vw, 22px) auto clamp(22px, 3.5vw, 32px);
-  height: var(--h, 56vh);
-  min-height: 320px;
-  max-height: 68vh;
   position: relative;
   overflow: hidden;
   border-radius: 16px;
   background: var(--card, #232333);
   box-shadow: 0 14px 36px rgba(0, 0, 0, 0.28);
 }
+
+/* on neutralise tout ce que WPImg/abs-cover lui met */
 .post-cover__img {
-  position: absolute;
-  inset: calc(-1 * var(--pad, 0px));
-  width: calc(100% + 2 * var(--pad, 0px));
-  height: calc(100% + 2 * var(--pad, 0px));
+  display: block;
+  position: static !important;
+  inset: auto !important;
+  width: 100% !important;
+  height: auto !important;
+
   object-fit: cover;
-  object-position: center;
-  transform: translate3d(0, var(--y, 0px), 0);
-  will-change: transform;
-  backface-visibility: hidden;
+  object-position: center center !important;
+
+  transform: none !important;
+  will-change: auto;
+  backface-visibility: visible;
 }
+
 @media (prefers-reduced-motion: reduce) {
   .post-cover__img {
     transform: none !important;
@@ -338,4 +342,14 @@
 .post-nav .btn {
   min-height: 44px;
   padding-inline: 16px;
+}
+/* Cover full-width sur mobile */
+@media (max-width: 640px) {
+  .post-cover {
+    width: 100vw; /* prend toute la largeur de la fenêtre */
+    max-width: none;
+    margin-left: calc(50% - 50vw); /* annule les marges du layout */
+    margin-right: 0;
+    border-radius: 0; /* optionnel : pas d’arrondi en bord d’écran */
+  }
 }

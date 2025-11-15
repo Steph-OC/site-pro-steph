@@ -149,11 +149,12 @@
 
   .services-hero__grid {
     display: flex;
-    flex-direction: column;
-    gap: 1.75rem; /* espace entre texte et bulles */
+    flex-direction: column-reverse; /* 👉 bulles en haut, texte en dessous */
+    gap: 1.75rem; /* espace entre bulles et texte */
     align-items: stretch;
   }
 
+  /* Texte sous les bulles, centré */
   .services-hero__col {
     max-width: 32rem;
     margin-inline: auto;
@@ -170,9 +171,10 @@
     justify-content: center;
   }
 
-  /* Bloc bulles : en dessous, plus compact */
+  /* Bloc bulles (au-dessus, plus compact) */
   .services-hero__illu {
-    margin-top: 0.5rem;
+    margin-top: 0; /* on enlève l’ancienne marge top */
+    margin-bottom: 0.5rem; /* petit espace sous les bulles */
     min-height: 220px;
     display: flex;
     justify-content: center;
