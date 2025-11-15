@@ -128,21 +128,36 @@ export default function initPointerCursor(opts = {}) {
     const movedEnough = Math.abs(mx - dx) + Math.abs(my - dy) > 0.2;
     if (movedEnough) {
       const stack = document.elementsFromPoint(mx, my) || [];
-
-      // priorité .post-nav
       let target = null;
-      for (const el of stack) {
-        const t = closestMatch(el, PREF);
-        if (t) { target = t; break; }
-      }
-      // sinon critères généraux
-      if (!target) {
+
+      // 1) Si on a déjà un élément actif ET que la souris est encore dans sa zone élargie,
+      // on le garde sans refaire un elementsFromPoint (gros gain perf)
+      if (
+        activeEl &&
+        activeRect &&
+        pointerInsideRectWithPad(activeRect, magnetRadius * 1.2)
+      ) {
+        target = activeEl;
+      } else {
+        // 2) Sinon, on recalcule la pile sous la souris
+        const stack = document.elementsFromPoint(mx, my) || [];
+
+        // priorité .post-nav
         for (const el of stack) {
-          if (safeMatches(el, targets)) { target = el; break; }
-          const t = closestMatch(el, targets);
+          const t = closestMatch(el, PREF);
           if (t) { target = t; break; }
         }
+
+        // sinon critères généraux
+        if (!target) {
+          for (const el of stack) {
+            if (safeMatches(el, targets)) { target = el; break; }
+            const t = closestMatch(el, targets);
+            if (t) { target = t; break; }
+          }
+        }
       }
+
 
       if (!target) {
         dot.style.opacity = freeOpacity;

@@ -265,6 +265,7 @@
     text-align: center;
     max-width: 32rem;
     margin-inline: auto;
+    max-height: 200px;
   }
 
   .realisations-page .real-hero__text .section-sub {

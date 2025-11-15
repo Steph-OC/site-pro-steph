@@ -5,11 +5,9 @@ html.use-ios-pointer body {
 
 /* Subtle target feedback (doesn’t cover button borders) */
 .magnet-on {
-  transform: translate(var(--magnet-tx, 0), var(--magnet-ty, 0))
-    rotateX(var(--magnet-rotX, 0)) rotateY(var(--magnet-rotY, 0))
+  transform: translate3d(var(--magnet-tx, 0), var(--magnet-ty, 0), 0)
     scale(var(--magnet-scale, 1));
   transition: transform 120ms cubic-bezier(0.2, 0.8, 0.2, 1);
-  transform-style: preserve-3d;
   will-change: transform;
 }
 

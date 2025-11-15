@@ -94,128 +94,177 @@ const business = {
   <!-- Grille principale -->
   <div class="container foot">
     <!-- 1) Accès rapides (SEO) -->
-    <nav class="footer__anchors" aria-label="Accès rapides (SEO)">
-      <h3 class="footer__section-title">Accès rapides</h3>
-      <ul class="footer__anchors-list">
-        <li><a href="/services#services">Création de site WordPress</a></li>
-        <li><a href="/services#services">Refonte WordPress</a></li>
-        <li><a href="/services#services">Maintenance & mises à jour</a></li>
-        <li><a href="/services#services">Optimisation des performances</a></li>
-        <li><a href="/services#services-cles">Accessibilité (RGAA)</a></li>
-        <li>
-          <a href="/services#services-cles">SEO — Référencement naturel</a>
-        </li>
-        <li>
-          <a href="/services#developpeuse-wordpress-beziers"
-            >Développeuse WordPress à Béziers</a
-          >
-        </li>
-      </ul>
+    <nav class="footer__anchors footer__col" aria-label="Accès rapides (SEO)">
+      <h3 class="footer__section-title">
+        <button
+          class="footer__toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="footer-panel-anchors"
+        >
+          Accès rapides
+        </button>
+      </h3>
+      <div class="footer__content" id="footer-panel-anchors" hidden>
+        <ul class="footer__anchors-list">
+          <li><a href="/services#services">Création de site WordPress</a></li>
+          <li><a href="/services#services">Refonte WordPress</a></li>
+          <li><a href="/services#services">Maintenance & mises à jour</a></li>
+          <li>
+            <a href="/services#services">Optimisation des performances</a>
+          </li>
+          <li><a href="/services#services-cles">Accessibilité (RGAA)</a></li>
+          <li>
+            <a href="/services#services-cles">SEO — Référencement naturel</a>
+          </li>
+          <li>
+            <a href="/services#developpeuse-wordpress-beziers"
+              >Développeuse WordPress à Béziers</a
+            >
+          </li>
+        </ul>
+      </div>
     </nav>
 
     <!-- 2) Navigation (WP) -->
-    <nav class="footer__nav" aria-label="Navigation">
-      <h3 class="footer__section-title">Navigation</h3>
-      {
-        links.length ? (
-          <ul class="footer__list">
-            {links.map((l) => {
-              const href = toRelative(l.url);
-              const norm = normalizePath(href);
-              const isActive =
-                norm === "/"
-                  ? current === "/"
-                  : current === norm || current.startsWith(norm + "/");
-              return (
-                <li>
-                  <a
-                    href={href}
-                    aria-current={isActive ? "page" : undefined}
-                    class={isActive ? "is-active" : undefined}
-                    target={l.opensInNewTab ? "_blank" : undefined}
-                    rel={l.opensInNewTab ? "noopener" : undefined}
-                  >
-                    {l.label}
-                  </a>
-                </li>
-              );
-            })}
-          </ul>
-        ) : IS_DEV ? (
-          <details style="opacity:.85;margin:.25rem 0">
-            <summary>Aucun lien de menu reçu (DEV)</summary>
-            <pre style="max-width:100%;overflow:auto">
-              {JSON.stringify({ info, tried }, null, 2)}
-            </pre>
-          </details>
-        ) : null
-      }
+    <nav class="footer__nav footer__col" aria-label="Navigation">
+      <h3 class="footer__section-title">
+        <button
+          class="footer__toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="footer-panel-nav"
+        >
+          Navigation
+        </button>
+      </h3>
+
+      <div class="footer__content" id="footer-panel-nav" hidden>
+        {
+          links.length ? (
+            <ul class="footer__list">
+              {links.map((l) => {
+                const href = toRelative(l.url);
+                const norm = normalizePath(href);
+                const isActive =
+                  norm === "/"
+                    ? current === "/"
+                    : current === norm || current.startsWith(norm + "/");
+                return (
+                  <li>
+                    <a
+                      href={href}
+                      aria-current={isActive ? "page" : undefined}
+                      class={isActive ? "is-active" : undefined}
+                      target={l.opensInNewTab ? "_blank" : undefined}
+                      rel={l.opensInNewTab ? "noopener" : undefined}
+                    >
+                      {l.label}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : IS_DEV ? (
+            <details style="opacity:.85;margin:.25rem 0">
+              <summary>Aucun lien de menu reçu (DEV)</summary>
+              <pre style="max-width:100%;overflow:auto">
+                {JSON.stringify({ info, tried }, null, 2)}
+              </pre>
+            </details>
+          ) : null
+        }
+      </div>
     </nav>
 
     <!-- 3) Support -->
-    <nav class="footer__support" aria-label="Support">
-      <h3 class="footer__section-title">Support</h3>
-      <ul class="footer__list">
-        <li><a href="/contact#faq">FAQ</a></li>
-        <li><a href="/contact">Contactez-nous</a></li>
-      </ul>
+    <nav class="footer__support footer__col" aria-label="Support">
+      <h3 class="footer__section-title">
+        <button
+          class="footer__toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="footer-panel-support"
+        >
+          Support
+        </button>
+      </h3>
+      <div class="footer__content" id="footer-panel-support" hidden>
+        <ul class="footer__list">
+          <li><a href="/contact#faq">FAQ</a></li>
+          <li><a href="/contact">Contactez-nous</a></li>
+        </ul>
+      </div>
     </nav>
 
-    <!-- 4) Contact + (sociaux + marque alignés en bas sur la même ligne) -->
-    <div class="footer__contact">
-      <h3 class="footer__section-title">Contact</h3>
-      <ul class="footer__meta">
-        <li>
-          <a href="mailto:contact@stephaniequibel.fr"
-            >contact@stephaniequibel.fr</a
-          >
-        </li>
-        <li><a href="tel:+33620681392">06 20 68 13 92 Lun–Ven, 9h–18h</a></li>
-        <li><a href="/contact">Formulaire de contact</a></li>
-        <li>Béziers • Partout en France 🇫🇷</li>
-      </ul>
+    <!-- 4) Contact + sociaux -->
+    <div class="footer__contact footer__col">
+      <h3 class="footer__section-title">
+        <button
+          class="footer__toggle"
+          type="button"
+          aria-expanded="true"
+          aria-controls="footer-panel-contact"
+        >
+          Contact
+        </button>
+      </h3>
 
-      <!-- Ligne du bas : LinkedIn à gauche, logo+nom à droite -->
-      <div class="footer__contact-bottom">
-        <ul class="footer__social">
+      <div class="footer__content" id="footer-panel-contact">
+        <ul class="footer__meta">
           <li>
-            <a
-              href="https://www.linkedin.com/in/stephanie-quibel-developpeuse-web/"
-              target="_blank"
-              rel="noopener"
-              aria-label="LinkedIn"
+            <a href="mailto:contact@stephaniequibel.fr"
+              >contact@stephaniequibel.fr</a
             >
-              <svg
-                width="34"
-                height="34"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  fill="currentColor"
-                  d="M4.98 3.5a2.5 2.5 0 11-.02 5.001A2.5 2.5 0 014.98 3.5zM3.5 8.98h2.95V21H3.5V8.98zM9.5 8.98h2.83v1.64h.04c.39-.74 1.35-1.53 2.78-1.53 2.98 0 3.53 1.96 3.53 4.51V21h-2.95v-5.38c0-1.28-.02-2.93-1.79-2.93-1.8 0-2.08 1.41-2.08 2.84V21H9.5V8.98z"
-                ></path>
-              </svg>
-              <span class="sr-only">LinkedIn</span>
-            </a>
           </li>
+          <li>
+            <a href="tel:+33620681392">06 20 68 13 92 Lun–Ven, 9h–18h</a>
+          </li>
+          <li><a href="/contact">Formulaire de contact</a></li>
+          <li>Béziers • Partout en France 🇫🇷</li>
         </ul>
 
-        <a
-          class="footer__brand-bottom"
-          href="/"
-          aria-label={`${business.name}, retour à l’accueil`}
-        >
-          <img
-            src={business.logo}
-            alt=""
-            width="34"
-            height="34"
-            loading="lazy"
-            decoding="async"
-          />
-          <strong>{business.name}</strong>
-        </a>
+        <div class="footer__contact-bottom">
+          <ul class="footer__social">
+            <li>
+              <a
+                href="https://www.linkedin.com/in/stephanie-quibel-developpeuse-web/"
+                target="_blank"
+                rel="noopener"
+                aria-label="LinkedIn"
+              >
+                <svg
+                  width="34"
+                  height="34"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M4.98 3.5a2.5 2.5 0 11-.02 5.001A2.5 2.5 0 014.98 3.5zM3.5 8.98h2.95V21H3.5V8.98zM9.5 8.98h2.83v1.64h.04c.39-.74 1.35-1.53 2.78-1.53 2.98 0 3.53 1.96 3.53 4.51V21h-2.95v-5.38c0-1.28-.02-2.93-1.79-2.93-1.8 0-2.08 1.41-2.08 2.84V21H9.5V8.98z"
+                  ></path>
+                </svg>
+                <span class="sr-only">LinkedIn</span>
+              </a>
+            </li>
+          </ul>
+
+          <a
+            class="footer__brand-bottom"
+            href="/"
+            aria-label={`${business.name}, retour à l’accueil`}
+          >
+            <img
+              src={business.logo}
+              alt=""
+              width="34"
+              height="34"
+              loading="lazy"
+              decoding="async"
+            />
+            <strong>{business.name}</strong>
+          </a>
+        </div>
       </div>
     </div>
   </div>
@@ -629,4 +678,114 @@ const business = {
       margin-top: 0 !important;
     }
   }
+  /* Boutons d'accordéon dans le footer */
+  .footer__section-title {
+    margin: 0 0 0.4rem;
+    width: 100%;
+  }
+
+  .footer__toggle {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    color: inherit;
+    font: inherit;
+    width: 100%;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+  }
+
+  .footer__toggle::after {
+    content: "▾";
+    font-size: 0.85em;
+    margin-left: auto;
+    transition: transform 180ms ease;
+  }
+
+  /* quand aria-expanded="true", on tourne le chevron */
+  .footer__toggle[aria-expanded="true"]::after {
+    transform: rotate(180deg);
+  }
+
+  /* en mobile, le contenu est vraiment pliable via [hidden] */
+  @media (max-width: 768px) {
+    .footer__content[hidden] {
+      display: none;
+    }
+
+    /* un petit séparateur entre colonnes si tu veux */
+    .footer__col {
+      padding-block: 0.4rem 0.6rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+  }
+
+  /* en desktop : on désactive l'accordéon visuellement */
+  @media (min-width: 768px) {
+    .footer__toggle {
+      cursor: default;
+    }
+
+    .footer__toggle::after {
+      content: none;
+    }
+
+    .footer__content {
+      display: block !important;
+    }
+  }
 </style>
+<script is:inline>
+  (() => {
+    const toggles = document.querySelectorAll(".footer__toggle");
+    if (!toggles.length) return;
+
+    const mqDesktop = window.matchMedia("(min-width: 768px)");
+
+    function syncMode() {
+      const isDesktop = mqDesktop.matches;
+      toggles.forEach((btn) => {
+        const controls = btn.getAttribute("aria-controls");
+        if (!controls) return;
+        const panel = document.getElementById(controls);
+        if (!panel) return;
+
+        if (isDesktop) {
+          // en desktop : toujours ouvert
+          btn.setAttribute("aria-expanded", "true");
+          panel.hidden = false;
+        } else {
+          // en mobile : on respecte l'état défini dans le HTML
+          if (!panel.hasAttribute("data-init")) {
+            const expanded = btn.getAttribute("aria-expanded") === "true";
+            panel.hidden = !expanded;
+            panel.dataset.init = "1";
+          }
+        }
+      });
+    }
+
+    syncMode();
+    mqDesktop.addEventListener("change", syncMode);
+
+    toggles.forEach((btn) => {
+      const controls = btn.getAttribute("aria-controls");
+      if (!controls) return;
+      const panel = document.getElementById(controls);
+      if (!panel) return;
+
+      btn.addEventListener("click", () => {
+        // en desktop : pas d'accordéon
+        if (mqDesktop.matches) return;
+
+        const expanded = btn.getAttribute("aria-expanded") === "true";
+        btn.setAttribute("aria-expanded", String(!expanded));
+        panel.hidden = expanded;
+      });
+    });
+  })();
+</script>

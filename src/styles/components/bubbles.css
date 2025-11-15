@@ -138,3 +138,67 @@
   animation: none !important;
   transition: none;
 }
+/* ============================
+   HERO SERVICES — MOBILE
+   ============================ */
+@media (max-width: 768px) {
+  /* Hero un peu plus aéré */
+  .services-hero {
+    padding-block: 56px 32px; /* plus de haut, un peu de bas */
+  }
+
+  .services-hero__grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem; /* espace entre texte et bulles */
+    align-items: stretch;
+  }
+
+  .services-hero__col {
+    max-width: 32rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .services-hero__col .lead {
+    margin-top: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .services-hero__col .actions {
+    margin-top: 1rem;
+    justify-content: center;
+  }
+
+  /* Bloc bulles : en dessous, plus compact */
+  .services-hero__illu {
+    margin-top: 0.5rem;
+    min-height: 220px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .services-hero__illu .bubble-cloud {
+    position: relative;
+    width: 260px;
+    height: 260px;
+    transform: scale(0.8); /* ↓ taille globale des bulles */
+    transform-origin: center top;
+  }
+
+  /* On réduit un peu le diamètre des disques pour éviter qu'ils débordent */
+  .services-hero__illu .bubble-cloud > li::before {
+    width: calc(var(--b, 120px) * 0.8);
+    height: calc(var(--b, 120px) * 0.8);
+  }
+
+  .services-hero__illu .bubble-cloud > li::after {
+    width: calc(var(--b, 120px) * 0.3);
+    height: calc(var(--b, 120px) * 0.3);
+  }
+
+  .services-hero__illu .bubble-cloud > li span {
+    font-size: 0.9rem;
+  }
+}
