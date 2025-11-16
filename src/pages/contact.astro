@@ -23,9 +23,10 @@ async function getPageBySlug(slug: string) {
 const item = await getPageBySlug("contact");
 const acf = item?.acf || {};
 
-const title = "Contact — Stéphanie Quibel";
+const title =
+  "Contact — développeuse WordPress freelance à Béziers | Stéphanie Quibel";
 const description =
-  "Parlons de votre projet WordPress : création, refonte, performance, accessibilité, SEO. Réponse sous 24h.";
+  "Expliquez-moi votre projet de site WordPress : création ou refonte, performance, accessibilité, SEO. Réponse rapide, partout en France.";
 
 // Contenus ACF / fallback
 const introHtml = acf.intro_rich_text || item?.content?.rendered || "";
@@ -56,13 +57,14 @@ const contactFaqJsonLd = {
 
 <SiteLayout {title} {description}>
   <!-- HERO -->
-  <!-- HERO -->
   <Fragment slot="hero">
     <section class="hero hero--contact" aria-labelledby="contact-title">
       <div class="container hero-contact">
         <!-- Container 1 : titre + texte -->
         <div class="hero-contact__text">
-          <h1 id="contact-title">Contact</h1>
+          <h1 id="contact-title">
+            Contact — parlons de votre projet WordPress
+          </h1>
 
           {
             introHtml ? (
@@ -441,7 +443,6 @@ const contactFaqJsonLd = {
     }
   </style>
 
-  <!-- JSON-LD: ProfessionalService (zones desservies) -->
   <script
     type="application/ld+json"
     set:html={JSON.stringify({
@@ -457,6 +458,14 @@ const contactFaqJsonLd = {
         { "@type": "City", name: "Montpellier" },
       ],
       provider: { "@type": "Person", name: "Stéphanie Quibel" },
+      contactPoint: [
+        {
+          "@type": "ContactPoint",
+          email,
+          contactType: "customer support",
+          areaServed: "FR",
+        },
+      ],
     })}
   />
 

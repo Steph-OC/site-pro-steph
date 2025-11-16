@@ -1,10 +1,10 @@
 // src/content/faq.ts
 
 // --- Littéraux centralisés (réutilisables dans tout le projet) ---
-export const FAQ_TAGS = ["pricing","timeline","process","maintenance","seo","contact"] as const;
+export const FAQ_TAGS = ["pricing", "timeline", "process", "maintenance", "seo", "contact"] as const;
 export type FaqTag = typeof FAQ_TAGS[number];
 
-export const FAQ_SURFACES = ["home","services","contact"] as const;
+export const FAQ_SURFACES = ["home", "services", "contact"] as const;
 export type FaqSurface = typeof FAQ_SURFACES[number];
 
 // --- Modèle de donnée ---
@@ -19,36 +19,81 @@ export type QA = Readonly<{
 
 // --- Données : cohérentes, immuables ---
 export const FAQ: Readonly<QA[]> = [
+  // ======================
+  // HOME + SERVICES (FAQ globale)
+  // ======================
   {
-    id: "pricing-vitrine",
-    q: "Comment estimer le coût de conception d'un site WordPress ?",
-    a: "Selon les fonctionnalités, entre 750€ et 4 000€ en moyenne. Le devis détaille design, intégration, performance et options (blog, formulaires, multilingue).",
-    tags: ["pricing"], surfaces: ["home","services"], priority: 1
+    id: "types-sites",
+    q: "Avec quels types de sites WordPress travaillez-vous ?",
+    a: "Je travaille surtout sur des sites vitrines, blogs éditoriaux et petits sites de services sous WordPress. L’objectif est d’avoir une base propre, rapide et facile à faire évoluer.",
+    tags: ["process"],
+    surfaces: ["home", "services"],
+    priority: 1,
   },
   {
+    id: "zone-geo",
+    q: "Travaillez-vous uniquement autour de Béziers ?",
+    a: "Je suis basée près de Béziers (Hérault), mais j’accompagne des clientes et clients en Occitanie et partout en France, principalement à distance (visio, e-mail, téléphone).",
+    tags: ["contact"],
+    surfaces: ["home", "contact"],
+    priority: 2,
+  },
+  {
+    id: "reprise-site",
+    q: "Pouvez-vous reprendre un site WordPress déjà existant ?",
+    a: "Oui. Je peux auditer un site WordPress déjà en ligne, corriger les points bloquants (performance, bugs, thème vieillissant…) et préparer un plan de refonte progressive si nécessaire.",
+    tags: ["process"],
+    surfaces: ["home", "services"],
+    priority: 3,
+  },
+
+  // ======================
+  // SERVICES
+  // ======================
+  {
     id: "delais",
-    q: "Quels sont les délais de livraison ?",
-    a: "Entre 2 et 6 semaines selon le contenu et les fonctionnalités. Un planning est fourni dès la validation.",
-    tags: ["timeline"], surfaces: ["home","services","contact"], priority: 2
+    q: "Quels sont les délais pour un projet de site WordPress ?",
+    a: "En général, il faut compter entre 2 et 6 semaines selon les fonctionnalités : nombre de pages, besoin en contenus et complexité des fonctionnalités. Un planning prévisionnel est posé dès le début du projet.",
+    tags: ["timeline"],
+    surfaces: ["home", "services", "contact"],
+    priority: 4,
+  },
+  {
+    id: "pricing-vitrine",
+    q: "Comment se passe l’estimation d’un projet de site WordPress ?",
+    a: "Je vous pose quelques questions sur votre activité, le type de site (création ou refonte), le volume de contenu et les fonctionnalités importantes. À partir de là, je vous envoie un devis détaillé poste par poste, pour que vous sachiez exactement ce qui est inclus.",
+    tags: ["pricing"],
+    surfaces: ["services"],
+    priority: 5,
   },
   {
     id: "maintenance",
-    q: "Proposes-tu la maintenance et les mises à jour ?",
-    a: "Oui : sauvegardes, mises à jour WP/thèmes/plugins, surveillance de sécurité et correctifs. Résiliable à tout moment.",
-    tags: ["maintenance"], surfaces: ["services","contact"], priority: 3
+    q: "Proposes-tu la maintenance et les mises à jour du site ?",
+    a: "Oui : mises à jour WordPress, thèmes et extensions, sauvegardes régulières, veille de sécurité et petites corrections. La formule est flexible et peut être ajustée ou arrêtée selon vos besoins.",
+    tags: ["maintenance"],
+    surfaces: ["services", "contact"],
+    priority: 6,
   },
   {
     id: "seo-perf",
-    q: "Le site sera-t-il optimisé pour le SEO et la performance ?",
-    a: "Oui : structure sémantique, métadonnées, images optimisées, cache et Core Web Vitals. Mise en place de Search Console et Analytics possible.",
-    tags: ["seo"], surfaces: ["services"], priority: 4
+    q: "Le site sera-t-il optimisé pour la performance et le SEO ?",
+    a: "Oui. J’accorde une attention particulière au temps de chargement (Core Web Vitals), à la structure HTML, aux balises importantes, aux images optimisées et au cache. Je peux aussi configurer Search Console et Analytics.",
+    tags: ["seo"],
+    surfaces: ["services"],
+    priority: 7,
   },
+
+  // ======================
+  // CONTACT
+  // ======================
   {
     id: "prise-contact",
     q: "Comment se passe la prise de contact ?",
-    a: "Vous m’écrivez, je vous réponds sous 24 h avec 2–3 questions et une courte visio si besoin.",
-    tags: ["contact"], surfaces: ["contact"], priority: 5
-  }
+    a: "Vous m’écrivez via le formulaire ou par e-mail, et je vous réponds généralement sous 24 h ouvrées avec quelques questions complémentaires. On peut ensuite prévoir une courte visio si nécessaire pour clarifier votre projet.",
+    tags: ["contact"],
+    surfaces: ["contact"],
+    priority: 8,
+  },
 ] as const;
 
 // --- Helpers ---
@@ -97,7 +142,7 @@ export function pickByIds(ids: string[]): QA[] {
   const arr = FAQ.filter(x => set.has(x.id));
   // respecte l’ordre des ids fournis
   return ids
-    .map(id => arr.find(x => x.id === id))
+    .map(id => arr.find(x => x?.id === id))
     .filter((x): x is QA => Boolean(x));
 }
 

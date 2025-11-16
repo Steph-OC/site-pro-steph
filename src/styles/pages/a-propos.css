@@ -786,3 +786,21 @@ main > .section.cta-final:last-child {
   padding-inline: clamp(24px, 4vw, 60px); /* marges internes gauche/droite */
   margin-inline: auto; /* bien centrée */
 }
+/* Titre + sous-titre alignés et rapprochés */
+.approach-stagger .section-head {
+  text-align: center;
+}
+
+.approach-stagger .approach__title {
+  margin: 0 0 clamp(10px, 1.8vw, 18px) !important;
+}
+
+/* Sous-titre juste sous le H2, centré */
+.approach-stagger .approach-lead {
+  margin: 0 auto clamp(10px, 2vw, 20px);
+  max-width: 40rem;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.6;
+}

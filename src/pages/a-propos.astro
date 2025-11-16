@@ -5,10 +5,9 @@ import "@/styles/pages/a-propos.css";
 import "@/styles/background.css";
 
 const meta = {
-  title:
-    "À propos — Stéphanie Quibel, développeuse WordPress (sites rapides & accessibles)",
+  title: "À propos — Stéphanie Quibel, développeuse web WordPress à Béziers",
   description:
-    "Je conçois des sites WordPress rapides, accessibles et sobres. Découvrez ma philosophie de travail, mon approche et les outils que j’utilise.",
+    "Je conçois des sites WordPress rapides, accessibles et sobres. Découvrez mon parcours, ma façon de travailler et les outils que j’utilise pour créer des sites durables.",
 };
 
 // Tags pour les bulles du hero
@@ -49,14 +48,16 @@ const tagKey = (s: string) =>
           <p class="kicker">À propos</p>
           <h1 id="about-hero-title" class="title">
             <span class="text-accent">Stéphanie Quibel</span> — développeuse web
-            spécialisée WordPress sur Béziers
+            spécialisée WordPress à Béziers
           </h1>
+
           <p class="lead">
             Je crée des sites <strong>rapides</strong>,
             <strong>accessibles</strong> et
             <strong>faciles à faire évoluer</strong>, avec une attention
             particulière à la sobriété numérique.
           </p>
+
           <div class="actions">
             <a class="btn btn--accent" href="/contact/">
               Parler de votre projet
@@ -65,6 +66,13 @@ const tagKey = (s: string) =>
               Voir mes réalisations
             </a>
           </div>
+
+          <!-- Petite phrase lisible sur les technos (SEO + clair pour l’humain) -->
+          <p class="muted" style="margin-top:0.75rem;">
+            Au quotidien, je travaille surtout avec HTML, CSS, JavaScript, PHP
+            et WordPress, ainsi qu’avec des outils comme Figma, GIMP ou les
+            DevTools pour analyser et améliorer les sites.
+          </p>
         </div>
 
         <!-- Colonne visuelle : bulles DOM -->
@@ -121,22 +129,16 @@ const tagKey = (s: string) =>
         <div>
           <h2 id="bio-title">Qui je suis</h2>
           <p>
-            Je m'appelle Stéphanie Quibel, je suis développeuse web passionnée
-            installée dans la région de Béziers.<br />
-            Après quelques années d'autoformation, j'ai eu envie de structurer mes
-            connaissances en suivant une formation de webmestre au CNAM de Montpellier
-            en 2014-2015. Depuis, je suis aussi diplômée en tant que développeuse
-            intégratrice web.<br />
-            J'accorde beaucoup d'importance à l'humain et à l'échange, c'est pourquoi
-            je privilégie une communication transparente et chaleureuse avec mes
-            clients.<br />
-            Mon objectif est de vous offrir un service personnalisé et adapté à vos
-            besoins, en vous accompagnant dans toutes les phases de votre projet
-            web, de la conception à la mise en ligne. Travailler avec moi, c'est
-            opter pour une approche humaine, professionnelle et attentionnée.<br
-            />
-            N'hésitez pas à me contacter pour discuter de votre projet et de vos
-            envies!
+            Je m’appelle Stéphanie Quibel et je suis développeuse web, installée
+            près de Béziers. Après plusieurs années d’auto-formation, j’ai suivi
+            une formation de webmestre au CNAM de Montpellier en 2014-2015, puis
+            j’ai complété ce parcours avec un diplôme de
+            développeuse-intégratrice web. J’accorde beaucoup d’importance à
+            l’écoute et à l’échange : je préfère une collaboration claire, avec
+            un langage simple et des retours réguliers plutôt que du jargon. Mon
+            objectif : vous accompagner de la première idée jusqu’à la mise en
+            ligne, en proposant des sites WordPress sobres, performants et
+            adaptés à votre façon de travailler.
           </p>
         </div>
       </div>
@@ -152,11 +154,12 @@ const tagKey = (s: string) =>
     >
       <div class="container container--xl">
         <header class="section-head stack-head">
-          <h2 id="stack-title">Stack &amp; outils</h2>
+          <h2 id="stack-title">Stack &amp; outils pour vos sites WordPress</h2>
           <p>
             Mon objectif&nbsp;: créer des sites WordPress rapides, accessibles
             et faciles à mettre à jour. Je privilégie des choix techniques
-            simples, fiables et durables.
+            simples, fiables et durables, pour que votre site reste agréable à
+            utiliser dans le temps.
           </p>
         </header>
 
@@ -173,22 +176,23 @@ const tagKey = (s: string) =>
               </li>
               <li>
                 <span class="s-dot" aria-hidden="true"></span>CSS moderne &amp;
-                Sass (Flex, animations légères)
+                Sass (mise en page souple, animations légères)
               </li>
               <li>
                 <span class="s-dot" aria-hidden="true"></span>JavaScript léger
+                (uniquement quand c’est utile)
               </li>
               <li>
                 <span class="s-dot" aria-hidden="true"></span>WordPress (thème
-                sur mesure)
+                sur mesure, sans surcharge inutile)
               </li>
               <li>
                 <span class="s-dot" aria-hidden="true"></span>Images
                 optimisées&nbsp;: WebP/AVIF (si dispo), lazy-loading
               </li>
               <li>
-                <span class="s-dot" aria-hidden="true"></span>Qualité du
-                code&nbsp;: ESLint / Prettier
+                <span class="s-dot" aria-hidden="true"></span>
+                Qualité du code&nbsp;: outils de vérification (ESLint, Prettier)
               </li>
             </ul>
           </article>
@@ -257,7 +261,8 @@ const tagKey = (s: string) =>
         </div>
 
         <p class="stack-note">
-          Je choisis l’outil le plus simple qui fait le travail.
+          Je privilégie des outils simples, fiables et adaptés, pour que votre
+          site reste agréable à utiliser et à maintenir dans le temps.
         </p>
       </div>
     </section>
@@ -280,25 +285,24 @@ const tagKey = (s: string) =>
     </section>
   </main>
 
-  <!-- JSON-LD Person -->
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "Person",
       "name": "Stéphanie Quibel",
-      "jobTitle": "Développeuse WordPress",
+      "jobTitle": "Développeuse web WordPress freelance",
       "url": "https://stephaniequibel.fr/",
-      "image": "https://stephaniequibel.fr/images/stephanie.jpg",
+      "image": "https://stephaniequibel.fr/images/photo-presentation.webp",
       "sameAs": [
-        "https://www.linkedin.com/in/stephaniequibel/",
+        "https://www.linkedin.com/in/stephanie-quibel-developpeuse-web/",
         "https://github.com/stephaniequibel"
       ],
       "knowsAbout": [
         "WordPress",
+        "Création de site vitrine",
         "Accessibilité web",
         "Performance web",
-        "Astro",
-        "React"
+        "SEO technique"
       ]
     }
   </script>

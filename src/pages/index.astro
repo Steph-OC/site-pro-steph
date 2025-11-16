@@ -10,9 +10,9 @@ import TestimonialsCodepen from "@/components/TestimonialsCodepen";
 import "@/styles/index.css";
 
 import { getDerniersProjetsAvecSlides, getTemoignages } from "@/lib/wp";
-import { pickFaq } from "@/content/faq";
+import { pickByIds, pickFaq } from "@/content/faq";
 
-const miniFaq = pickFaq({ surface: "home", limit: 2 });
+const miniFaq = pickByIds(["zone-geo", "reprise-site"]);
 
 const faqJsonLd = {
   "@context": "https://schema.org",
@@ -23,10 +23,10 @@ const faqJsonLd = {
     acceptedAnswer: { "@type": "Answer", text: a },
   })),
 };
-
-const title = "Développeuse WordPress freelance — Stéphanie Quibel";
+const title =
+  "Développeuse web WordPress freelance à Béziers — sites vitrines & blogs | Stéphanie Quibel";
 const description =
-  "Sites WordPress rapides, accessibles et bien référencés. Refonte, création, maintenance. Réponse sous 24h.";
+  "Création et refonte de sites WordPress rapides, accessibles et optimisés pour le référencement. Développeuse web freelance à Béziers (Hérault), j’accompagne vos projets de site vitrine, blog et maintenance partout en France. Réponse sous 24h.";
 
 /* ---------------------------
    Helpers: map WP/ACF -> UI
@@ -143,9 +143,10 @@ const safeTemoins = (temoins ?? []).map((t) => ({
       bg="glass"
       bleed
       visual="codeReveal"
-      kicker="WordPress sur mesure"
-      title="Développeuse WordPress — sites rapides & accessibles"
-      lead="Je conçois et optimise des sites vitrine & blog qui chargent vite, sont confortables à lire et visibles localement. Réponse sous 24h."
+      kicker="Création de sites WordPress"
+      title="Développeuse web WordPress à Béziers — sites rapides et optimisés"
+      lead="Création et refonte de sites WordPress rapides, accessibles et optimisés pour le référencement. Basée près de Béziers (Hérault), j’accompagne des projets de sites vitrines, blogs et maintenance partout en France. Réponse rapide."
+      ;
       actions={[
         {
           href: "/realisations/",
@@ -413,36 +414,10 @@ const safeTemoins = (temoins ?? []).map((t) => ({
   type="application/ld+json"
   set:html={JSON.stringify({
     "@context": "https://schema.org",
-    "@type": "Organization",
+    "@type": "Person",
     name: "Stéphanie Quibel",
+    jobTitle: "Développeuse web WordPress freelance",
     url: "https://stephaniequibel.fr/",
-    sameAs: ["https://www.linkedin.com"],
-    logo: "https://stephaniequibel.fr/logo.png",
-  })}
-/>
-
-<script
-  type="application/ld+json"
-  set:html={JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: [
-      {
-        "@type": "Question",
-        name: "Combien coûte un site vitrine WordPress ?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Selon le périmètre, entre 1 500€ et 4 000€ en moyenne. Je fournis un devis détaillé.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "Quels délais pour la livraison ?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "De 2 à 6 semaines selon le contenu et les fonctionnalités.",
-        },
-      },
-    ],
+    sameAs: ["https://www.linkedin.com/in/stephanie-quibel-developpeuse-web/"],
   })}
 />

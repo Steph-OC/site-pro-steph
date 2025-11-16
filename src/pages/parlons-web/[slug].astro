@@ -41,9 +41,14 @@ const readMin = Math.max(1, Math.round(words / 200));
 
 // Titre/description plain text pour les metas
 const plainTitle = (post.title?.rendered || "").replace(/<[^>]+>/g, "");
-const plainDesc = (post.excerpt?.rendered || "")
-  .replace(/<[^>]+>/g, "")
-  .slice(0, 150);
+const rawDesc = (post.excerpt?.rendered || "").replace(/<[^>]+>/g, "").trim();
+const plainDesc = rawDesc.slice(0, 160);
+
+// Fallback description SEO si l’extrait est trop court ou vide
+const metaDescription =
+  plainDesc && plainDesc.length > 40
+    ? plainDesc
+    : "Article du blog Parlons web sur WordPress, l’accessibilité, la performance et les bonnes pratiques SEO, rédigé par Stéphanie Quibel, développeuse WordPress à Béziers.";
 
 // Précédent / suivant
 const all = await wp.getPosts({ per_page: 100 });
@@ -54,19 +59,22 @@ const prev = idx > 0 ? all[idx - 1] : null; // plus récent
 const next = idx >= 0 && idx < all.length - 1 ? all[idx + 1] : null; // plus ancien
 ---
 
-<Layout title={`${plainTitle} — Parlons web`} description={plainDesc}>
+<Layout
+  title={`${plainTitle} — blog WordPress | Stéphanie Quibel`}
+  description={metaDescription}
+>
   <!-- Hero -->
   <HeroBlog
     slot="hero"
     kicker="Article"
     title={plainTitle}
     lead={`${dateStr} • ${readMin} min de lecture`}
-    actions={[{ href: "/blog", label: "Tous les articles", kind: "ghost" }]}
+    actions={[{ href: "/parlons-web", label: "Tous les articles", kind: "ghost" }]}
     tags={[
       "WordPress",
       "SEO",
       "Performance",
-      "Création",
+      "Création de site vitrine",
       "Design",
       "Accessibilité",
     ]}
@@ -125,8 +133,28 @@ const next = idx >= 0 && idx < all.length - 1 ? all[idx + 1] : null; // plus anc
     )
   }
 
+  <!-- JSON-LD BlogPosting -->
+  <script type="application/ld+json">
+    {JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      headline: plainTitle,
+      description: metaDescription,
+      datePublished: post.date,
+      dateModified: post.modified || post.date,
+      author: {
+        "@type": "Person",
+        name: "Stéphanie Quibel",
+      },
+      mainEntityOfPage: {
+        "@type": "WebPage",
+        "@id": `https://stephaniequibel.fr/parlons-web/${slug}`,
+      },
+      image: coverSrc ? [coverSrc] : undefined,
+    })}
+  </script>
+
   <!-- Parallax cover script (doux, perf-friendly, respecte RDM) -->
-  <!-- Parallax doux et centré -->
   <script type="module">
     const wrap = document.querySelector(".post-cover");
     if (wrap && matchMedia("(prefers-reduced-motion: no-preference)").matches) {

@@ -20,13 +20,19 @@ const wp = await getServicesPage();
 const acf = wp?.acf ?? {};
 const data = normalizeServices(acf) ?? {};
 
-const title = "Services — Stéphanie Quibel";
-const description = "Création, refonte, optimisation WordPress.";
+// 🔍 SEO : titre + description un peu plus ciblés
+const title =
+  "Services WordPress — création, refonte & maintenance à Béziers | Stéphanie Quibel";
+const description =
+  "Création, refonte et optimisation de sites WordPress rapides et bien référencés. Développeuse web freelance près de Béziers (Hérault), j’accompagne vos projets de site vitrine, blog et maintenance partout en France.";
 
 // Nettoyage du HTML WordPress (évite <pre><code> dans le hero)
 function cleanWpIntro(html: string = "") {
   return html
-    .replace(/<pre[^>]*>\s*<code[^>]*>([\s\S]*?)<\/code>\s*<\/pre>/gi, "<p>$1</p>")
+    .replace(
+      /<pre[^>]*>\s*<code[^>]*>([\s\S]*?)<\/code>\s*<\/pre>/gi,
+      "<p>$1</p>"
+    )
     .replace(/<code[^>]*>([\s\S]*?)<\/code>/gi, "$1")
     .replace(/\s+$/g, "");
 }
@@ -50,7 +56,11 @@ const svcFromAcf =
     return {
       title:
         s?.title ??
-        ["Création sur mesure", "Refonte & optimisation", "Maintenance & accompagnement"][i] ??
+        [
+          "Création sur mesure",
+          "Refonte & optimisation",
+          "Maintenance & accompagnement",
+        ][i] ??
         "Service",
       desc:
         s?.desc ??
@@ -58,25 +68,32 @@ const svcFromAcf =
           "Design fidèle à votre identité, intégration WordPress propre et modulaire. Performance & accessibilité au cœur.",
           "Audit technique & éditorial, UX/UI, nettoyage thème, accélération (LCP/CLS), SEO technique et sécurisation.",
           "Mises à jour, sauvegardes, corrections, petites évolutions et suivi continu des performances & SEO.",
-        ][i] ?? "",
+        ][i] ??
+        "",
       accent,
       accentRgb: hexToRgbValues(accent),
     };
   }) ?? [];
 
-  function stripHtml(html = "") {
+function stripHtml(html = "") {
   return html.replace(/<[^>]+>/g, "").trim();
 }
 
 /* ✅ Liste FAQ à afficher :
-   - si ACF contient des FAQs -> on les utilise (fallback ponctuel)
+   - si ACF contient des FAQs -> on les utilise
    - sinon on prend la source unique depuis faq.ts (surface: services)
+     en excluant les questions "pricing" (pas de prix affichés)
 */
 const faqFromAcf = (data?.faqs ?? [])
   .map((x) => ({ q: stripHtml(x?.q || ""), a: stripHtml(x?.a || "") }))
   .filter((x) => x.q && x.a);
 
-const faqAll = faqFromAcf.length ? faqFromAcf : pickFaq({ surface: "services" });
+const faqAll = faqFromAcf.length
+  ? faqFromAcf
+  : pickFaq({
+      surface: "services",
+      excludeTags: ["pricing"], // ⛔ pas de question de prix sur cette page
+    });
 
 /* ✅ JSON-LD aligné sur l’affichage réel */
 const faqJsonLd = {
@@ -104,27 +121,63 @@ const cardIcons = [
       <div class="container services-hero__grid">
         <div class="services-hero__col">
           <p class="kicker">WordPress sur mesure</p>
-          {data?.intro?.title && <h1 id="services-hero-title">{data.intro.title}</h1>}
-          {data?.intro?.text && <div class="lead" set:html={cleanWpIntro(data.intro.text)} />}
-          {data?.cta?.btnLabel && (
-            <div class="actions">
-              <a class={`btn btn--${data.cta?.style ?? "accent"}`} href={data.cta?.btnUrl || "/contact"}>
-                {data.cta.btnLabel}
-              </a>
-            </div>
-          )}
+          {
+            data?.intro?.title && (
+              <h1 id="services-hero-title">{data.intro.title}</h1>
+            )
+          }
+          {
+            data?.intro?.text && (
+              <div class="lead" set:html={cleanWpIntro(data.intro.text)} />
+            )
+          }
+          {
+            data?.cta?.btnLabel && (
+              <div class="actions">
+                <a
+                  class={`btn btn--${data.cta?.style ?? "accent"}`}
+                  href={data.cta?.btnUrl || "/contact"}
+                >
+                  {data.cta.btnLabel}
+                </a>
+              </div>
+            )
+          }
         </div>
 
         <!-- Illu + nuage de bulles -->
         <div class="services-hero__illu" aria-hidden="true">
-          <!-- garde ton SVG d’illustration ici -->
           <ul class="bubble-cloud" data-active="0" aria-hidden="true">
-            <li style="--x:12%; --y:22%; --s:1.05; --d:16s; --b:140px; --c:#6aa8ff;">WordPress</li>
-            <li style="--x:34%; --y:12%; --s:0.90; --d:18s; --b:110px; --c:#ef9355;">Design</li>
-            <li style="--x:56%; --y:28%; --s:1.00; --d:17s; --b:120px; --c:#5cc7a0;">SEO</li>
-            <li style="--x:78%; --y:22%; --s:0.95; --d:19s; --b:130px; --c:#b984f6;">Maintenance</li>
-            <li style="--x:70%; --y:56%; --s:0.92; --d:21s; --b:115px; --c:#d51111;">Sécurité</li>
-            <li style="--x:42%; --y:60%; --s:1.06; --d:17s; --b:130px; --c:#ffd166;">Performance</li>
+            <li
+              style="--x:12%; --y:22%; --s:1.05; --d:16s; --b:140px; --c:#6aa8ff;"
+            >
+              WordPress
+            </li>
+            <li
+              style="--x:34%; --y:12%; --s:0.90; --d:18s; --b:110px; --c:#ef9355;"
+            >
+              Design
+            </li>
+            <li
+              style="--x:56%; --y:28%; --s:1.00; --d:17s; --b:120px; --c:#5cc7a0;"
+            >
+              SEO
+            </li>
+            <li
+              style="--x:78%; --y:22%; --s:0.95; --d:19s; --b:130px; --c:#b984f6;"
+            >
+              Maintenance
+            </li>
+            <li
+              style="--x:70%; --y:56%; --s:0.92; --d:21s; --b:115px; --c:#d51111;"
+            >
+              Sécurité
+            </li>
+            <li
+              style="--x:42%; --y:60%; --s:1.06; --d:17s; --b:130px; --c:#ffd166;"
+            >
+              Performance
+            </li>
           </ul>
         </div>
       </div>
@@ -136,281 +189,375 @@ const cardIcons = [
   <!-- CONTENU -->
   <div id="services" class="halo-desync">
     <!-- 3 cartes services -->
-    {svcFromAcf.length > 0 && (
-      <section class="section--halo svc3" aria-labelledby="services3-title">
-        <header class="section-head">
-          <h2 id="services3-title">Mes services</h2>
-          <p class="muted">Trois offres claires, modulables selon vos besoins.</p>
-        </header>
+    {
+      svcFromAcf.length > 0 && (
+        <section class="section--halo svc3" aria-labelledby="services3-title">
+          <header class="section-head">
+            <h2 id="services3-title">Mes services</h2>
+            <p class="muted">
+              Trois offres claires, modulables selon vos besoins.
+            </p>
+          </header>
 
-        <ul class="svc3-cards" role="list">
-          {svcFromAcf.map((card, i) => {
-            const items = linesToItems(card.desc ?? "");
-            return (
-              <li
-                class="svc3-card"
-                style={`--accent:${card.accent}; --accent-rgb:${card.accentRgb}`}
-              >
-                <div class="svc3-card__inner">
-                  <!-- Halo rendu côté CSS (svc3-cards.css) -->
-                  <div class="svc3-card__icon" aria-hidden="true" set:html={cardIcons[i % cardIcons.length]} />
-                  <h3 class="svc3-card__title">{card.title}</h3>
+          <ul class="svc3-cards" role="list">
+            {svcFromAcf.map((card, i) => {
+              const items = linesToItems(card.desc ?? "");
+              return (
+                <li
+                  class="svc3-card"
+                  style={`--accent:${card.accent}; --accent-rgb:${card.accentRgb}`}
+                >
+                  <div class="svc3-card__inner">
+                    <div
+                      class="svc3-card__icon"
+                      aria-hidden="true"
+                      set:html={cardIcons[i % cardIcons.length]}
+                    />
+                    <h3 class="svc3-card__title">{card.title}</h3>
 
-                  {items.length ? (
-                    <ul class="svc3-card__list">
-                      {items.map((li) => <li>{li}</li>)}
-                    </ul>
-                  ) : (
-                    <p class="svc3-card__desc">{card.desc}</p>
-                  )}
+                    {items.length ? (
+                      <ul class="svc3-card__list">
+                        {items.map((li) => (
+                          <li>{li}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p class="svc3-card__desc">{card.desc}</p>
+                    )}
 
-                  <p class="svc3-card__cta">
-                    <a class="btn" href="/contact">
-                      {i === 1 ? "Demander un audit" : i === 2 ? "Demander un devis" : "Parlons de votre projet"}
-                    </a>
+                    <p class="svc3-card__cta">
+                      <a class="btn" href="/contact">
+                        {i === 1
+                          ? "Demander un audit"
+                          : i === 2
+                            ? "Demander un devis"
+                            : "Parlons de votre projet"}
+                      </a>
+                    </p>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )
+    }
+
+    <!-- Étapes -->
+    {
+      (data?.steps?.length ?? 0) > 0 && (
+        <section class="section--halo" aria-labelledby="flow-title">
+          <header class="section-head">
+            <h2 id="flow-title">De l’idée au site en ligne</h2>
+            <p class="muted">
+              Un parcours en 6 étapes, transparent et efficace.
+            </p>
+          </header>
+
+          <div
+            class="steps-slider"
+            id="steps-slider"
+            role="group"
+            aria-labelledby="flow-title"
+          >
+            <label class="step-card">
+              <input class="step-input" type="radio" name="flow" checked />
+              <span class="step-badge" aria-hidden="true">
+                1
+              </span>
+              <div class="step-info">
+                <h3>Écoute</h3>
+                <p class="step-kicker">
+                  On clarifie vos objectifs, votre public et le rôle de votre
+                  site.
+                </p>
+                <ul class="step-chips" aria-hidden="true">
+                  <>
+                    <li>échange</li>
+                    <li>1–2 h</li>
+                    <li>en visio</li>
+                  </>
+                </ul>
+              </div>
+            </label>
+
+            <label class="step-card">
+              <input class="step-input" type="radio" name="flow" />
+              <span class="step-badge" aria-hidden="true">
+                2
+              </span>
+              <div class="step-info">
+                <h3>Cadrage</h3>
+                <p class="step-kicker">
+                  On pose l’arborescence et les priorités, puis on fait évoluer
+                  le site étape par étape, en ajustant selon vos retours et
+                  votre budget.
+                </p>
+                <ul class="step-chips" aria-hidden="true">
+                  <>
+                    <li>plan</li>
+                    <li>budget</li>
+                    <li>fonctionnalités</li>
+                  </>
+                </ul>
+              </div>
+            </label>
+
+            <label class="step-card">
+              <input class="step-input" type="radio" name="flow" />
+              <span class="step-badge" aria-hidden="true">
+                3
+              </span>
+              <div class="step-info">
+                <h3>Design</h3>
+                <p class="step-kicker">
+                  Un site sobre, lisible, pensé pour le mobile et agréable à
+                  consulter par tous·tes.
+                </p>
+                <ul class="step-chips" aria-hidden="true">
+                  <>
+                    <li>sobriété</li>
+                    <li>identité</li>
+                    <li>accessible</li>
+                  </>
+                </ul>
+              </div>
+            </label>
+
+            <label class="step-card">
+              <input class="step-input" type="radio" name="flow" />
+              <span class="step-badge" aria-hidden="true">
+                4
+              </span>
+              <div class="step-info">
+                <h3>Intégration</h3>
+                <p class="step-kicker">
+                  Code propre, rapide et accessible, optimisé pour WordPress et
+                  le référencement..
+                </p>
+                <ul class="step-chips" aria-hidden="true">
+                  <>
+                    <li>pages modifiables</li>
+                    <li>rapide</li>
+                    <li>SEO propre</li>
+                  </>
+                </ul>
+              </div>
+            </label>
+
+            <label class="step-card">
+              <input class="step-input" type="radio" name="flow" />
+              <span class="step-badge" aria-hidden="true">
+                5
+              </span>
+              <div class="step-info">
+                <h3>Mise en ligne & suivi</h3>
+                <p class="step-kicker">
+                  Déploiement, sauvegardes, sécurité et accompagnement.
+                </p>
+                <ul class="step-chips" aria-hidden="true">
+                  <>
+                    <li>mise en ligne</li>
+                    <li>sauvegardes</li>
+                    <li>suivi</li>
+                  </>
+                </ul>
+              </div>
+            </label>
+
+            <label class="step-card">
+              <input class="step-input" type="radio" name="flow" />
+              <span class="step-badge" aria-hidden="true">
+                6
+              </span>
+              <div class="step-info">
+                <h3>Après</h3>
+                <p class="step-kicker">
+                  Mises à jour, corrections et petites évolutions possibles
+                  selon vos besoins.
+                </p>
+                <ul class="step-chips" aria-hidden="true">
+                  <>
+                    <li>relecture</li>
+                    <li>mobile & ordi</li>
+                    <li>corrections</li>
+                  </>
+                </ul>
+              </div>
+            </label>
+          </div>
+        </section>
+      )
+    }
+
+    <!-- Points clés -->
+    {
+      (data?.tips?.cwv || data?.tips?.access || data?.tips?.seo) && (
+        <section
+          id="services-cles"
+          class="container section--halo halo-pulse-gentle"
+          aria-labelledby="tips-title"
+        >
+          <header class="section-head">
+            <h2 id="tips-title">Points clés</h2>
+          </header>
+
+          <ul class="tips" role="list">
+            {data?.tips?.cwv && (
+              <li class="tips__item tips__item--cwv">
+                <div class="tips__inner">
+                  <span class="tips__icon" aria-hidden="true">
+                    <svg
+                      viewBox="0 0 24 24"
+                      width="20"
+                      height="20"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.9"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                    </svg>
+                  </span>
+                  <p class="tips__text">
+                    <strong>
+                      <abbr title="Core Web Vitals = indicateurs Google sur la vitesse et la stabilité visuelle d’une page.">
+                        Core Web Vitals
+                      </abbr>
+                    </strong>{" "}
+                    — {data.tips.cwv}
                   </p>
                 </div>
               </li>
-            );
-          })}
-        </ul>
-      </section>
-    )}
+            )}
 
-    <!-- Étapes -->
-    {(data?.steps?.length ?? 0) > 0 && (
-      <section class="section--halo" aria-labelledby="flow-title">
-        <header class="section-head">
-          <h2 id="flow-title">De l’idée au site en ligne</h2>
-          <p class="muted">Un parcours en 6 étapes, transparent et efficace.</p>
-        </header>
-
-        <div class="steps-slider" id="steps-slider" role="group" aria-labelledby="flow-title">
-          <label class="step-card">
-            <input class="step-input" type="radio" name="flow" checked />
-            <span class="step-badge" aria-hidden="true">1</span>
-            <div class="step-info">
-              <h3>Échange & objectifs</h3>
-              <p class="step-kicker">On clarifie vos besoins, votre audience et les fonctionnalités.</p>
-              <ul class="step-chips" aria-hidden="true"><li>échange</li><li>1–2 h</li><li>en visio</li></ul>
-            </div>
-          </label>
-
-          <label class="step-card">
-            <input class="step-input" type="radio" name="flow" />
-            <span class="step-badge" aria-hidden="true">2</span>
-            <div class="step-info">
-              <h3>Cadrage & planning</h3>
-              <p class="step-kicker">On se met d’accord sur la suite et le budget.</p>
-              <ul class="step-chips" aria-hidden="true"><li>plan</li><li>budget</li><li>calendrier</li></ul>
-            </div>
-          </label>
-
-          <label class="step-card">
-            <input class="step-input" type="radio" name="flow" />
-            <span class="step-badge" aria-hidden="true">3</span>
-            <div class="step-info">
-              <h3>Design</h3>
-              <p class="step-kicker">UI propre, accessible, fidèle à votre identité.</p>
-              <ul class="step-chips" aria-hidden="true"><li>maquettes</li><li>identité</li><li>accessible</li></ul>
-            </div>
-          </label>
-
-          <label class="step-card">
-            <input class="step-input" type="radio" name="flow" />
-            <span class="step-badge" aria-hidden="true">4</span>
-            <div class="step-info">
-              <h3>Intégration WordPress</h3>
-              <p class="step-kicker">Blocs modulaires, performance et SEO technique.</p>
-              <ul class="step-chips" aria-hidden="true"><li>pages modifiables</li><li>rapide</li><li>SEO propre</li></ul>
-            </div>
-          </label>
-
-          <label class="step-card">
-            <input class="step-input" type="radio" name="flow" />
-            <span class="step-badge" aria-hidden="true">5</span>
-            <div class="step-info">
-              <h3>Recette</h3>
-              <p class="step-kicker">Tests, corrections, accessibilité et vitesse.</p>
-              <ul class="step-chips" aria-hidden="true"><li>relecture</li><li>mobile & ordi</li><li>corrections</li></ul>
-            </div>
-          </label>
-
-          <label class="step-card">
-            <input class="step-input" type="radio" name="flow" />
-            <span class="step-badge" aria-hidden="true">6</span>
-            <div class="step-info">
-              <h3>Mise en ligne & suivi</h3>
-              <p class="step-kicker">Déploiement, sauvegardes, sécurité et accompagnement.</p>
-              <ul class="step-chips" aria-hidden="true"><li>mise en ligne</li><li>sauvegardes</li><li>suivi</li></ul>
-            </div>
-          </label>
-        </div>
-      </section>
-    )}
-
-    <!-- Points clés -->
-    {(data?.tips?.cwv || data?.tips?.access || data?.tips?.seo) && (
-      <section
-        id="services-cles"
-        class="container section--halo halo-pulse-gentle"
-        aria-labelledby="tips-title"
-      >
-        <header class="section-head">
-          <h2 id="tips-title">Points clés</h2>
-        </header>
-
-        <ul class="tips" role="list">
-          {data?.tips?.cwv && (
-            <li class="tips__item tips__item--cwv">
-              <div class="tips__inner">
-                <span class="tips__icon" aria-hidden="true">
-                  {/* Icône “activité / performance” */}
-                  <svg
-                    viewBox="0 0 24 24"
-                    width="20"
-                    height="20"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.9"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-                  </svg>
-                </span>
-                <p class="tips__text">
-                  <strong>
-                    <abbr
-                      title="Core Web Vitals = indicateurs Google sur la vitesse et la stabilité visuelle d’une page."
+            {data?.tips?.access && (
+              <li class="tips__item tips__item--access">
+                <div class="tips__inner">
+                  <span class="tips__icon" aria-hidden="true">
+                    <svg
+                      viewBox="0 0 24 24"
+                      width="20"
+                      height="20"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.9"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
                     >
-                      Core Web Vitals
-                    </abbr>
-                  </strong>{" "}
-                  — {data.tips.cwv}
-                </p>
-              </div>
-            </li>
-          )}
+                      <circle cx="12" cy="4" r="1.7" />
+                      <path d="M7 8.5h10" />
+                      <path d="M9 21l1.5-8.5" />
+                      <path d="M15 21L13.5 12.5" />
+                      <path d="M6 11.5l3.5-1.5" />
+                      <path d="M18 11.5l-3.5-1.5" />
+                    </svg>
+                  </span>
+                  <p class="tips__text">
+                    <strong>Accessibilité</strong> — {data.tips.access}
+                  </p>
+                </div>
+              </li>
+            )}
 
-          {data?.tips?.access && (
-            <li class="tips__item tips__item--access">
-              <div class="tips__inner">
-                <span class="tips__icon" aria-hidden="true">
-                  {/* Icône “accessibilité / personne” */}
-                  <svg
-                    viewBox="0 0 24 24"
-                    width="20"
-                    height="20"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.9"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <circle cx="12" cy="4" r="1.7" />
-                    <path d="M7 8.5h10" />
-                    <path d="M9 21l1.5-8.5" />
-                    <path d="M15 21L13.5 12.5" />
-                    <path d="M6 11.5l3.5-1.5" />
-                    <path d="M18 11.5l-3.5-1.5" />
-                  </svg>
-                </span>
-                <p class="tips__text">
-                  <strong>Accessibilité</strong> — {data.tips.access}
-                </p>
-              </div>
-            </li>
-          )}
+            {data?.tips?.seo && (
+              <li class="tips__item tips__item--seo">
+                <div class="tips__inner">
+                  <span class="tips__icon" aria-hidden="true">
+                    <svg
+                      viewBox="0 0 24 24"
+                      width="20"
+                      height="20"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.9"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <circle cx="11" cy="11" r="5.5" />
+                      <path d="m16 16 4 4" />
+                    </svg>
+                  </span>
+                  <p class="tips__text">
+                    <strong>SEO</strong> — {data.tips.seo}
+                  </p>
+                </div>
+              </li>
+            )}
+          </ul>
+        </section>
+      )
+    }
 
-          {data?.tips?.seo && (
-            <li class="tips__item tips__item--seo">
-              <div class="tips__inner">
-                <span class="tips__icon" aria-hidden="true">
-                  {/* Icône “loupe / SEO” */}
-                  <svg
-                    viewBox="0 0 24 24"
-                    width="20"
-                    height="20"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.9"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <circle cx="11" cy="11" r="5.5" />
-                    <path d="m16 16 4 4" />
-                  </svg>
-                </span>
-                <p class="tips__text">
-                  <strong>SEO</strong> — {data.tips.seo}
-                </p>
-              </div>
-            </li>
-          )}
-        </ul>
-      </section>
-    )}
+    <!-- FAQ -->
+    {
+      faqAll.length > 0 && (
+        <section
+          class="container section--halo halo-pulse-gentle"
+          aria-labelledby="faq-title"
+        >
+          <header class="section-head">
+            <h2 id="faq-title">FAQ</h2>
+          </header>
 
-
- <!-- FAQ -->
-{faqAll.length > 0 && (
-  <section class="container section--halo halo-pulse-gentle" aria-labelledby="faq-title">
-    <header class="section-head"><h2 id="faq-title">FAQ</h2></header>
-
-    {faqAll.map(({ q, a }) => (
-      <details class="faq">
-        <summary>{q}</summary>
-        <p class="faq__answer">{a}</p>
-      </details>
-    ))}
-  </section>
-)}
-
+          {faqAll.map(({ q, a }) => (
+            <details class="faq">
+              <summary>{q}</summary>
+              <p class="faq__answer">{a}</p>
+            </details>
+          ))}
+        </section>
+      )
+    }
 
     <!-- CTA final -->
-    {(data?.cta?.title || data?.cta?.text || data?.cta?.btnLabel) && (
-      <section class="container section--halo halo-pulse-gentle">
-        <article class="card">
-          <div class="card__body">
-            {data?.cta?.title && <h2>{data.cta.title}</h2>}
-            {data?.cta?.text && <p class="muted">{data.cta.text}</p>}
-            <div class="actions">
-              {data?.cta?.btnLabel && (
-                <a class={`btn btn--${data.cta?.style ?? "accent"}`} href={data.cta?.btnUrl || "/contact"}>
-                  {data.cta.btnLabel}
-                </a>
-              )}
+    {
+      (data?.cta?.title || data?.cta?.text || data?.cta?.btnLabel) && (
+        <section class="container section--halo halo-pulse-gentle">
+          <article class="card">
+            <div class="card__body">
+              {data?.cta?.title && <h2>{data.cta.title}</h2>}
+              {data?.cta?.text && <p class="muted">{data.cta.text}</p>}
+              <div class="actions">
+                {data?.cta?.btnLabel && (
+                  <a
+                    class={`btn btn--${data.cta?.style ?? "accent"}`}
+                    href={data.cta?.btnUrl || "/contact"}
+                  >
+                    {data.cta.btnLabel}
+                  </a>
+                )}
+              </div>
             </div>
-          </div>
-        </article>
-      </section>
-    )}
+          </article>
+        </section>
+      )
+    }
   </div>
 </SiteLayout>
 
-<!-- JSON-LD -->
 <script
   type="application/ld+json"
   set:html={JSON.stringify({
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
+    "@id": "https://stephaniequibel.fr/services#professional-service",
     name: "Services WordPress — Stéphanie Quibel",
-    areaServed: "France",
-    serviceType: ["Création site vitrine", "Refonte", "Maintenance"],
-    provider: { "@type": "Person", name: "Stéphanie Quibel" },
-  })}
-/>
-<!-- JSON-LD ProfessionalService : OK -->
-<script
-  type="application/ld+json"
-  set:html={JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "ProfessionalService",
-    name: "Services WordPress — Stéphanie Quibel",
-    areaServed: "France",
-    serviceType: ["Création site vitrine", "Refonte", "Maintenance"],
-    provider: { "@type": "Person", name: "Stéphanie Quibel" },
+    url: "https://stephaniequibel.fr/services",
+    image: "https://stephaniequibel.fr/logo.png",
+    areaServed: ["Béziers", "Hérault", "Occitanie", "France"],
+    serviceType: [
+      "Création site vitrine WordPress",
+      "Refonte de site WordPress",
+      "Maintenance WordPress",
+      "Optimisation de performance et SEO",
+    ],
+    provider: {
+      "@type": "Person",
+      name: "Stéphanie Quibel",
+      url: "https://stephaniequibel.fr/",
+    },
   })}
 />
 

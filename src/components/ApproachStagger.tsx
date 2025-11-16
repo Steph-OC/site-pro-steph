@@ -7,10 +7,12 @@ type Step = {
   title: string;
   text: string;
 };
+
 type Props = {
   variant?: "full" | "teaser";
   id?: string;
   title?: string;
+  subtitle?: string;
   items?: Step[];
 };
 
@@ -23,12 +25,12 @@ const defaultSteps: Step[] = [
   {
     Icon: Gauge,
     title: "Performance",
-    text: "Sites rapides, stables et SEO-friendly. Bonnes pratiques WordPress + optimisation images/code pour un rendu fluide.",
+    text: "Sites rapides, stables et pensés pour le référencement. Bonnes pratiques WordPress + optimisation images/code pour un rendu fluide.",
   },
   {
     Icon: Heart,
-    title: "Passion",
-    text: "Veille et soin du détail. UX nette, code propre et finitions utiles pour créer de la valeur.",
+    title: "Soin du détail",
+    text: "Goût du détail, curiosité et envie de bien faire : UX nette, code propre et finitions utiles pour créer de la valeur.",
   },
   {
     Icon: ShieldCheck,
@@ -55,6 +57,7 @@ export default function ApproachStagger({
   variant = "full",
   id = "approach",
   title = "Mon approche",
+  subtitle = "4 piliers qui guident chaque projet WordPress.",
   items,
 }: Props) {
   const steps = items ?? defaultSteps;
@@ -110,11 +113,13 @@ export default function ApproachStagger({
           <h2 id={titleId} className="approach__title">
             {isTeaser ? "Mon approche" : title || "Mon approche détaillée"}
           </h2>
-          {isTeaser && (
-            <p className="approach-lead">
-              4 piliers qui guident chaque projet.
-            </p>
-          )}
+
+          {/* Sous-titre affiché dans les deux variantes */}
+          <p className="approach-lead">
+            {isTeaser
+              ? subtitle || "4 piliers qui guident chaque projet."
+              : subtitle}
+          </p>
         </header>
 
         <div className="stagger">

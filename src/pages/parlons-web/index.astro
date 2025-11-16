@@ -18,14 +18,14 @@ try {
 ---
 
 <Layout
-  title="Parlons web — Blog"
-  description="Articles courts sur WordPress, accessibilité, performance et bonnes pratiques."
+  title="Parlons web — blog WordPress, accessibilité & performance | Stéphanie Quibel"
+  description="Blog WordPress : articles courts sur création de sites vitrines, accessibilité, performance, SEO et bonnes pratiques web. Rédigé par Stéphanie Quibel, développeuse WordPress à Béziers."
 >
   <HeroBlog
     slot="hero"
     kicker="Blog"
-    title="Parlons Web!"
-    lead="Des billets concis sur WordPress, l’accessibilité, la performance et des astuces concrètes."
+    title="Parlons web"
+    lead="Articles courts sur WordPress, la création de sites vitrines, l’accessibilité, la performance et le SEO — avec des conseils concrets pour améliorer votre site."
   />
 
   {
@@ -34,7 +34,10 @@ try {
         Aucun article pour le moment.
       </p>
     ) : (
-      <ul class="posts-grid posts-grid--x3">
+      <ul
+        class="posts-grid posts-grid--x3"
+        aria-label="Articles du blog Parlons web"
+      >
         {posts.map((p) => {
           const m = p?._embedded?.["wp:featuredmedia"]?.[0];
           const s = m?.media_details?.sizes || {};
@@ -92,9 +95,9 @@ try {
               <div class="card__body">
                 {dateStr && <span class="card__meta">{dateStr}</span>}
 
-                <h3 class="card__title">
+                <h2 class="card__title">
                   <span set:html={p.title?.rendered} />
-                </h3>
+                </h2>
 
                 {p.excerpt?.rendered && (
                   <div class="card__excerpt" set:html={p.excerpt.rendered} />

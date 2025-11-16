@@ -16,14 +16,21 @@ import {
 export const prerender = true;
 
 const basePath = "/realisations";
-const title = "Réalisations";
-const description =
-  "Sélection de projets WordPress récents : vitrine, blog, sur-mesure — rapides, accessibles, bien référencés.";
 
+// pagination
 const url = new URL(Astro.request.url);
 const page = Math.max(1, Number(url.searchParams.get("page") ?? "1") || 1);
 const PER_PAGE = 9;
 
+// 🔍 SEO : titre + description
+const baseTitle =
+  "Réalisations WordPress — portfolio de sites vitrines & blogs | Stéphanie Quibel";
+const title = page > 1 ? `${baseTitle} (page ${page})` : baseTitle;
+
+const description =
+  "Sélection de réalisations WordPress : sites vitrines, blogs et pages sur-mesure, conçues pour être rapides, accessibles et simples à faire évoluer. Développeuse web freelance près de Béziers, je travaille avec des clientes et clients partout en France.";
+
+// données WP
 const {
   items = [],
   pages = 1,
@@ -99,7 +106,7 @@ function haloVarsFromSlug(
         <div class="real-hero__text">
           <p class="kicker">Portfolio</p>
           <h1 id="realisations-title" class="h2">
-            Des sites WordPress pensés pour durer
+            Réalisations WordPress : sites vitrines & blogs
           </h1>
           <p class="section-sub">
             {description}
@@ -169,7 +176,7 @@ function haloVarsFromSlug(
       <div class="container container--xl">
         {
           cards.length === 0 ? (
-            <p class="muted">Aucune réalisation pour le moment.</p>
+            <p class="muted">Aucune réalisation publiée pour le moment.</p>
           ) : (
             <div class="projects-grid">
               {cards.map((c, idx) => (
@@ -211,6 +218,21 @@ function haloVarsFromSlug(
     <link
       rel="canonical"
       href={`${Astro.site}${basePath}${page > 1 ? `?page=${page}` : ""}`}
+    />
+
+    <!-- JSON-LD ItemList pour la liste de réalisations -->
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        itemListElement: cards.map((c, idx) => ({
+          "@type": "ListItem",
+          position: (page - 1) * PER_PAGE + idx + 1,
+          url: `${Astro.site}${basePath}/${c.slug}`,
+          name: c.title,
+        })),
+      })}
     />
   </Fragment>
 </SiteLayout>
