@@ -1,12 +1,18 @@
 // astro.config.mjs
 import { defineConfig } from 'astro/config';
 import { fileURLToPath } from 'node:url';
-import react from '@astrojs/react'; // ← ajouter l’intégration React
+import react from '@astrojs/react';
+import sitemap from '@astrojs/sitemap'; // ← ajout du plugin sitemap
 
 export default defineConfig({
+  // ⚠️ URL finale de ton site en prod
+  site: 'https://stephaniequibel.fr',
+
   integrations: [
-    react(), // ← active le renderer React (SSR + client directives)
+    react(),
+    sitemap(), // ← génère automatiquement /sitemap.xml au build
   ],
+
   vite: {
     resolve: {
       alias: {
