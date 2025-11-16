@@ -242,3 +242,14 @@
     height: auto;
   }
 }
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3); /* 16px d’après ta scale */
+  flex-wrap: wrap; /* pour que ça passe bien sur mobile */
+}
+
+/* Optionnel : un peu d’espace au-dessus du groupe de boutons */
+.hero-actions {
+  margin-top: var(--space-3);
+}

@@ -10,7 +10,7 @@ export default function initPointerCursor(opts = {}) {
     enableOnCoarse = false,
     freeOpacity = 0.45,
     ringBorder = 1.25,
-    follow = 0.18,
+    follow = 0.75,
   } = opts;
 
   const canHover = matchMedia("(hover: hover) and (pointer: fine)").matches;

@@ -14,7 +14,7 @@
   isolation: isolate;
   overflow-x: clip; /* évite le scroll horizontal */
   overflow-y: visible; /* laisse déborder le décor */
-  padding-block: clamp(32px, 6.5vw, 96px) clamp(24px, 4vw, 48px);
+  padding-block: clamp(32px, 6.5vw, 77px) clamp(24px, 4vw, 48px);
   border-bottom: 0;
 }
 .hero__inner {
@@ -55,7 +55,8 @@
   --a2: color-mix(in srgb, var(--orange) 75%, #e879f9 25%);
   --a3: color-mix(in srgb, #7c3aed 65%, #22d3ee 35%);
 
-  background: radial-gradient(
+  background:
+    radial-gradient(
       800px 420px at 10% 10%,
       color-mix(in srgb, var(--a2) 52%, transparent) 0%,
       transparent 70%
@@ -141,7 +142,8 @@
   transform: scale(var(--pc-scale)) rotateY(var(--pc-tilt-y))
     rotateX(var(--pc-tilt-x));
   transform-origin: 50% 50%;
-  transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1),
+  transition:
+    transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1),
     filter 0.35s ease;
   filter: drop-shadow(
     0 24px 40px color-mix(in srgb, var(--gray) 22%, transparent 78%)
@@ -339,7 +341,9 @@ html[data-theme="dark"] .pc-tilt::after {
   position: relative;
   z-index: 0;
   transform: translateZ(0);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
 }
 #home [aria-labelledby="dern-projets"] .project-card:hover {
   z-index: 20;
@@ -419,7 +423,10 @@ section[aria-labelledby="services-title"] .card {
   z-index: 2; /* au-dessus du header (z:1) */
   transform: translateZ(0); /* lisse le rendu */
   will-change: transform, box-shadow;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, z-index 0s;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    z-index 0s;
   overflow: visible; /* pas de clipping interne */
 }
 section[aria-labelledby="services-title"] .card:hover,

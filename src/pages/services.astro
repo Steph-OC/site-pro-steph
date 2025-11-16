@@ -563,10 +563,137 @@ const cardIcons = [
 
 <!-- ✅ JSON-LD FAQPage aligné avec l’affichage -->
 <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
-
 <!-- Interaction des bulles -->
-<script type="module">
-  import initBubbleCloud from "/src/scripts/bubbles.ts";
-  const el = document.querySelector(".services-hero__illu .bubble-cloud");
-  if (el) initBubbleCloud(el);
+<script>
+  (function () {
+    function initBubbleCloud(cloud, opts) {
+      // 👉 Par défaut on limite au conteneur des bulles
+      var pointerArea = (opts && opts.pointerArea) || cloud;
+
+      var items = Array.from(cloud.querySelectorAll("li"));
+      if (!items.length) return;
+
+      var readVar = function (el, name) {
+        var inline = el.getAttribute("style") || "";
+        var m = inline.match(new RegExp(name + "\\s*:\\s*([^;]+)"));
+        if (m && m[1]) return m[1].trim();
+        return getComputedStyle(el).getPropertyValue(name).trim();
+      };
+      var pct = function (el, name) {
+        return parseFloat(readVar(el, name)) || 0;
+      };
+      var num = function (el, name) {
+        return parseFloat(readVar(el, name)) || 0;
+      };
+
+      var cloudRect = cloud.getBoundingClientRect();
+      var updateRect = function () {
+        cloudRect = cloud.getBoundingClientRect();
+      };
+      window.addEventListener("resize", updateRect);
+
+      var state = items.map(function (el) {
+        return {
+          el: el,
+          xPct: pct(el, "--x"),
+          yPct: pct(el, "--y"),
+          s: num(el, "--s") || 1,
+          b: num(el, "--b") || 120,
+          phase: Math.random() * Math.PI * 2,
+          speed: 0.6 + Math.random() * 0.6,
+          amp: 6 + Math.random() * 10,
+          dx: 0,
+          dy: 0,
+        };
+      });
+
+      var mouse = {
+        x: cloudRect.width * 0.5,
+        y: cloudRect.height * 0.5,
+        active: false,
+      };
+      var toLocalOfCloud = function (e) {
+        return {
+          x: e.clientX - cloudRect.left,
+          y: e.clientY - cloudRect.top,
+        };
+      };
+
+      pointerArea.addEventListener(
+        "pointerenter",
+        function (e) {
+          mouse.active = true;
+          Object.assign(mouse, toLocalOfCloud(e));
+        },
+        { passive: true }
+      );
+      pointerArea.addEventListener(
+        "pointermove",
+        function (e) {
+          Object.assign(mouse, toLocalOfCloud(e));
+        },
+        { passive: true }
+      );
+      pointerArea.addEventListener("pointerleave", function () {
+        mouse.active = false;
+      });
+
+      var RADIUS = 130; // px
+      var STRENGTH = 80; // force max
+      var EASE = 0.18; // lissage
+
+      var last = performance.now();
+      var t = 0;
+      var tick = function (now) {
+        var dt = Math.min(32, now - last) / 1000;
+        last = now;
+        t += dt;
+
+        for (var i = 0; i < state.length; i++) {
+          var b = state[i];
+          var cx = (b.xPct / 100) * cloudRect.width;
+          var cy = (b.yPct / 100) * cloudRect.height;
+
+          var driftX = Math.sin(b.phase + t * b.speed) * b.amp;
+          var driftY = Math.cos(b.phase + t * b.speed * 0.9) * b.amp;
+
+          var repX = 0,
+            repY = 0;
+          if (mouse.active) {
+            var dx = cx - mouse.x;
+            var dy = cy - mouse.y;
+            var d2 = dx * dx + dy * dy;
+            if (d2 > 0) {
+              var d = Math.sqrt(d2);
+              if (d < RADIUS) {
+                var f = 1 - d / RADIUS;
+                var s = STRENGTH * f * f;
+                repX = (dx / d) * s;
+                repY = (dy / d) * s;
+              }
+            }
+          }
+
+          var targetDX = driftX + repX;
+          var targetDY = driftY + repY;
+
+          b.dx += (targetDX - b.dx) * EASE;
+          b.dy += (targetDY - b.dy) * EASE;
+
+          b.el.style.setProperty("--dx", b.dx.toFixed(2) + "px");
+          b.el.style.setProperty("--dy", b.dy.toFixed(2) + "px");
+        }
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }
+
+    // Initialisation sur la page Services
+    if (typeof window !== "undefined") {
+      window.addEventListener("DOMContentLoaded", function () {
+        var el = document.querySelector(".services-hero__illu .bubble-cloud");
+        if (el) initBubbleCloud(el);
+      });
+    }
+  })();
 </script>

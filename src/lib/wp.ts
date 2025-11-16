@@ -49,6 +49,12 @@ const DISABLE = DEV && import.meta.env.VITE_WP_DISABLE === "1";
 const WP = (import.meta.env.WP_URL || "").replace(/\/+$/, "");
 const WP_API = `${WP}/wp-json/wp/v2`;
 
+console.log("[wp.ts] DEV =", DEV);
+console.log("[wp.ts] WP_URL brut =", import.meta.env.WP_URL);
+console.log("[wp.ts] WP =", WP);
+console.log("[wp.ts] WP_API =", WP_API);
+
+
 if (DEV && !WP) {
   console.warn("[wp.ts] WP_URL manquant dans .env (mode DEV). Les fonctions renverront []");
 }
@@ -190,11 +196,33 @@ export function normalizeProjet(item: WPItem): NormalizedProjet {
 // ———————————————————————————————————————————
 
 export async function getProjets({ per_page = 12, page = 1 } = {}) {
+  const fields = [
+    "id",
+    "slug",
+    "title",
+    "excerpt",
+    "acf.card_title",
+    "acf.card_intro",
+    "acf.project_subtitle",
+    "acf.subtitle",
+    "acf.subtitle_1",
+    "acf.site_url",
+    "acf.slide_url",
+    ...Array.from({ length: 4 }, (_, i) => i + 1).flatMap((n) => [
+      `acf.slide_${n}_img`,
+      `acf.slide_${n}_title`,
+      `acf.slide_${n}_text`,
+      `acf.slide_${n}_meta`,
+    ]),
+  ].join(",");
+
   const items = await wpFetchJSON<WPItem[]>(
-   `/projets?per_page=${limit}&_fields=${fields}&_embed=1&acf_format=standard`
- );
+    `/projets?per_page=${per_page}&page=${page}&_fields=${fields}&_embed=1&acf_format=standard`
+  );
+
   return (Array.isArray(items) ? items : []).map(normalizeProjet);
 }
+
 
 export async function getCPTList(
   type: string,

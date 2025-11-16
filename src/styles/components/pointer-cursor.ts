@@ -49,8 +49,7 @@ export default function initPointerCursor(opts: Options = {}) {
   const loop = () => {
     raf = 0;
 
-    // Lissage simple façon spring (sans physique lourde)
-    const ease = 0.20;
+    const ease = 0.8; 
     x += (mx - x) * ease;
     y += (my - y) * ease;
 
@@ -58,6 +57,7 @@ export default function initPointerCursor(opts: Options = {}) {
 
     raf = requestAnimationFrame(loop);
   };
+
 
   const ensureRAF = () => { if (!raf) raf = requestAnimationFrame(loop); };
 
@@ -170,7 +170,7 @@ export default function initPointerCursor(opts: Options = {}) {
     window.removeEventListener('pointerup', onUp as any);
     window.removeEventListener('pointerenter', onEnter as any);
     window.removeEventListener('pointerleave', onLeave as any);
-    document.documentElement.classList.remove('use-ios-pointer');
+    document.documentElement.classList.add('use-ios-pointer');
     el.remove();
   };
 }

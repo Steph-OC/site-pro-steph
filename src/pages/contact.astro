@@ -93,9 +93,9 @@ const contactFaqJsonLd = {
         <form
           id="contact-form"
           class="flow"
-          method="POST"
-          action="/api/contact"
-          novalidate
+          method="GET"
+          action={`mailto:${email}`}
+          enctype="text/plain"
           aria-describedby="contact-help"
         >
           <!-- Honeypot (anti-spam) -->
@@ -240,75 +240,6 @@ const contactFaqJsonLd = {
       </section>
     )
   }
-
-  <!-- JS: envoi AJAX + messages d'état -->
-  <script is:inline>
-    (() => {
-      const f = document.getElementById("contact-form");
-      if (!f) return;
-      // Évite les doublons en dev (HMR)
-      if (f.dataset.bound === "1") return;
-      f.dataset.bound = "1";
-
-      const s = document.getElementById("form-status");
-      const submitBtn = f.querySelector('button[type="submit"]');
-
-      f.addEventListener(
-        "submit",
-        async (e) => {
-          e.preventDefault();
-          if (!s) return;
-
-          // Anti double-clic / double envoi
-          if (f.dataset.sending === "1") return;
-          f.dataset.sending = "1";
-          submitBtn?.setAttribute("disabled", "true");
-          s.textContent = "";
-
-          // honeypot
-          if (f.website && f.website.value.trim()) {
-            s.textContent = "Message non envoyé (anti-spam).";
-            f.dataset.sending = "0";
-            submitBtn?.removeAttribute("disabled");
-            return;
-          }
-
-          const name = f.name.value.trim();
-          const email = f.email.value.trim();
-          if (!name || !email) {
-            s.textContent = "Veuillez renseigner votre nom et votre e-mail.";
-            f.dataset.sending = "0";
-            submitBtn?.removeAttribute("disabled");
-            return;
-          }
-
-          try {
-            const fd = new FormData(f);
-            const r = await fetch(f.action, {
-              method: "POST",
-              body: fd,
-              headers: { Accept: "application/json" },
-            });
-            const j = await r.json().catch(() => ({}));
-
-            if (r.ok && j.ok) {
-              s.textContent = "Merci ! Votre message a bien été envoyé.";
-              f.reset();
-            } else {
-              s.textContent = j.error || "Impossible d’envoyer pour le moment.";
-              if (j.debug) console.debug("[contact debug]", j.debug);
-            }
-          } catch {
-            s.textContent = "Erreur réseau.";
-          } finally {
-            f.dataset.sending = "0";
-            submitBtn?.removeAttribute("disabled");
-          }
-        },
-        { passive: false }
-      );
-    })();
-  </script>
 
   <style>
     /* Accessibilité / honeypot */

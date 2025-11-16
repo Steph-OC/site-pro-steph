@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+
+Sitemap: https://stephaniequibel.fr/sitemap.xml

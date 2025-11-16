@@ -7,6 +7,7 @@ import sitemap from '@astrojs/sitemap'; // ← ajout du plugin sitemap
 export default defineConfig({
   // ⚠️ URL finale de ton site en prod
   site: 'https://stephaniequibel.fr',
+output: 'static',   
 
   integrations: [
     react(),
