@@ -103,7 +103,7 @@ export default function Services() {
         <div className="service-card__icon" aria-hidden="true">
           <MessageSquareText width={44} height={44} strokeWidth={1.8} />
         </div>
-        <h3 className="service-card__title">Accompagnement durable</h3>
+        <h3 className="service-card__title">Suivi & maintenance</h3>
         <p className="service-card__desc">
           Je vous accompagne après la mise en ligne.
         </p>

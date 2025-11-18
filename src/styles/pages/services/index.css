@@ -10,7 +10,7 @@
 /* Section headers centered on this page */
 #services .section-head {
   text-align: center;
-  margin-bottom: clamp(16px, 3vw, 28px);
+  margin-bottom: clamp(16px, 8vh, 120px);
 }
 #services .section-head .muted {
   max-width: 60ch;
@@ -27,16 +27,14 @@
   content-visibility: auto;
   contain-intrinsic-size: 480px;
 }
-/* ===========================
-   Section "Points clés" (services)
-   =========================== */
+
 /* ===========================
    Section "Points clés" (services)
    =========================== */
 
 #services-cles {
-  margin-top: clamp(32px, 5vw, 56px);
-  margin-bottom: clamp(24px, 4vw, 56px);
+  margin-top: clamp(60px, 8vw, 120px);
+  margin-bottom: clamp(60px, 8vw, 120px);
 }
 
 /* grille de cartes */
@@ -72,7 +70,8 @@
   padding: 14px 16px;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--border, #3a3a4f) 70%, transparent);
-  background: radial-gradient(
+  background:
+    radial-gradient(
       120% 180% at 0% 0%,
       color-mix(in oklab, var(--acc) 20%, transparent),
       transparent 55%
@@ -83,7 +82,8 @@
       transparent 60%
     ),
     color-mix(in srgb, var(--card, rgba(15, 15, 30, 0.96)) 88%, transparent);
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.26),
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.26),
     0 0 0 1px color-mix(in srgb, var(--border, #3a3a4f) 40%, transparent) inset;
 }
 
@@ -122,7 +122,8 @@
   justify-content: center;
   background: color-mix(in srgb, var(--acc) 22%, var(--card) 78%);
   color: color-mix(in srgb, var(--acc) 86%, #000 14%);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--acc) 35%, transparent),
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--acc) 35%, transparent),
     0 8px 18px color-mix(in oklab, var(--acc) 30%, transparent);
 }
 
@@ -146,12 +147,16 @@
 /* Hover un peu fun mais sobre */
 @media (hover: hover) {
   #services-cles .tips__item {
-    transition: transform 0.18s ease, box-shadow 0.18s ease,
-      border-color 0.18s ease, background 0.18s ease;
+    transition:
+      transform 0.18s ease,
+      box-shadow 0.18s ease,
+      border-color 0.18s ease,
+      background 0.18s ease;
   }
   #services-cles .tips__item:hover {
     transform: translateY(-3px);
-    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.3),
+    box-shadow:
+      0 18px 40px rgba(0, 0, 0, 0.3),
       0 0 32px color-mix(in oklab, var(--acc) 20%, transparent);
     border-color: color-mix(in srgb, var(--acc) 35%, var(--border));
   }
@@ -159,13 +164,15 @@
 
 /* mode clair : cartes un peu plus “papier” */
 :root[data-theme="light"] #services-cles .tips__item {
-  background: radial-gradient(
+  background:
+    radial-gradient(
       120% 160% at 0% 0%,
       color-mix(in oklab, var(--acc) 15%, transparent),
       transparent 55%
     ),
     #ffffff;
-  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.08),
+  box-shadow:
+    0 12px 26px rgba(0, 0, 0, 0.08),
     0 0 0 1px color-mix(in srgb, #1a1a1a 12%, transparent) inset;
 }
 /* Centrage de la grille quand il n'y a qu'une colonne */
@@ -186,4 +193,7 @@
   #services-cles .tips {
     max-width: 480px; /* un peu plus compact sur tout petits écrans */
   }
+}
+.card {
+  margin-top: 50px;
 }

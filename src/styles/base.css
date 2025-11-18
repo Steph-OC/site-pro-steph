@@ -11,7 +11,7 @@
     /* Thème clair (défaut) */
     --bg: var(--offwhite);
     --fg: #1d1b26;
-    --muted: #5c596e;
+    --muted: #3c394cdb;
     --card: #ffffff;
     --border: #e8e6ef;
     --link: var(--gray);
@@ -121,6 +121,16 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale; /* ignoré par Firefox → OK */
   }
+  p,
+  li {
+    color: color-mix(in srgb, var(--fg) 85%, var(--muted) 15%);
+    line-height: 1.65;
+  }
+
+  /* Texte volontairement atténué (légendes, notes, etc.) */
+  .muted {
+    color: var(--muted);
+  }
 
   /* Titres */
   h1,
@@ -134,7 +144,7 @@
     letter-spacing: -0.012em;
     line-height: 1.15;
     margin: 0 0 0.5em;
-    color: var(--fg);
+    color: var(--muted);
   }
   h1 {
     font-size: clamp(2rem, 1.2rem + 3vw, var(--h1-max));

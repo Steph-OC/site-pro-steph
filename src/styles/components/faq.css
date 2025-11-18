@@ -1,4 +1,8 @@
 /* Élément <details> utilisé comme FAQ */
+#all-faq {
+  margin-bottom: clamp(16px, 8vh, 120px);
+}
+
 details.faq {
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -19,7 +23,7 @@ details.faq > summary {
   cursor: pointer;
   list-style: none; /* retire le triangle natif */
   font-weight: 700;
-  color: var(--fg);
+  color: var(--muted);
   outline: none;
 }
 /* retire le marqueur natif (Safari/Chromium) */

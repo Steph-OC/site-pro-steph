@@ -13,7 +13,10 @@
   color: var(--btn-fg);
   font-weight: 600;
   line-height: 1;
-  transition: box-shadow 0.2s ease, filter 0.15s ease, border-color 0.2s ease,
+  transition:
+    box-shadow 0.2s ease,
+    filter 0.15s ease,
+    border-color 0.2s ease,
     transform 0.06s ease;
 }
 
@@ -34,14 +37,14 @@
 /* Variantes */
 .btn--ghost {
   background: transparent;
-  color: var(--fg);
+  color: var(--muted);
   border-color: var(--border);
 }
 
 .btn--accent {
   background: var(--orange);
   border-color: transparent;
-  color: #23212e;
+  color: var(--offwhite);
 }
 
 /* Tailles utilitaires (optionnel) */

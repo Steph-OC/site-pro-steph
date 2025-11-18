@@ -221,7 +221,7 @@ const business = {
             <a href="tel:+33620681392">06 20 68 13 92 Lun–Ven, 9h–18h</a>
           </li>
           <li><a href="/contact">Formulaire de contact</a></li>
-          <li>Béziers • Partout en France 🇫🇷</li>
+          <li class="zones">Béziers • Partout en France 🇫🇷</li>
         </ul>
 
         <div class="footer__contact-bottom">
@@ -277,7 +277,7 @@ const business = {
     <a class="backtop btn btn--ghost btn--sm" href="#top">Haut de page ↑</a>
   </div>
 </div>
-<style is:global>
+li<style is:global>
   /* ===========================
    Footer — styles compacts (clean)
    =========================== */
@@ -297,7 +297,7 @@ const business = {
   :root[data-theme="dark"] {
     --footer-bg: #151521;
     --footer-fg: #eef0f6;
-    --footer-muted: #cfd3e2;
+    --footer-muted: #3c394cdb;
     --footer-link: #dfe3ff;
     --footer-border: rgba(255, 255, 255, 0.1);
     --footer-halo: color-mix(in oklab, var(--footer-accent) 12%, transparent);
@@ -308,7 +308,8 @@ const business = {
     position: relative;
     margin-top: 4rem;
     color: var(--footer-fg);
-    background: radial-gradient(
+    background:
+      radial-gradient(
         1100px 420px at 70% -10%,
         var(--footer-halo),
         transparent 60%
@@ -432,13 +433,21 @@ const business = {
     padding: 0;
     display: grid;
     gap: 0.35rem;
-    color: var(--footer-muted);
+    color: var(--footer-link);
   }
   .footer__meta a {
     color: var(--footer-link);
   }
   .footer__meta a:hover {
     text-decoration: underline;
+  }
+  .footer__meta li {
+    color: var(--footer-link); /* même couleur que les liens */
+  }
+
+  /* optionnel : si tu veux pouvoir changer juste cette ligne plus tard */
+  .footer__meta .zones {
+    color: var(--footer-link);
   }
 
   /* Colonne Contact en flex pour épingler la marque en bas */
@@ -549,15 +558,18 @@ const business = {
   .footer__cta .cta {
     padding-block: 1.2rem 2.2rem;
   }
+
   @media (min-width: 900px) {
     .footer__cta .cta {
       padding-block: 1.4rem 2.6rem;
     }
-  }
-  .footer__cta :is(h2, #cta-title) {
-    font-size: clamp(1.45rem, 2vw + 0.55rem, 2.15rem);
-    line-height: 1.15;
-    margin: 0 0 0.8rem;
+    .footer__cta :is(h2, #cta-title) {
+      font-size: clamp(1.45rem, 2vw + 0.55rem, 2.15rem);
+      line-height: 1.15;
+      margin: 0 0 0.8rem;
+      color: var(--offwithe);
+      text-align: left;
+    }
   }
 
   /* Accessibilité */
@@ -582,6 +594,13 @@ const business = {
     .footer__brand-bottom {
       margin-left: 0;
       order: 2; /* passe la marque après LinkedIn si ça wrap */
+    }
+    .footer__cta :is(h2, #cta-title) {
+      font-size: clamp(1.45rem, 2vw + 0.55rem, 2.15rem);
+      line-height: 1.15;
+      margin: 0 0 0.8rem;
+      color: var(--offwithe);
+      text-align: left;
     }
   }
   /* ===== Footer — compact mobile ===== */
@@ -722,10 +741,6 @@ const business = {
       padding-block: 0.4rem 0.6rem;
       border-top: 1px solid rgba(255, 255, 255, 0.06);
     }
-  }
-
-  /* en desktop : on désactive l'accordéon visuellement */
-  @media (min-width: 768px) {
     .footer__toggle {
       cursor: default;
     }
@@ -737,6 +752,13 @@ const business = {
     .footer__content {
       display: block !important;
     }
+  }
+  :root[data-theme="light"] .copyright {
+    color: #111827; /* gris très foncé, lisible sur fond clair */
+  }
+
+  :root[data-theme="dark"] .copyright {
+    color: #e5e7eb; /* gris clair, lisible sur fond sombre */
   }
 </style>
 <script is:inline>

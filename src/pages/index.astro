@@ -148,12 +148,12 @@ const safeTemoins = (temoins ?? []).map((t) => ({
       lead="Création et refonte de sites WordPress rapides, accessibles et optimisés pour le référencement. Basée près de Béziers (Hérault), j’accompagne des projets de sites vitrines, blogs et maintenance partout en France. Réponse rapide."
       ;
       actions={[
+        { href: "/contact", label: "Parler de votre projet", kind: "accent" },
         {
           href: "/realisations/",
           label: "Voir mes réalisations",
-          kind: "accent",
+          kind: "ghost",
         },
-        { href: "/contact", label: "Parler de votre projet", kind: "ghost" },
       ]}
     />
   </Fragment>
@@ -313,6 +313,19 @@ const safeTemoins = (temoins ?? []).map((t) => ({
             -webkit-box-orient: vertical;
             overflow: hidden;
           }
+          /* Corrige le décalage des cards "Approche" en mobile */
+          @media (max-width: 768px) {
+            .approach-stagger--teaser .stagger {
+              padding-inline: 0 !important; /* plus de poussée vers la droite */
+              margin-inline: auto; /* on recentre la grille */
+            }
+
+            .approach-stagger--teaser .stagger__card {
+              width: 100%;
+              max-width: 480px;
+              margin-inline: auto; /* chaque carte bien centrée */
+            }
+          }
         </style>
         <p class="approach-cta">
           <a class="btn btn--accent" href="/a-propos/#approche"
@@ -369,7 +382,7 @@ const safeTemoins = (temoins ?? []).map((t) => ({
           ))
         }
         <p class="muted" style="text-align:center;margin-top:var(--space-3)">
-          <a href="/services#faq">Voir toutes les questions</a>
+          <a href="/services/#all-faq">Voir toutes les questions</a>
         </p>
       </div>
     </section>
@@ -386,7 +399,7 @@ const safeTemoins = (temoins ?? []).map((t) => ({
           <div class="card__body">
             <h2 id="cta-title">Parlons de votre projet</h2>
             <p class="muted">
-              Réponse sous 24 h. Vos données ne sont jamais revendues.
+              Réponse rapide. Vos données ne sont jamais revendues.
             </p>
             <div class="actions">
               <a
@@ -399,7 +412,7 @@ const safeTemoins = (temoins ?? []).map((t) => ({
                 class="btn btn--ghost cursor-hover-item"
                 href="mailto:contact@stephaniequibel.fr"
                 data-cursor-text="ÉCRIRE UN E-MAIL"
-                data-cursor-text-repeat="5">Écrire un e-mail</a
+                data-cursor-text-repeat="5">Envoyer un e-mail</a
               >
             </div>
           </div>

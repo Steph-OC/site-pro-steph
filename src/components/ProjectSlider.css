@@ -43,7 +43,8 @@
   border-radius: 20px;
   overflow: hidden;
   background: linear-gradient(147deg, #fe8a39 0%, var(--ps-accent) 74%);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.16),
+  box-shadow:
+    0 12px 24px rgba(0, 0, 0, 0.16),
     0 24px 64px color-mix(in srgb, var(--ps-accent) 24%, transparent),
     0 0 0 1px color-mix(in srgb, #000 6%, transparent) inset;
 }
@@ -118,7 +119,7 @@
 }
 .ps-title {
   grid-area: title;
-  color: var(--fg);
+  color: var(--muted);
   font-size: clamp(22px, 3.4vw, 28px);
   margin: 6px 0;
   letter-spacing: -0.01em;
@@ -271,14 +272,16 @@
 /* Version punchy (optionnelle) */
 .ps-card.is-punchy {
   border: 1px solid transparent;
-  background: radial-gradient(
+  background:
+    radial-gradient(
         80% 120% at 50% 0%,
         color-mix(in oklab, var(--ps-accent) 9%, transparent) 0%,
         transparent 60%
       )
       border-box,
     var(--ps-bg);
-  box-shadow: 0 16px 40px color-mix(in oklab, var(--ps-accent) 14%, transparent),
+  box-shadow:
+    0 16px 40px color-mix(in oklab, var(--ps-accent) 14%, transparent),
     var(--shadow);
 }
 .ps-card.is-punchy::before {

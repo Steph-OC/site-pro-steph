@@ -70,7 +70,8 @@
     rgb(241, 109, 14) 100%
   );
   background-size: 100% 300%;
-  animation: real-gradient-scroll 3s linear infinite,
+  animation:
+    real-gradient-scroll 3s linear infinite,
     real-plane-appear 1600ms ease forwards;
   transform: translateZ(var(--hero-plane-pos-b));
   height: var(--hero-plane-height);
@@ -217,9 +218,13 @@
    MOBILE (flex colonne + zoom)
    ============================ */
 @media (max-width: 900px) {
+  main.realisations .projects-grid {
+    margin-top: 220px;
+    text-align: center;
+  }
   /* un peu plus d'air entre le header et le visuel */
   .realisations-page .real-hero {
-    padding-block: 60px 16px; /* haut | bas */
+    padding-block: 40px 80px; /* haut | bas */
   }
 
   .realisations-page .real-hero__grid {
@@ -238,9 +243,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-
-    /* 🟠 c'est ÇA qui marche chez toi, on l'assume proprement */
-    margin: 0 0 -200px; /* tu ajustes -180 / -220 selon ce que tu veux */
+    margin: 20px 0 -200px;
   }
 
   /* bloc 3D : même config que desktop, juste zoomé et recentré */
@@ -261,7 +264,7 @@
 
   /* TEXTE : centré, plus collé au visuel grâce à la margin négative du bloc au-dessus */
   .realisations-page .real-hero__text {
-    margin-top: 0;
+    margin-top: -50px;
     text-align: center;
     max-width: 32rem;
     margin-inline: auto;
@@ -272,5 +275,38 @@
     margin-inline: auto;
   }
 }
-@media (max-width: 1400px) {
+/* ===== Responsive cards Réalisations ===== */
+@media (max-width: 768px) {
+  .listingCard__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .listingCard__imgWrap {
+    order: 0;
+    width: 100%;
+    max-width: none;
+  }
+
+  .listingCard__img {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+
+  .listingCard__content {
+    order: 1;
+  }
+
+  .listingCard__dots {
+    order: 2;
+    margin-top: 8px;
+    align-self: center;
+  }
+  .realisations-page .projects-grid {
+    row-gap: clamp(24px, 10vw, 80px); /* espace entre les cards */
+  }
 }

@@ -59,12 +59,14 @@
   transform: translate3d(0, 16px, -120px) scale(0.3);
   filter: blur(6px);
 
-  animation: contact-bubble-intro 900ms cubic-bezier(0.16, 1, 0.3, 1) forwards,
+  animation:
+    contact-bubble-intro 900ms cubic-bezier(0.16, 1, 0.3, 1) forwards,
     contact-bubble-float 6.5s ease-in-out infinite 900ms;
 }
 
 .contact-bubble__icon {
   font-size: clamp(1.4rem, 13vw, 18rem);
+  color: var(--muted);
 }
 
 /* Effet hover léger (desktop) */
@@ -72,7 +74,9 @@
   .contact-bubble--main:hover {
     transform: translate3d(0, -4px, 8px) scale(1.06);
     box-shadow: 0 22px 55px rgba(15, 23, 42, 0.9);
-    transition: transform 160ms ease-out, box-shadow 160ms ease-out;
+    transition:
+      transform 160ms ease-out,
+      box-shadow 160ms ease-out;
   }
 }
 
@@ -195,23 +199,20 @@
     margin-top: 0;
   }
 
-  /* Au cas où tu as une règle .section + .section qui ajoute de la marge */
   .hero.hero--contact + .section.two-col,
   .hero.hero--contact + section.container.section.two-col {
     margin-top: 0;
   }
-  /* On neutralise le padding vertical du container du hero contact */
+
   .hero.hero--contact > .container.hero-contact {
-    padding-top: 24px; /* tu peux descendre à 16px si tu veux */
-    padding-bottom: 80px; /* très peu d'espace sous le sous-titre */
+    padding-top: 24px;
+    padding-bottom: 80px;
   }
 
-  /* On évite de rajouter de l'espace après le hero */
   .hero.hero--contact {
     margin-bottom: 0;
   }
 
-  /* On annule le min-height global du hero pour cette page */
   .hero.hero--contact {
     min-height: auto;
     height: auto;
@@ -220,7 +221,6 @@
     margin-bottom: 0;
   }
 
-  /* Hero en colonne icône puis texte, mais compact */
   .hero-contact {
     flex-direction: column;
     align-items: flex-start;
@@ -237,8 +237,12 @@
     max-width: 100%;
   }
 
-  /* On s'assure que la section du formulaire ne rajoute pas de marge en plus */
   .hero.hero--contact + section.container.section.two-col {
     margin-top: 0;
   }
+}
+:root[data-theme="light"] .contact-bubble--main::before,
+:root[data-theme="light"] .contact-bubble--main::after {
+  border-width: 2.5px;
+  border-color: color-mix(in srgb, #0f172a6f 90%, transparent);
 }

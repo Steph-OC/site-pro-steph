@@ -2,8 +2,10 @@
   position: relative;
   isolation: isolate;
   overflow: clip;
-  padding-block: clamp(14px, 2vw, 96px);
-  background: radial-gradient(
+  padding-block: clamp(72px, 14vh, 160px);
+  min-height: clamp(520px, 80vh, 720px);
+  background:
+    radial-gradient(
       120% 120% at 50% -10%,
       color-mix(in srgb, var(--green) 10%, transparent) 0%,
       transparent 60%
@@ -13,6 +15,7 @@
       color-mix(in srgb, var(--orange) 12%, transparent) 0%,
       transparent 70%
     );
+  margin-bottom: var(--section-gap);
 }
 @supports (
   (backdrop-filter: saturate(105%)) or (-webkit-backdrop-filter: saturate(105%))
@@ -23,18 +26,41 @@
   }
 }
 
+/* Conteneur + gouttières intérieures */
+.services-hero .container {
+  width: min(1200px, 92vw);
+  margin-inline: auto;
+  padding-inline: clamp(16px, 4vw, 40px);
+}
+
+/* Grille : illu/bulles à gauche, texte à droite */
 .services-hero__grid {
   display: grid;
   grid-template-columns: 0.95fr 1.05fr;
+  grid-template-areas: "text illu";
   align-items: center;
   column-gap: clamp(24px, 5vw, 56px);
+}
+.services-hero__illu {
+  grid-area: illu;
+}
+.services-hero__col {
+  grid-area: text;
+}
+
+/* Colonne texte – wrapping garanti */
+.services-hero__col,
+.services-hero__col * {
+  white-space: normal !important;
 }
 .services-hero__col {
   max-width: 62ch;
   overflow-wrap: anywhere;
+  word-break: normal;
   justify-self: end;
   z-index: 2;
 }
+
 .services-hero .kicker {
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -56,19 +82,49 @@
   flex-wrap: wrap;
 }
 
+/* Illustration + bulles (colonne gauche) */
 .services-hero__illu {
   position: relative;
   min-height: clamp(280px, 38vh, 480px);
   display: grid;
   place-items: center;
+  overflow: visible;
+  z-index: 0;
 }
 .services-hero__illu svg {
   width: 100%;
+  height: auto;
   max-width: 560px;
   display: block;
-  pointer-events: none;
+  overflow: visible;
+  z-index: 1;
+  pointer-events: none; /* le décor ne capte pas */
 }
 
+/* Nuage de bulles – zone élargie (débord contrôlé) */
+.services-hero__illu .bubble-cloud {
+  position: absolute;
+  inset: -6% -10% -8% -6%;
+  pointer-events: auto;
+  z-index: 2;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  touch-action: none; /* drag/touch sans scroll parasite */
+}
+/* pilotage JS (pas d’anim CSS concurrente) */
+.services-hero__illu .bubble-cloud li {
+  --dx: 0px;
+  --dy: 0px;
+  transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy)))
+    scale(var(--s, 1));
+  transition: transform 160ms linear;
+  will-change: transform;
+  animation: none !important;
+  pointer-events: auto;
+}
+
+/* Halos de fond doux */
 .services-hero__bg {
   position: absolute;
   inset: 0;
@@ -84,7 +140,8 @@
   opacity: 0.9;
 }
 .services-hero__bg::before {
-  background: radial-gradient(
+  background:
+    radial-gradient(
       42% 42% at 18% 25%,
       color-mix(in srgb, var(--green) 18%, transparent),
       transparent 60%
@@ -97,7 +154,8 @@
   animation: srvHaloA 16s ease-in-out infinite;
 }
 .services-hero__bg::after {
-  background: radial-gradient(
+  background:
+    radial-gradient(
       38% 38% at 78% 18%,
       color-mix(in srgb, #60a5fa 14%, transparent),
       transparent 62%
@@ -136,7 +194,7 @@
 @media (max-width: 860px) {
   .services-hero__grid {
     grid-template-columns: 1fr;
-    grid-template-areas: "text" "illu";
+    grid-template-areas: "illu" "text";
     row-gap: clamp(16px, 5vw, 28px);
     text-align: center;
   }

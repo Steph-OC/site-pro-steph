@@ -1,5 +1,5 @@
 @layer layout {
-  /* ========== BASE LAYOUT (inchangé) ========== */
+  /* ========== BASE LAYOUT ========== */
   :root {
     /* min pour mobile, max = 1400px */
     --container: clamp(320px, 96vw, 1400px);
@@ -18,6 +18,8 @@
   .container--xl {
     max-width: var(--container-xl);
   }
+
+  /* sections dans main : padding interne mais pas de marges propres */
   main > section,
   main > * > section {
     position: relative;
@@ -28,14 +30,17 @@
     border: 0;
     overflow: visible;
   }
-  main > section + section,
-  main > * > section + section,
+
+  /* espacement unique entre blocs de premier niveau dans main */
   main > * + * {
     margin-top: var(--section-gap);
   }
+
+  /* home : premier bloc un peu plus bas sous le hero */
   #home > section:first-of-type {
     margin-top: clamp(60px, 10vw, 200px);
   }
+
   .section--halo {
     position: relative;
     z-index: 2;
@@ -149,7 +154,9 @@
     height: 2px;
     border-radius: 2px;
     background: currentColor;
-    transition: transform 0.25s ease, opacity 0.2s ease;
+    transition:
+      transform 0.25s ease,
+      opacity 0.2s ease;
   }
   .burger__bar {
     top: 50%;
@@ -268,7 +275,8 @@
       transform: translateY(-8%);
       opacity: 0;
       pointer-events: none;
-      transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+      transition:
+        transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
         opacity 0.2s ease;
       z-index: 700;
     }
@@ -316,6 +324,7 @@
   .theme-icon {
     display: block;
   }
+
   /* --- ProjectSlider: verrouiller l'image dans son cadre --- */
   .ps-card .ps-media {
     overflow: hidden; /* coupe ce qui dépasse */
@@ -343,6 +352,7 @@
       block-size: 100% !important; /* garde le cover dans le ratio */
     }
   }
+
   /* ==== ProjectSlider — reset fort et fiable ==== */
 
   /* Grille interne identique à l'origine */

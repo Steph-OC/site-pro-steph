@@ -20,8 +20,14 @@ const html = page?.content?.rendered || "<p>Contenu à venir.</p>";
 ---
 
 <SiteLayout title={title}>
-  <article class="wp-content">
+  <article class="wp-content mentions">
     <h1 set:html={title} />
     <div class="entry" set:html={html} />
   </article>
 </SiteLayout>
+
+<style is:global>
+  .mentions {
+    margin-top: 150px;
+  }
+</style>

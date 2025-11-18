@@ -1,224 +1,4 @@
-/* =========================
-     HERO Services (nettoyé)
-     ========================= */
-
-.services-hero {
-  position: relative;
-  isolation: isolate;
-  overflow: clip;
-  padding-block: clamp(14px, 2vw, 96px);
-  scroll-margin-top: var(--header-h, 72px);
-  background: radial-gradient(
-      120% 120% at 50% -10%,
-      color-mix(in srgb, var(--green) 10%, transparent) 0%,
-      transparent 60%
-    ),
-    radial-gradient(
-      90% 100% at 110% 20%,
-      color-mix(in srgb, var(--orange) 12%, transparent) 0%,
-      transparent 70%
-    );
-}
-
-/* Légère saturation si supportée (syntax correctement groupée) */
-@supports (
-  (backdrop-filter: saturate(105%)) or (-webkit-backdrop-filter: saturate(105%))
-) {
-  .services-hero {
-    backdrop-filter: saturate(105%);
-    -webkit-backdrop-filter: saturate(105%);
-  }
-}
-
-/* Conteneur + gouttières intérieures */
-.services-hero .container {
-  width: min(1200px, 92vw);
-  margin-inline: auto;
-  padding-inline: clamp(16px, 4vw, 40px);
-}
-
-/* Grille : illu/bulles à gauche, texte à droite */
-.services-hero__grid {
-  display: grid;
-  grid-template-columns: 0.95fr 1.05fr;
-  grid-template-areas: "illu text";
-  align-items: center;
-  column-gap: clamp(24px, 5vw, 56px);
-}
-.services-hero__illu {
-  grid-area: illu;
-}
-.services-hero__col {
-  grid-area: text;
-}
-
-/* Colonne texte – wrapping garanti */
-.services-hero__col,
-.services-hero__col * {
-  white-space: normal !important;
-}
-.services-hero__col {
-  max-width: 62ch;
-  overflow-wrap: anywhere;
-  word-break: normal;
-  justify-self: end;
-  z-index: 2;
-}
-
-.services-hero .kicker {
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-size: 0.8rem;
-  color: var(--muted);
-  margin: 0 0 0.4rem;
-}
-.services-hero h1 {
-  margin: 0 0 0.5rem;
-}
-.services-hero .lead {
-  margin: 0 0 clamp(14px, 2.6vw, 22px);
-  max-width: 60ch;
-  color: var(--muted);
-}
-.services-hero .actions {
-  display: flex;
-  gap: 0.6rem;
-  flex-wrap: wrap;
-}
-
-/* Illustration + bulles (colonne gauche) */
-.services-hero__illu {
-  position: relative;
-  min-height: clamp(280px, 38vh, 480px);
-  display: grid;
-  place-items: center;
-  overflow: visible;
-  z-index: 0;
-}
-.services-hero__illu svg {
-  width: 100%;
-  height: auto;
-  max-width: 560px;
-  display: block;
-  overflow: visible;
-  z-index: 1;
-  pointer-events: none; /* le décor ne capte pas */
-}
-
-/* Nuage de bulles – zone élargie (débord contrôlé) */
-.services-hero__illu .bubble-cloud {
-  position: absolute;
-  inset: -6% -10% -8% -6%;
-  pointer-events: auto;
-  z-index: 2;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  touch-action: none; /* drag/touch sans scroll parasite */
-}
-/* pilotage JS (pas d’anim CSS concurrente) */
-.services-hero__illu .bubble-cloud li {
-  --dx: 0px;
-  --dy: 0px;
-  transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy)))
-    scale(var(--s, 1));
-  transition: transform 160ms linear;
-  will-change: transform;
-  animation: none !important;
-  pointer-events: auto;
-}
-
-/* Halos de fond doux */
-.services-hero__bg {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-}
-.services-hero__bg::before,
-.services-hero__bg::after {
-  content: "";
-  position: absolute;
-  inset: -10%;
-  filter: blur(22px) saturate(110%);
-  opacity: 0.9;
-}
-.services-hero__bg::before {
-  background: radial-gradient(
-      42% 42% at 18% 25%,
-      color-mix(in srgb, var(--green) 18%, transparent),
-      transparent 60%
-    ),
-    radial-gradient(
-      40% 40% at 82% 75%,
-      color-mix(in srgb, var(--orange) 16%, transparent),
-      transparent 62%
-    );
-  animation: srvHaloDriftA 16s ease-in-out infinite;
-}
-.services-hero__bg::after {
-  background: radial-gradient(
-      38% 38% at 78% 18%,
-      color-mix(in srgb, #60a5fa 14%, transparent),
-      transparent 62%
-    ),
-    radial-gradient(
-      36% 36% at 22% 82%,
-      color-mix(in srgb, #e879f9 12%, transparent),
-      transparent 64%
-    );
-  animation: srvHaloDriftB 18s ease-in-out infinite;
-}
-@keyframes srvHaloDriftA {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(1.8vh);
-  }
-}
-@keyframes srvHaloDriftB {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-2.2vh);
-  }
-}
-:root[data-theme="dark"] .services-hero__bg::before,
-:root[data-theme="dark"] .services-hero__bg::after {
-  filter: blur(20px) saturate(105%);
-  opacity: 0.78;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .services-hero__bg::before,
-  .services-hero__bg::after {
-    animation: none !important;
-  }
-}
-
-/* Mobile : pile propre, texte au-dessus */
-@media (max-width: 860px) {
-  .services-hero__grid {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "text"
-      "illu";
-    row-gap: clamp(16px, 5vw, 28px);
-    text-align: center;
-  }
-  .services-hero__col {
-    margin-inline: auto;
-  }
-  .services-hero__illu .bubble-cloud {
-    inset: -4% -8% -6% -8%;
-  }
-}
-
-/* ---------- Ancrage correct sous header sticky ---------- */
+/* ----------  Service.css - Ancrage correct sous header sticky ---------- */
 #services h1,
 #services h2,
 .section--halo,
@@ -241,7 +21,8 @@
 }
 .service-card[style*="--accent"] {
   border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent) inset,
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent) inset,
     var(--shadow);
 }
 .service-card[style*="--accent"] .service-card__icon svg {
@@ -450,14 +231,17 @@
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
   overflow: hidden;
   isolation: isolate;
-  transition: transform 0.24s cubic-bezier(0.2, 0.65, 0.3, 1), box-shadow 0.24s;
+  transition:
+    transform 0.24s cubic-bezier(0.2, 0.65, 0.3, 1),
+    box-shadow 0.24s;
 }
 .svc3-card::before {
   content: "";
   position: absolute;
   inset: -28% -8% auto -8%;
   height: 58%;
-  background: radial-gradient(
+  background:
+    radial-gradient(
       60% 60% at 50% 50%,
       color-mix(in srgb, var(--accent) 26%, transparent),
       transparent 70%
@@ -490,9 +274,12 @@
   color: var(--fg);
   background: color-mix(in srgb, var(--accent) 18%, transparent);
   outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 0%, var(--card-bg)),
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--accent) 0%, var(--card-bg)),
     0 0 0 6px color-mix(in srgb, var(--accent) 45%, transparent);
-  transition: background 0.25s ease, transform 0.25s ease;
+  transition:
+    background 0.25s ease,
+    transform 0.25s ease;
 }
 .svc3-card:hover .svc3-card__icon {
   background: var(--accent);
@@ -527,7 +314,11 @@
   background: var(--accent);
   color: #111;
   border: 2px solid var(--accent);
-  transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    border-color 0.2s,
+    transform 0.2s;
 }
 .svc3-card .btn:hover {
   background: transparent;
@@ -536,7 +327,9 @@
 }
 .svc3-card .btn:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px #000, 0 0 0 5px var(--accent);
+  box-shadow:
+    0 0 0 3px #000,
+    0 0 0 5px var(--accent);
 }
 
 :root[data-theme="dark"] .svc3-card {
@@ -662,7 +455,8 @@
   .service-card:hover {
     z-index: 10; /* passe devant ses voisines */
     /* pas de translate ici si Framer le fait déjà */
-    box-shadow: 0 16px 36px color-mix(in srgb, #000 20%, transparent),
+    box-shadow:
+      0 16px 36px color-mix(in srgb, #000 20%, transparent),
       inset 0 1px 0 color-mix(in oklab, #fff 12%, transparent);
     border-color: color-mix(in oklab, var(--accent) 48%, var(--border) 52%);
   }
