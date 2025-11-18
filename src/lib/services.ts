@@ -1,6 +1,6 @@
 // src/lib/services.ts
 import { Settings, BadgeCheck, MessageSquareText } from "lucide-react";
-// ❌ plus d'import toRelativeUrl ici
+
 
 /** Map simple: slug ACF -> composant Lucide (optionnel) */
 function iconFromSlug(slug?: string) {

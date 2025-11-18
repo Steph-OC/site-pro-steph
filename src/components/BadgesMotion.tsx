@@ -4,8 +4,7 @@ import {
   useInView,
   useReducedMotion,
   type Variants,
-  type TargetAndTransition, // type pour whileHover/whileTap
-  // type MotionProps, // <- voir fallback plus bas si besoin
+  type TargetAndTransition,
 } from "framer-motion";
 import {
   Accessibility,
@@ -100,7 +99,6 @@ export default function BadgesMotion({ items = DEFAULTS }: Props) {
         },
       };
 
-  // Animation de survol du cercle (typage explicite)
   const hoverBounce: TargetAndTransition = prefersReduced
     ? {
         y: [-4, 0],

@@ -48,32 +48,38 @@ function hexToRgbValues(hex?: string): string {
   return `${r} ${g} ${b}`;
 }
 
-// 3 cartes depuis ACF (sinon fallback)
-const svcFromAcf =
-  (data?.services ?? []).slice(0, 3).map((s: any, i: number) => {
-    const fallback = ["#2C84DB", "#EE8E48", "#7256C2"][i] ?? "#5b98eb";
-    const accent = s?.accent ?? fallback;
-    return {
-      title:
-        s?.title ??
-        [
-          "Création sur mesure",
-          "Refonte & optimisation",
-          "Maintenance & accompagnement",
-        ][i] ??
-        "Service",
-      desc:
-        s?.desc ??
-        [
-          "Design fidèle à votre identité, intégration WordPress propre et modulaire. Performance & accessibilité au cœur.",
-          "Audit technique & éditorial, UX/UI, nettoyage thème, accélération (LCP/CLS), SEO technique et sécurisation.",
-          "Mises à jour, sauvegardes, corrections, petites évolutions et suivi continu des performances & SEO.",
-        ][i] ??
-        "",
-      accent,
-      accentRgb: hexToRgbValues(accent),
-    };
-  }) ?? [];
+// ✅ On prépare toujours 3 “slots” de services : soit depuis ACF, soit fallback
+const rawServices: any[] =
+  Array.isArray(data?.services) && data.services.length
+    ? data.services
+    : Array.from({ length: 3 }, () => ({}) as any);
+
+// 3 cartes depuis rawServices (ACF ou fallback)
+const svcFromAcf = rawServices.slice(0, 3).map((s: any, i: number) => {
+  const fallback = ["#2C84DB", "#EE8E48", "#7256C2"][i] ?? "#5b98eb";
+  const accent = s?.accent ?? fallback;
+
+  return {
+    title:
+      s?.title ??
+      [
+        "Création sur mesure",
+        "Refonte & optimisation",
+        "Maintenance & accompagnement",
+      ][i] ??
+      "Service",
+    desc:
+      s?.desc ??
+      [
+        "Design fidèle à votre identité, intégration WordPress propre et modulaire. Performance & accessibilité au cœur.",
+        "Audit technique & éditorial, UX/UI, nettoyage thème, accélération (LCP/CLS), SEO technique et sécurisation.",
+        "Mises à jour, sauvegardes, corrections, petites évolutions et suivi continu des performances & SEO.",
+      ][i] ??
+      "",
+    accent,
+    accentRgb: hexToRgbValues(accent),
+  };
+});
 
 function stripHtml(html = "") {
   return html.replace(/<[^>]+>/g, "").trim();

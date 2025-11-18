@@ -31,8 +31,6 @@
   width: 100%;
   margin: 0 auto;
   overflow-x: hidden;
-
-  /* ↓ resserré (top un peu, bottom très peu) */
   --pad-top: clamp(12px, 2.8vw, 28px);
   --pad-bottom: clamp(4px, 1.2vw, 10px);
   padding-block: var(--pad-top) var(--pad-bottom);
@@ -40,21 +38,17 @@
   min-height: clamp(80px, 10vw, 150px);
 }
 
-/* 1 ligne centrée */
 .hex-badges .row {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: var(--gap);
   list-style: none;
-
-  /* avant: margin: calc(var(--s) * 0.22) 0; → fortement réduit */
   margin-block: clamp(4px, 0.6vw, 8px) 0;
   padding: 0;
   flex-wrap: nowrap;
 }
 
-/* Pastille : empilement vertical (cercle au-dessus, label en dessous) */
 .badge {
   position: relative;
   width: var(--s);
@@ -64,7 +58,9 @@
   align-items: center;
   gap: clamp(6px, 0.8vw, 10px); /* espace cercle/label */
   filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.08));
-  transition: transform 0.18s ease, filter 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    filter 0.18s ease;
   margin: 0; /* pas d'espace supplémentaire */
 }
 .badge::before,
@@ -74,21 +70,22 @@
 
 /* --- CERCLE VRAIMENT ROND --- */
 .badge .circle {
-  position: relative; /* dans le flux */
-  flex: 0 0 auto; /* empêche l'étirement par flex */
+  position: relative;
+  flex: 0 0 auto;
   width: calc(var(--s) * 0.82);
   height: calc(var(--s) * 0.82);
-  aspect-ratio: 1 / 1; /* ceinture + bretelles */
-
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
   background: var(--circle-bg, #fff);
   display: grid;
   place-items: center;
-  color: var(--icon, #333); /* icône suit --icon */
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, #000 7%, transparent),
+  color: var(--icon, #333);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, #000 7%, transparent),
     0 6px 18px rgba(0, 0, 0, 0.06);
   z-index: 1;
 }
+
 .badge .circle svg {
   width: calc(var(--s) * 0.4) !important;
   height: calc(var(--s) * 0.4) !important;
@@ -96,18 +93,16 @@
   fill: none;
 }
 
-/* Label sous le badge : même couleur que l’icône */
 .badge__label {
   text-align: center;
   font-weight: 600;
   font-size: clamp(0.95rem, 0.9rem + 0.25vw, 1.05rem);
   line-height: 1.25;
   letter-spacing: 0.01em;
-  color: var(--icon, currentColor); /* hérite de --icon posé sur <li> */
-  margin: 0; /* pas de marge supplémentaire en bas */
+  color: var(--icon, currentColor);
+  margin: 0;
 }
 
-/* Hover : pas de sursaut (anim gérée en JS) */
 .badge:hover {
   transform: none;
 }
@@ -116,7 +111,8 @@
 :root[data-theme="dark"] .badge .circle {
   --circle-bg: color-mix(in srgb, var(--card) 88%, var(--bg) 12%);
   color: var(--icon, var(--fg));
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, #fff 12%, transparent),
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, #fff 12%, transparent),
     0 8px 20px rgba(0, 0, 0, 0.28);
 }
 
@@ -143,7 +139,6 @@
   }
 }
 
-/* Titre de section (inchangé) */
 .section-head {
   text-align: center;
   margin-bottom: clamp(14px, 3vw, 26px);
@@ -165,14 +160,13 @@ header.section-head {
   backdrop-filter: none;
 }
 
-/* (facultatif) si tu n’utilises plus la légende globale */
 .hex-caption {
   display: none;
 }
 :root[data-theme="dark"] .hex-caption {
   display: none;
 }
-/* BadgesMotion — variante flex */
+
 section[aria-labelledby="principes"] .badges,
 section[aria-labelledby="principes"] .badges-motion,
 section[aria-labelledby="principes"] .badgesList {
@@ -184,12 +178,11 @@ section[aria-labelledby="principes"] .badgesList {
 section[aria-labelledby="principes"] .badges > *,
 section[aria-labelledby="principes"] .badges-motion > *,
 section[aria-labelledby="principes"] .badgesList > * {
-  flex: 1 1 120px; /* base 120px, se réduit et passe à la ligne */
-  min-width: 0; /* évite l’overflow du contenu */
+  flex: 1 1 120px;
+  min-width: 0;
 }
 /* ---- Badges: wrap + largeur pilotée par --n ---- */
 
-/* 1) Autoriser le retour à la ligne */
 .hex-badges .row {
   display: flex;
   justify-content: center;
@@ -201,9 +194,8 @@ section[aria-labelledby="principes"] .badgesList > * {
   flex-wrap: wrap; /* ⬅️ wrap ON */
 }
 
-/* 2) Les items prennent exactement la largeur calculée par --s */
 .badge {
-  flex: 0 0 var(--s); /* ⬅️ largeur fixe par item pour un wrap propre */
+  flex: 0 0 var(--s);
   width: var(--s);
   height: auto;
   display: flex;
@@ -211,16 +203,16 @@ section[aria-labelledby="principes"] .badgesList > * {
   align-items: center;
   gap: clamp(6px, 0.8vw, 10px);
   filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.08));
-  transition: transform 0.18s ease, filter 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    filter 0.18s ease;
   margin: 0;
 }
 
-/* 3) Valeur par défaut (desktop) */
 .hex-badges {
-  --n: 6; /* 6 par ligne par défaut */
+  --n: 6;
 }
 
-/* 4) Adapter le nombre d’items par ligne selon la largeur */
 @media (max-width: 1200px) {
   .hex-badges {
     --n: 5;
@@ -242,14 +234,12 @@ section[aria-labelledby="principes"] .badgesList > * {
   }
 }
 
-/* 5) (option) Si tu veux garantir 1 badge / ligne tout en bas */
 @media (max-width: 340px) {
   .hex-badges {
     --n: 1;
   }
 }
 
-/* 6) On garde ton calcul de taille en fonction de --n */
 .hex-badges {
   --gap: clamp(7px, 0.9vw, 11px);
   --s-min: 116px;
@@ -270,7 +260,6 @@ section[aria-labelledby="principes"] .badgesList > * {
   min-height: clamp(80px, 10vw, 150px);
 }
 
-/* 7) Ajustements mobile déjà présents: on les garde */
 @media (max-width: 900px) {
   .hex-badges {
     --s-min: 96px;

@@ -3,7 +3,7 @@
   isolation: isolate;
   overflow: clip;
   padding-block: clamp(72px, 14vh, 160px);
-  min-height: clamp(520px, 80vh, 720px);
+  min-height: clamp(320px, 80vh, 720px);
   background:
     radial-gradient(
       120% 120% at 50% -10%,

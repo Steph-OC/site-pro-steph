@@ -30,7 +30,7 @@ export function Reveal({
   delay = 0,
   className,
   once = true,
-  amount = 0.3,
+  amount = 0.12,
 }: RevealProps) {
   const reduce = useReducedMotion();
 
@@ -38,10 +38,10 @@ export function Reveal({
     direction === "left"
       ? { x: -distance }
       : direction === "right"
-      ? { x: distance }
-      : direction === "up"
-      ? { y: -distance }
-      : { y: distance };
+        ? { x: distance }
+        : direction === "up"
+          ? { y: -distance }
+          : { y: distance };
 
   const initial = reduce ? { opacity: 1 } : { opacity: 0, ...axis };
   const animate = { opacity: 1, x: 0, y: 0 };
@@ -53,7 +53,7 @@ export function Reveal({
       whileInView={animate}
       viewport={{ once, amount }}
       transition={{
-        duration: reduce ? 0 : 0.6,
+        duration: reduce ? 0 : 0.55,
         delay,
         ease: [0.22, 1, 0.36, 1],
       }}
@@ -105,9 +105,9 @@ export function RevealGroup({
   delay = 0,
   cascade = true,
   className,
-  amount = 0.25,
+  amount = 0.15,
   once = true,
-  rootMargin = "0px 0px -15% 0px",
+  rootMargin = "0px 0px -3% 0px",
 }: RevealGroupProps) {
   const reduce = useReducedMotion();
   const controls = useAnimation();
@@ -139,7 +139,7 @@ export function RevealGroup({
     // déclenche si déjà dans le viewport au mount
     const rect = el.getBoundingClientRect();
     const vh = window.innerHeight || document.documentElement.clientHeight;
-    if (rect.top <= vh * 0.9 && rect.bottom >= 0) controls.start("show");
+    if (rect.top <= vh * 1.0 && rect.bottom >= 0) controls.start("show");
 
     const observer = new IntersectionObserver(
       ([entry]) => {

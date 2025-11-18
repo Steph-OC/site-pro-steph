@@ -26,6 +26,7 @@
   list-style: none;
   position: relative;
   z-index: 2; /* contenu au-dessus du décor de section */
+  margin-bottom: 120px;
 }
 
 @media (max-width: 1024px) {
@@ -65,7 +66,9 @@
   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
   isolation: isolate;
   overflow: visible; /* conserver l’ombre externe */
-  transition: transform 0.24s cubic-bezier(0.2, 0.65, 0.3, 1), box-shadow 0.24s;
+  transition:
+    transform 0.24s cubic-bezier(0.2, 0.65, 0.3, 1),
+    box-shadow 0.24s;
 }
 
 .svc3-card:hover {
@@ -97,7 +100,8 @@
   pointer-events: none;
   border-radius: inherit;
 
-  background: radial-gradient(
+  background:
+    radial-gradient(
       70% 70% at 50% 45%,
       color-mix(in srgb, var(--accent) 38%, transparent) 0%,
       transparent 70%
@@ -127,11 +131,14 @@
   color: var(--fg);
   background: color-mix(in srgb, var(--accent) 18%, transparent);
   outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 0%, var(--card-bg)),
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--accent) 0%, var(--card-bg)),
     0 0 0 6px color-mix(in srgb, var(--accent) 45%, transparent);
 
   margin-bottom: clamp(10px, 1.2vw, 16px); /* espace sous l’icône */
-  transition: background 0.25s ease, transform 0.25s ease;
+  transition:
+    background 0.25s ease,
+    transform 0.25s ease;
 }
 .svc3-card:hover .svc3-card__icon {
   background: var(--accent);
@@ -211,7 +218,9 @@
 }
 .svc3-card .btn:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px #000, 0 0 0 5px var(--accent);
+  box-shadow:
+    0 0 0 3px #000,
+    0 0 0 5px var(--accent);
 }
 
 /* ============ Règles spécifiques à la page services ============ */

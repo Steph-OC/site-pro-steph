@@ -377,7 +377,7 @@
 }
 .svc3 .section-head {
   text-align: center;
-  margin-bottom: clamp(16px, 3vw, 28px);
+  margin-bottom: clamp(66px, 8vw, 120px);
 }
 .svc3 .section-head h2 {
   margin: 0 0 8px;
@@ -392,6 +392,7 @@
 #services .section-head {
   text-align: center;
   margin-bottom: 80px;
+  margin-top: 120px;
 }
 #services .section-head h2 {
   margin-left: auto;
