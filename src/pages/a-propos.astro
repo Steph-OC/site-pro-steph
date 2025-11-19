@@ -117,7 +117,7 @@ const tagKey = (s: string) =>
     <!-- BIO courte + portrait -->
     <section class="section section--halo" aria-labelledby="bio-title">
       <div class="container container--xl bio-grid">
-        <figure class="portrait-ring">
+        <figure class="portrait-ring" data-reveal="fade-right">
           <img
             src="/images/photo-presentation.webp"
             alt="Portrait de Stéphanie Quibel"
@@ -126,7 +126,7 @@ const tagKey = (s: string) =>
           />
         </figure>
 
-        <div>
+        <div data-reveal="fade-left">
           <h2 id="bio-title">Qui je suis</h2>
           <p>
             Je m’appelle Stéphanie Quibel et je suis développeuse web, installée
@@ -145,7 +145,12 @@ const tagKey = (s: string) =>
     </section>
 
     <!-- APPROCHE détaillée -->
-    <ApproachStagger id="approche" variant="full" client:visible />
+    <ApproachStagger
+      id="approche"
+      variant="full"
+      client:visible
+      data-reveal="fade-down"
+    />
 
     <!-- STACK / outils -->
     <section
@@ -164,7 +169,7 @@ const tagKey = (s: string) =>
         </header>
 
         <div class="stack-grid">
-          <article class="s-card s-card--orange">
+          <article class="s-card s-card--orange" data-reveal="fade-right">
             <div class="s-card__head">
               <span class="s-badge">Stack</span>
               <h3>Production</h3>
@@ -197,7 +202,7 @@ const tagKey = (s: string) =>
             </ul>
           </article>
 
-          <article class="s-card s-card--cyan">
+          <article class="s-card s-card--cyan" data-reveal="fade-up">
             <div class="s-card__head">
               <span class="s-badge s-badge--cyan">Outils</span>
               <h3>Design &amp; réalisation</h3>
@@ -244,7 +249,7 @@ const tagKey = (s: string) =>
             </ul>
           </article>
 
-          <article class="s-card s-card--violet">
+          <article class="s-card s-card--violet" data-reveal="fade-left">
             <div class="s-card__head">
               <span class="s-badge s-badge--violet">Principes</span>
               <h3>Lignes directrices</h3>
@@ -268,7 +273,7 @@ const tagKey = (s: string) =>
     </section>
 
     <!-- CTA final -->
-    <section class="section cta-final">
+    <section class="section cta-final" data-reveal="fade-down">
       <div
         class="container container--xl cta-box"
         style="display:grid;place-items:center;text-align:center;border-radius:1.25rem;padding:clamp(24px,6vw,48px);background:radial-gradient(120% 120% at 50% 0%, rgba(255,255,255,.06), transparent 60%);"

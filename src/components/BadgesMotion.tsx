@@ -69,7 +69,7 @@ export default function BadgesMotion({ items = DEFAULTS }: Props) {
   // 👉 Déclenche PLUS TÔT : zone de détection agrandie vers le bas,
   // et amount faible = 10% visible suffisent
   const inView = useInView(ref, {
-    margin: "0px 0px 80% 0px", // +25% sous le viewport → déclenche avant d’arriver
+    margin: "0px 0px 25% 0px", // +25% sous le viewport → déclenche avant d’arriver
     amount: 0.01, // 10% visibles suffisent
     once: true,
   });

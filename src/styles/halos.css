@@ -35,11 +35,8 @@
   pointer-events: none;
   z-index: 0; /* IMPORTANT : pas de négatif */
 
-  background: radial-gradient(
-      60% 55% at 30% 40%,
-      var(--halo-a),
-      transparent 65%
-    ),
+  background:
+    radial-gradient(60% 55% at 30% 40%, var(--halo-a), transparent 65%),
     radial-gradient(60% 55% at 70% 60%, var(--halo-b), transparent 70%);
   filter: blur(38px) saturate(120%);
   opacity: 0.9;
@@ -53,7 +50,8 @@
   mask-image: radial-gradient(120% 110% at 50% 55%, #000 60%, transparent 100%);
 
   /* animation douce */
-  animation: haloBreath 6.5s ease-in-out infinite,
+  animation:
+    haloBreath 6.5s ease-in-out infinite,
     haloDrift 18s ease-in-out 0.3s infinite alternate;
 }
 
@@ -196,7 +194,8 @@ main > * > section > .container {
   pointer-events: none;
   z-index: 0;
   mix-blend-mode: screen;
-  background: radial-gradient(
+  background:
+    radial-gradient(
       55% 40% at 50% 22%,
       rgba(255, 255, 255, 0.22),
       transparent 60%
@@ -264,4 +263,34 @@ main > * > section > .container {
 /* Si une grille interne clippe (ex: projets), garde visible */
 #home [aria-labelledby="dern-projets"] .projects-grid {
   overflow: visible;
+}
+/* ============================================
+   Ajuste le halo du HERO en thème clair
+   pour éviter l'effet "plus de couleur"
+   ============================================ */
+
+:root[data-theme="light"] .hero {
+  /* on garde la couleur plus présente, moins de flash blanc */
+  --hero-sat-min: 1.15;
+  --hero-sat-max: 1.3;
+  --hero-bright-min: 1.02;
+  --hero-bright-max: 1.18;
+  --hero-fade-mid: 0.98; /* ne descend presque pas en opacité */
+}
+
+/* voile blanc moins fort en thème clair */
+:root[data-theme="light"] .hero .hero__bg::after {
+  opacity: 0;
+  animation: heroHaloVeilLight var(--hero-dur) ease-in-out infinite;
+}
+
+/* variante plus douce du voile */
+@keyframes heroHaloVeilLight {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.1; /* au lieu de 0.18 → moins “blanchi” */
+  }
 }

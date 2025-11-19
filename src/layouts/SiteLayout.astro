@@ -293,5 +293,58 @@ import "@/styles/components/pointer-cursor.css";
         else if (mq.addListener) mq.addListener(onChange);
       })();
     </script>
+    <script is:inline>
+      (() => {
+        if (typeof window === "undefined") return;
+
+        // Empêche d'initialiser deux fois si le layout est re-monté
+        if (window.__scrollRevealInit) return;
+        window.__scrollRevealInit = true;
+
+        const els = document.querySelectorAll("[data-reveal]");
+        if (!els.length) return;
+
+        const prefersReduce = window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
+
+        // Si pas d’Observer OU motion réduite : tout visible d’un coup
+        if (!("IntersectionObserver" in window) || prefersReduce) {
+          els.forEach((el) => el.classList.add("is-revealed"));
+          return;
+        }
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+
+              const el = entry.target;
+
+              // delay optionnel via data-reveal-delay="0.12s"
+              const delay = el.getAttribute("data-reveal-delay");
+              if (delay) {
+                el.style.setProperty("--reveal-delay", delay);
+              }
+
+              el.classList.add("is-revealed");
+
+              // par défaut : on ne rejoue pas (once)
+              const once = el.getAttribute("data-reveal-once");
+              if (once !== "false") {
+                observer.unobserve(el);
+              }
+            });
+          },
+          {
+            root: null,
+            threshold: 0.18,
+            rootMargin: "0px 0px -18% 0px", // déclenche un peu AVANT le centre
+          }
+        );
+
+        els.forEach((el) => observer.observe(el));
+      })();
+    </script>
   </body>
 </html>

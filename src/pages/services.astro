@@ -212,6 +212,8 @@ const cardIcons = [
                 <li
                   class="svc3-card"
                   style={`--accent:${card.accent}; --accent-rgb:${card.accentRgb}`}
+                  data-reveal={i % 2 === 0 ? "fade-up" : "fade-up"}
+                  data-reveal-delay={`${0.05 * i}s`}
                 >
                   <div class="svc3-card__inner">
                     <div
@@ -252,7 +254,11 @@ const cardIcons = [
     <!-- Étapes -->
     {
       (data?.steps?.length ?? 0) > 0 && (
-        <section class="section--halo" aria-labelledby="flow-title">
+        <section
+          class="section--halo"
+          aria-labelledby="flow-title"
+          data-reveal="fade-right"
+        >
           <header class="section-head">
             <h2 id="flow-title">De l’idée au site en ligne</h2>
             <p class="muted">
@@ -403,6 +409,7 @@ const cardIcons = [
           id="services-cles"
           class="container section--halo halo-pulse-gentle"
           aria-labelledby="tips-title"
+          data-reveal="fade-left"
         >
           <header class="section-head">
             <h2 id="tips-title">Points clés</h2>
@@ -503,6 +510,7 @@ const cardIcons = [
           id="all-faq"
           class="container section--halo halo-pulse-gentle"
           aria-labelledby="faq-title"
+          data-reveal="fade-down"
         >
           <header class="section-head">
             <h2 id="faq-title">FAQ</h2>
