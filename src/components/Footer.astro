@@ -277,7 +277,7 @@ const business = {
     <a class="backtop btn btn--ghost btn--sm" href="#top">Haut de page ↑</a>
   </div>
 </div>
-li<style is:global>
+<style is:global>
   /* ===========================
    Footer — styles compacts (clean)
    =========================== */
@@ -442,10 +442,8 @@ li<style is:global>
     text-decoration: underline;
   }
   .footer__meta li {
-    color: var(--footer-link); /* même couleur que les liens */
+    color: var(--footer-link);
   }
-
-  /* optionnel : si tu veux pouvoir changer juste cette ligne plus tard */
   .footer__meta .zones {
     color: var(--footer-link);
   }
@@ -459,17 +457,18 @@ li<style is:global>
   .footer__contact-bottom {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* LinkedIn à gauche, marque à droite */
+    justify-content: space-between;
     gap: 0.9rem;
     margin-top: 0.8rem;
-    flex-wrap: nowrap; /* reste sur une seule ligne */
+    flex-wrap: nowrap;
     width: 100%;
-    min-width: 0; /* évite les débordements */
+    min-width: 0;
   }
+
   /* Réseaux (LinkedIn) */
   .footer__social {
     list-style: none;
-    margin: 0; /* marge neutre */
+    margin: 0;
     padding: 0;
     display: flex;
     gap: 0.75rem;
@@ -491,13 +490,13 @@ li<style is:global>
 
   /* Marque en bas à droite */
   .footer__brand-bottom {
-    margin-left: auto; /* pousse la marque complètement à droite */
+    margin-left: auto;
     display: inline-flex;
     align-items: center;
     gap: 0.55rem;
     text-decoration: none;
     color: inherit;
-    white-space: nowrap; /* évite le retour à la ligne du nom */
+    white-space: nowrap;
     opacity: 0.98;
   }
   .footer__brand-bottom img {
@@ -584,7 +583,8 @@ li<style is:global>
     white-space: nowrap;
     border: 0;
   }
-  /* Sécurité sur très petits écrans : autoriser le retour à la ligne si nécessaire */
+
+  /* Sécurité sur très petits écrans */
   @media (max-width: 420px) {
     .footer__contact-bottom {
       flex-wrap: wrap;
@@ -593,7 +593,7 @@ li<style is:global>
     }
     .footer__brand-bottom {
       margin-left: 0;
-      order: 2; /* passe la marque après LinkedIn si ça wrap */
+      order: 2;
     }
     .footer__cta :is(h2, #cta-title) {
       font-size: clamp(1.45rem, 2vw + 0.55rem, 2.15rem);
@@ -603,22 +603,21 @@ li<style is:global>
       text-align: left;
     }
   }
-  /* ===== Footer — compact mobile ===== */
+
+  /* ===== Footer — compact mobile (hérité WP, safe) ===== */
   @media (max-width: 768px) {
     .site-footer {
-      padding-block: clamp(16px, 4vw, 24px); /* ↓ hauteur */
+      padding-block: clamp(16px, 4vw, 24px);
       border-top: 1px solid var(--border);
       background: var(--card);
     }
 
-    /* grille principale : 1 colonne + petits espacements */
     .site-footer .footer-grid {
       display: grid;
       grid-template-columns: 1fr !important;
       gap: clamp(10px, 3.5vw, 16px);
     }
 
-    /* titres de colonnes plus petits */
     .site-footer h4,
     .site-footer .footer-title {
       font-size: clamp(13px, 3.6vw, 15px);
@@ -626,20 +625,18 @@ li<style is:global>
       margin: 0 0 6px;
     }
 
-    /* listes + liens compacts */
     .site-footer ul {
       margin: 0;
       padding: 0;
       list-style: none;
       display: grid;
-      gap: 6px; /* ↓ spacing items */
+      gap: 6px;
     }
     .site-footer a {
       font-size: clamp(13px, 3.6vw, 15px);
       line-height: 1.35;
     }
 
-    /* blocs “contact / adresse / horaires” plus aérés mais courts */
     .site-footer .footer-meta,
     .site-footer address,
     .site-footer .footer-quicklinks {
@@ -648,7 +645,6 @@ li<style is:global>
       margin: 0;
     }
 
-    /* CTA éventuels dans le footer */
     .site-footer .btn,
     .site-footer .wp-block-button__link {
       padding: 10px 14px;
@@ -656,7 +652,6 @@ li<style is:global>
       border-radius: 10px;
     }
 
-    /* bandeau du bas */
     .site-footer .footer-bottom,
     .site-footer .footnote {
       margin-top: clamp(10px, 3vw, 14px);
@@ -664,7 +659,7 @@ li<style is:global>
       border-top: 1px dashed color-mix(in srgb, var(--border) 80%, transparent);
       display: grid;
       gap: 6px;
-      text-align: center; /* tout centré sur mobile */
+      text-align: center;
     }
     .site-footer .footer-bottom small,
     .site-footer .footnote small {
@@ -672,7 +667,6 @@ li<style is:global>
       opacity: 0.8;
     }
 
-    /* rangées de liens légaux / sociaux -> wrap propre */
     .site-footer .footer-inline,
     .site-footer .legal,
     .site-footer .social {
@@ -682,13 +676,11 @@ li<style is:global>
       gap: 10px 14px;
     }
 
-    /* images/logos dans le footer */
     .site-footer img,
     .site-footer .logo {
       max-height: 28px;
     }
 
-    /* tuer les marges verticales héritées des blocs WP */
     .site-footer .wp-block-group,
     .site-footer .wp-block-columns {
       margin: 0 !important;
@@ -697,12 +689,14 @@ li<style is:global>
       margin-top: 0 !important;
     }
   }
+
   /* Boutons d'accordéon dans le footer */
   .footer__section-title {
     margin: 0 0 0.4rem;
     width: 100%;
   }
 
+  /* Desktop : simple titre, pas de chevron, pas cliquable */
   .footer__toggle {
     background: none;
     border: none;
@@ -712,55 +706,49 @@ li<style is:global>
     font: inherit;
     width: 100%;
     text-align: left;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
+    display: block;
+    cursor: default;
   }
 
-  .footer__toggle::after {
-    content: "▾";
-    font-size: 0.85em;
-    margin-left: auto;
-    transition: transform 180ms ease;
-  }
-
-  /* quand aria-expanded="true", on tourne le chevron */
-  .footer__toggle[aria-expanded="true"]::after {
-    transform: rotate(180deg);
-  }
-
-  /* en mobile, le contenu est vraiment pliable via [hidden] */
+  /* Mobile : accordéon + chevron */
   @media (max-width: 768px) {
     .footer__content[hidden] {
       display: none;
     }
 
-    /* un petit séparateur entre colonnes si tu veux */
     .footer__col {
       padding-block: 0.4rem 0.6rem;
       border-top: 1px solid rgba(255, 255, 255, 0.06);
     }
+
     .footer__toggle {
-      cursor: default;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
     }
 
     .footer__toggle::after {
-      content: none;
+      content: "▾";
+      font-size: 0.85em;
+      margin-left: auto;
+      transition: transform 180ms ease;
     }
 
-    .footer__content {
-      display: block !important;
+    .footer__toggle[aria-expanded="true"]::after {
+      transform: rotate(180deg);
     }
   }
+
   :root[data-theme="light"] .copyright {
-    color: #111827; /* gris très foncé, lisible sur fond clair */
+    color: #111827;
   }
 
   :root[data-theme="dark"] .copyright {
-    color: #e5e7eb; /* gris clair, lisible sur fond sombre */
+    color: #e5e7eb;
   }
 </style>
+
 <script is:inline>
   (() => {
     const toggles = document.querySelectorAll(".footer__toggle");

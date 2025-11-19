@@ -476,7 +476,6 @@
 }
 /* ===== ApproachStagger — MODE MOBILE SIMPLE ===== */
 @media (max-width: 1200px) {
-  /* coupe l'ancien rail/dots/tiges */
   .approach-stagger .stagger__rail,
   .approach-stagger .stagger__dot,
   .approach-stagger .stagger__card::after {
@@ -493,8 +492,8 @@
 
     /* rail config */
     --rail-w: 2px;
-    --rail-over-top: 48px; /* ⟵ plus court au-dessus (était ~90px) */
-    --rail-over-bottom: 90px; /* ⟵ garde du dépassement en bas */
+    --rail-over-top: 48px;
+    --rail-over-bottom: 90px;
     overflow: visible;
   }
 
@@ -519,7 +518,7 @@
     -webkit-mask-image: linear-gradient(
       to bottom,
       transparent 0 8%,
-      /* ⟵ fondu un peu plus long en haut */ #000 16% 84%,
+      #000 16% 84%,
       transparent 100%
     );
     mask-image: linear-gradient(
@@ -598,9 +597,8 @@
     content: "" !important;
   }
 }
-/* Boost the rail & sheen in LIGHT mode */
+
 :root[data-theme="light"] .approach-stagger .stagger::before {
-  /* a bit darker rail so the flash pops */
   background: linear-gradient(
     180deg,
     color-mix(in srgb, var(--border) 85%, #000 12%) 0%,
@@ -609,7 +607,6 @@
   );
 }
 
-/* brighter, wider sheen and a different blend for light bg */
 :root[data-theme="light"] .approach-stagger .stagger::after {
   opacity: 0.8; /* was 0.55 */
   width: max(8px, calc(var(--rail-w) * 3.5));
@@ -623,7 +620,6 @@
   filter: saturate(110%) contrast(110%);
 }
 
-/* If you also honor system preference without data-theme: */
 @media (prefers-color-scheme: light) {
   :root:not([data-theme="dark"]) .approach-stagger .stagger::before {
     background: linear-gradient(
