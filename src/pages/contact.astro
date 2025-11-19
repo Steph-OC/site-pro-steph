@@ -93,16 +93,16 @@ const contactFaqJsonLd = {
         <form
           id="contact-form"
           class="flow"
-          method="GET"
-          action={`mailto:${email}`}
+          method="POST"
+          action="api/contact"
           enctype="text/plain"
           aria-describedby="contact-help"
         >
           <!-- Honeypot (anti-spam) -->
           <p class="hp">
-            <label for="website" class="visually-hidden"
-              >Laissez ce champ vide</label
-            >
+            <label for="website" class="visually-hidden">
+              Laissez ce champ vide
+            </label>
             <input
               id="website"
               type="text"
@@ -113,6 +113,13 @@ const contactFaqJsonLd = {
               aria-hidden="true"
             />
           </p>
+
+          <!-- infos cachées utiles dans l’e-mail -->
+          <input
+            type="hidden"
+            name="formulaire"
+            value="Formulaire de contact – stephaniequibel.fr"
+          />
 
           <div class="grid formgrid">
             <p>
@@ -161,34 +168,36 @@ const contactFaqJsonLd = {
 
           <p>
             <label for="message">Votre message</label>
-            <textarea id="message" name="message" rows="6" class="field"
-            ></textarea>
+            <textarea
+              id="message"
+              name="message"
+              rows="6"
+              class="field"
+              required></textarea>
           </p>
 
           <p id="contact-help" class="muted">
-            Vos données ne sont jamais revendues.
+            Vos données ne sont jamais revendues. Votre message partira
+            directement par e-mail vers {email}.
           </p>
+
           <p class="accept">
             <input id="accept" name="accept" type="checkbox" required />
             <label for="accept">
               J’accepte la
-              <a
-                href="/politique-de-confidentialite"
-                target="_blank"
-                rel="noopener"
-              >
+              <a href="/privacy-policy" rel="noopener">
                 politique de confidentialité
               </a>.
             </label>
           </p>
 
           <div class="actions">
-            <button class="btn btn--accent btn--lg" type="submit"
-              >Envoyer</button
-            >
-            <a class="btn btn--ghost" href={`mailto:${email}`}
-              >Ou écrire directement</a
-            >
+            <button class="btn btn--accent btn--lg" type="submit">
+              Envoyer
+            </button>
+            <a class="btn btn--ghost" href={`mailto:${email}`}>
+              Ou écrire directement
+            </a>
           </div>
 
           <p id="form-status" class="muted" role="status" aria-live="polite">
@@ -406,4 +415,44 @@ const contactFaqJsonLd = {
     type="application/ld+json"
     set:html={JSON.stringify(contactFaqJsonLd)}
   />
+  <script is:inline>
+    (() => {
+      const form = document.getElementById("contact-form");
+      if (!form) return;
+
+      const statusEl = document.getElementById("form-status");
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        if (!statusEl) return;
+
+        statusEl.textContent = "Envoi en cours…";
+
+        const formData = new FormData(form);
+
+        try {
+          const res = await fetch("/api/contact", {
+            method: "POST",
+            body: formData,
+            headers: { Accept: "application/json" },
+          });
+
+          const data = await res.json().catch(() => ({}));
+
+          if (res.ok && data.ok) {
+            statusEl.textContent = "Merci, votre message a bien été envoyé.";
+            form.reset();
+          } else {
+            statusEl.textContent =
+              data.error ||
+              "Impossible d’envoyer le message pour le moment. Vous pouvez aussi m’écrire directement par e-mail.";
+          }
+        } catch (e) {
+          statusEl.textContent =
+            "Erreur réseau. Vous pouvez réessayer dans un instant, ou m’écrire directement par e-mail.";
+        }
+      });
+    })();
+  </script>
 </SiteLayout>

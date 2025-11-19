@@ -255,7 +255,10 @@ const safeTemoins = (temoins ?? []).map((t) => ({
 
     <!-- Mon approche -->
     <section
-      class="section--halo halo-pulse-gentle"
+      id"approche"
+      class="section--halo halo-pulse-gentle section approach-stagger"
+      data-reveal="fade-up"
+      data-reveal-once="true"
       aria-labelledby="approach-title"
     >
       <div class="container container--xl">
@@ -338,6 +341,9 @@ const safeTemoins = (temoins ?? []).map((t) => ({
     <!-- Témoignages -->
     <section
       class="section--halo halo-pulse-gentle"
+      data-reveal="fade-up"
+      data-reveal-delay="0.08s"
+      data-reveal-once="true"
       aria-labelledby="temoin-title"
     >
       <div class="container container--xl">
@@ -367,6 +373,9 @@ const safeTemoins = (temoins ?? []).map((t) => ({
     <!-- Mini-FAQ -->
     <section
       id="faq"
+      data-reveal="fade-up"
+      data-reveal-delay="0.08s"
+      data-reveal-once="true"
       class="section--alt section--halo halo-pulse-gentle"
       aria-labelledby="faq-title"
     >
@@ -434,3 +443,50 @@ const safeTemoins = (temoins ?? []).map((t) => ({
     sameAs: ["https://www.linkedin.com/in/stephanie-quibel-developpeuse-web/"],
   })}
 />
+<script is:inline>
+  (() => {
+    const els = document.querySelectorAll("[data-reveal]");
+    if (!els.length) return;
+
+    const prefersReduce = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    // Si pas d’Observer ou motion réduite : tout visible direct
+    if (!("IntersectionObserver" in window) || prefersReduce) {
+      els.forEach((el) => el.classList.add("is-revealed"));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+
+          const el = entry.target;
+
+          // delay optionnel via data-reveal-delay="0.12s"
+          const delay = el.getAttribute("data-reveal-delay");
+          if (delay) {
+            el.style.setProperty("--reveal-delay", delay);
+          }
+
+          el.classList.add("is-revealed");
+
+          // par défaut : on ne rejoue pas (once)
+          const once = el.getAttribute("data-reveal-once");
+          if (once !== "false") {
+            observer.unobserve(el);
+          }
+        });
+      },
+      {
+        root: null,
+        threshold: 0.18,
+        rootMargin: "0px 0px -18% 0px", // déclenche un peu AVANT le centre
+      }
+    );
+
+    els.forEach((el) => observer.observe(el));
+  })();
+</script>

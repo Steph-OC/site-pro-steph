@@ -104,8 +104,8 @@ export default function TestimonialsCodepen({
 
   const prefersReduce = useReducedMotion();
   const { ref: inViewRef, inView } = useInView({
-    threshold: 0.01, // ← déclenche plus tard (~60% visible)
-    rootMargin: "0px 0px -25% 0px",
+    threshold: 0.05, // ← déclenche ~5% visible
+    rootMargin: "0px 0px 0px 0px",
     triggerOnce: true,
   });
 
@@ -331,7 +331,7 @@ export default function TestimonialsCodepen({
       onTouchEnd={() => (paused.current = false)}
       initial="hidden"
       whileInView="show"
-      viewport={{ once: true, amount: 0.05, margin: "0px 0px -20% 0px" }} // déclenche plus tard
+      viewport={{ once: true, amount: 0.15, margin: "0px 0px 0px 0px" }} // déclenche plus tard
       transition={{ ...baseSpring }}
     >
       {/* Révélation du container du haut vers le bas */}
@@ -384,8 +384,8 @@ export default function TestimonialsCodepen({
             const cls = isActive
               ? "active"
               : i === mod(current - 1, total)
-              ? "inactive"
-              : "";
+                ? "inactive"
+                : "";
             const slideId = `slide-${t.id}`;
 
             return (

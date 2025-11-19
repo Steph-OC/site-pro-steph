@@ -1,13 +1,20 @@
 ---
+// src/pages/politique-de-confidentialite.astro (par ex.)
 import SiteLayout from "@/layouts/SiteLayout.astro";
 import "@/styles/wp-content.css";
+import "@/styles/background.css";
 
 const WP = (import.meta.env.WP_URL || "").replace(/\/+$/, "");
+
+// slug de la page WP
+const WP_PRIVACY_SLUG = "politique-de-confidentialite";
 
 let page = null;
 if (WP) {
   const r = await fetch(
-    `${WP}/wp-json/wp/v2/pages?slug=privacy-policy&_fields=title,content,slug`
+    `${WP}/wp-json/wp/v2/pages?slug=${encodeURIComponent(
+      WP_PRIVACY_SLUG
+    )}&_fields=title,content,slug`
   );
   if (r.ok) {
     const arr = await r.json();

@@ -190,10 +190,8 @@ export function RevealGroup({
 }
 
 /* =============================
-   3) Spectacle — rail/parallax 3D
+  rail/parallax 3D
    ============================= */
-/* Headless: tu peux passer tes propres classes. Fournit un
-   minimum de styles inline si tu ne passes pas de classes. */
 
 export type SpectacleCard = {
   title: string;

@@ -65,11 +65,18 @@ const colorByKey: Record<string, string> = {
 export default function BadgesMotion({ items = DEFAULTS }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const prefersReduced = useReducedMotion();
-  const inView = useInView(ref, { margin: "-10% 0px -10% 0px", once: true });
+
+  // 👉 Déclenche PLUS TÔT : zone de détection agrandie vers le bas,
+  // et amount faible = 10% visible suffisent
+  const inView = useInView(ref, {
+    margin: "0px 0px 80% 0px", // +25% sous le viewport → déclenche avant d’arriver
+    amount: 0.01, // 10% visibles suffisent
+    once: true,
+  });
 
   const STAGGER = prefersReduced ? 0 : 0.08;
-  const CIRCLE_DUR = prefersReduced ? 0.2 : 0.95;
-  const LABEL_OFFSET = prefersReduced ? 0 : 0.35;
+  const CIRCLE_DUR = prefersReduced ? 0.2 : 0.8; // un chouia plus vif
+  const LABEL_OFFSET = prefersReduced ? 0 : 0.3;
 
   const listVariants: Variants = {
     hidden: {},
@@ -166,7 +173,6 @@ export default function BadgesMotion({ items = DEFAULTS }: Props) {
               data-cursor-text-repeat="6"
               data-cursor-color={color}
             >
-              {/* le commentaire est ici, pas entre les props */}
               <motion.div
                 className="circle"
                 aria-hidden="true"
