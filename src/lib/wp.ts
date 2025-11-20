@@ -86,21 +86,11 @@ async function fetchWithTimeout(input: string, ms = 6000) {
   }
 }
 
-/**
- * wpFetch : essaie l'URL REST “propre”, puis fallback `?rest_route=`.
- * - Désactivable via VITE_WP_DISABLE.
- * - Cache mémoire par `path`.
- * - DEV : si échec → renvoie [] sans throw (évite le HMR en boucle).
- * - PROD : throw si double échec.
- */
 async function wpFetchJSON<T = any>(path: string): Promise<T> {
-  // Flag off → vide
   if (DISABLE) return [] as unknown as T;
 
-  // Cache
   if (cache.has(path)) return cache.get(path) as T;
 
-  // WP absent ?
   if (!WP) {
     if (DEV) {
       warnOnce(path, `[wp.ts] WP_URL absent → ${path} → []`);
@@ -114,7 +104,6 @@ async function wpFetchJSON<T = any>(path: string): Promise<T> {
   const urlClean = `${WP_API}${path}`;
   const urlRoute = `${WP}/?rest_route=/wp/v2${path}`;
 
-  // 1) URL propre
   try {
     const r1 = await fetchWithTimeout(urlClean);
     if (r1.ok) {
@@ -123,10 +112,8 @@ async function wpFetchJSON<T = any>(path: string): Promise<T> {
       return json;
     }
   } catch {
-    // ignore → on tente le fallback
   }
 
-  // 2) Fallback rest_route
   try {
     const r2 = await fetchWithTimeout(urlRoute);
     if (r2.ok) {
@@ -135,7 +122,6 @@ async function wpFetchJSON<T = any>(path: string): Promise<T> {
       return json;
     }
   } catch {
-    // ignore
   }
 
   if (DEV) {
@@ -299,6 +285,7 @@ export async function toSlidesFixed(
   }).filter((s) => s.img || s.title || s.text);
 }
 
+
 // ———————————————————————————————————————————
 // Derniers projets + ACF
 // ———————————————————————————————————————————
@@ -309,12 +296,21 @@ export async function getDerniersProjetsAvecSlides(limit = 2) {
     "acf.project_subtitle","acf.subtitle","acf.subtitle_1",
     "acf.site_url","acf.slide_url",
     ...Array.from({ length: 4 }, (_, i) => i + 1).flatMap((n) => [
-      `acf.slide_${n}_img`,`acf.slide_${n}_title`,`acf.slide_${n}_text`,`acf.slide_${n}_meta`,
+      `acf.slide_${n}_img`,
+      `acf.slide_${n}_title`,
+      `acf.slide_${n}_text`,
+      `acf.slide_${n}_meta`,
     ]),
   ].join(",");
 
   const items = await wpFetchJSON<WPItem[]>(
-    `/projets?per_page=${limit}&_fields=${fields}&_embed=1`
+    `/projets` +
+      `?status=publish` +
+      `&orderby=menu_order` +   
+      `&order=asc` +            
+      `&per_page=${limit}` +
+      `&_fields=${fields}` +
+      `&_embed=1`
   );
 
   const safe = Array.isArray(items) ? items : [];
@@ -369,8 +365,6 @@ export function listCardAccent(item?: WPItem) {
   return typeof v === "string" && /^#([0-9a-f]{3}){1,2}$/i.test(v) ? v : undefined;
 }
 
-// petit cache local pour éviter de refetch 10 fois le même media
-// petit cache local pour éviter de refetch 10 fois le même media
 const mediaUrlCache = new Map<string, string>();
 
 async function resolveMediaIdToUrl(id: string | number): Promise<string> {
@@ -386,7 +380,7 @@ async function resolveMediaIdToUrl(id: string | number): Promise<string> {
 
     const data: any = await res.json();
 
-    // on laisse buildWpSrc choisir la meilleure version (pleine largeur / grande taille)
+   
     const { src } = buildWpSrc(data);
 
     if (src) {
@@ -403,7 +397,6 @@ async function resolveMediaIdToUrl(id: string | number): Promise<string> {
 async function resolveAnyImg(raw: unknown): Promise<string> {
   if (raw == null) return "";
 
-  // petit helper interne pour récupérer un ID numérique
   const toNumericId = (v: unknown): number | null => {
     if (typeof v === "number" && Number.isFinite(v) && v > 0) {
       return v;
@@ -419,27 +412,22 @@ async function resolveAnyImg(raw: unknown): Promise<string> {
     return null;
   };
 
-  // STRING
   if (typeof raw === "string") {
     const s = raw.trim();
     if (!s) return "";
 
-    // 👉 URL absolue / protocole relatif / chemin racine
     if (/^https?:\/\//.test(s) || s.startsWith("//") || s.startsWith("/")) {
       return s;
     }
 
-    // 👉 string numérique => ID média WP
     const id = toNumericId(s);
     if (id !== null) {
       return await resolveMediaIdToUrl(id);
     }
 
-    // autre string non exploitable
     return "";
   }
 
-  // NUMBER = ID direct
   if (typeof raw === "number") {
     const id = toNumericId(raw);
     if (id !== null) {
@@ -448,19 +436,16 @@ async function resolveAnyImg(raw: unknown): Promise<string> {
     return "";
   }
 
-  // OBJET ACF (return_format = "array" ou similaire)
-  if (typeof raw === "object") {
+   if (typeof raw === "object") {
     const anyRaw = raw as any;
 
-    // 👉 priorité à l'URL "pleine"
-    if (typeof anyRaw.url === "string" && anyRaw.url.trim()) {
+       if (typeof anyRaw.url === "string" && anyRaw.url.trim()) {
       return anyRaw.url.trim();
     }
     if (typeof anyRaw.source_url === "string" && anyRaw.source_url.trim()) {
       return anyRaw.source_url.trim();
     }
 
-    // 👉 tailles éventuelles
     if (anyRaw.sizes) {
       const sizes = anyRaw.sizes;
       const candidates = [
@@ -475,7 +460,6 @@ async function resolveAnyImg(raw: unknown): Promise<string> {
       }
     }
 
-    // 👉 id / ID dans l'objet
     const maybeIdRaw = anyRaw.id ?? anyRaw.ID;
     const id = toNumericId(maybeIdRaw);
     if (id !== null) {
@@ -490,15 +474,13 @@ async function resolveAnyImg(raw: unknown): Promise<string> {
 
 export async function toSlidesForListing(item?: WPItem, maxSlides = 4) {
   const a = item?.acf ?? {};
-    // 🔍 DEBUG : regarder l'ACF complet pour Mota
   if (item?.slug?.includes("mota")) {
     console.log("ACF complet pour Mota :", JSON.stringify(a, null, 2));
   }
   const slides = [];
 
   for (let n = 1; n <= maxSlides; n++) {
-    // 1️⃣ on privilégie les champs "réalisations", sinon fallback sur "projet"
-    const rawImg =
+        const rawImg =
       a[`list_slide_${n}_img`] ??
       a[`slide_${n}_img`];
 if (item?.slug?.includes("mota") && n === 1) {
@@ -531,7 +513,6 @@ if (item?.slug?.includes("mota") && n === 1) {
       (typeof baseMeta === "string" && baseMeta.trim()) ||
       "";
 
-    // si vraiment tout est vide, on skip
     if (!img && !title && !text && !meta) continue;
 
     slides.push({
@@ -715,7 +696,6 @@ export async function getServicesPage() {
 export type NavLink = { label: string; url: string; opensInNewTab?: boolean };
 type WpNavigationItem = { id: number; slug: string; content?: { raw: string } };
 
-/** Récupère le post wp_navigation (FSE) par slug, ex: "footer-nav". */
 export async function getNavigationBySlugFSE(slug: string): Promise<WpNavigationItem | null> {
   const arr = await wpFetchJSON<WpNavigationItem[]>(
     `/navigation?slug=${encodeURIComponent(slug)}&_fields=id,slug,content`
@@ -723,12 +703,10 @@ export async function getNavigationBySlugFSE(slug: string): Promise<WpNavigation
   return Array.isArray(arr) && arr[0] ? arr[0] : null;
 }
 
-/** Parse les liens du bloc Navigation (self-closing ET ouvert/fermé). */
 export function parseNavLinksFromContent(raw = ""): NavLink[] {
   const links: NavLink[] = [];
   if (!raw) return links;
 
-  // <!-- wp:navigation-link {...} /-->
   const reSelf = /wp:navigation-link\s+({[^}]*})\s*\/-->/g;
   let m: RegExpExecArray | null;
   while ((m = reSelf.exec(raw)) !== null) {
@@ -738,7 +716,6 @@ export function parseNavLinksFromContent(raw = ""): NavLink[] {
     } catch {}
   }
 
-  // <!-- wp:navigation-link {...} --> ... <!-- /wp:navigation-link -->
   const reOpen = /wp:navigation-link\s+({[^}]*})\s*-->([\s\S]*?)<!--\s*\/wp:navigation-link\s*-->/g;
   while ((m = reOpen.exec(raw)) !== null) {
     try {
@@ -750,7 +727,6 @@ export function parseNavLinksFromContent(raw = ""): NavLink[] {
   return links;
 }
 
-/** Si la nav contient "Liste de pages", renvoie les pages publiées (niveau racine). */
 async function getTopLevelPagesAsLinks(limit = 100): Promise<NavLink[]> {
   const rows = await wpFetchJSON<Array<{ title?: { rendered?: string }; link?: string }>>(
     `/pages?status=publish&parent=0&_fields=title,link&orderby=menu_order&order=asc&per_page=${limit}`
@@ -765,7 +741,6 @@ async function getTopLevelPagesAsLinks(limit = 100): Promise<NavLink[]> {
     }));
 }
 
-/** 👉 À utiliser dans le footer : lit la nav FSE, gère "Liste de pages", sinon [] */
 export async function getFooterMenuLinksFSE(slug = "footer-nav"): Promise<NavLink[]> {
   const nav = await getNavigationBySlugFSE(slug);
   const raw = nav?.content?.raw || "";
@@ -778,7 +753,6 @@ export async function getFooterMenuLinksFSE(slug = "footer-nav"): Promise<NavLin
   return [];
 }
 
-/** Utilitaire URL relative (si besoin). */
 export function toRelative(url: string) {
   try { const u = new URL(url); return u.pathname + u.search + u.hash; }
   catch { return url; }
@@ -804,12 +778,10 @@ async function fetchHeadlessNav(slug: string, allowPageList = true): Promise<Nav
   }
 }
 
-/** Navigation principale (slug fixé : header-nav) */
 export async function getHeaderLinks(): Promise<NavLink[]> {
-  return fetchHeadlessNav("header-nav", /* allowPageList */ true);
+  return fetchHeadlessNav("header-nav", true);
 }
 
-/** Navigation footer (slug fixé : footer-nav) */
 export async function getFooterLinks(): Promise<NavLink[]> {
-  return fetchHeadlessNav("footer-nav", /* allowPageList */ false);
+  return fetchHeadlessNav("footer-nav", false);
 }

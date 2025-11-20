@@ -10,7 +10,7 @@ import TestimonialsCodepen from "@/components/TestimonialsCodepen";
 import "@/styles/index.css";
 
 import { getDerniersProjetsAvecSlides, getTemoignages } from "@/lib/wp";
-import { pickByIds, pickFaq } from "@/content/faq";
+import { pickByIds } from "@/content/faq";
 
 const miniFaq = pickByIds(["zone-geo", "reprise-site"]);
 
@@ -23,94 +23,14 @@ const faqJsonLd = {
     acceptedAnswer: { "@type": "Answer", text: a },
   })),
 };
+
 const title =
   "Développeuse web WordPress freelance à Béziers — sites vitrines & blogs | Stéphanie Quibel";
 const description =
   "Création et refonte de sites WordPress rapides, accessibles et optimisés pour le référencement. Développeuse web freelance à Béziers (Hérault), j’accompagne vos projets de site vitrine, blog et maintenance partout en France. Réponse sous 24h.";
 
 /* ---------------------------
-   Helpers: map WP/ACF -> UI
-   --------------------------- */
-const isNonEmpty = (v: any) =>
-  v !== undefined && v !== null && String(v).trim() !== "";
-const firstOf = (obj: any, keys: string[]) => {
-  for (const k of keys) {
-    const v = k.includes(".")
-      ? k.split(".").reduce((acc, kk) => (acc ? acc[kk] : undefined), obj)
-      : obj?.[k];
-    if (isNonEmpty(v)) return v;
-  }
-  return undefined;
-};
-
-function buildSlides(acf: any): any[] {
-  if (!acf) return [];
-  const rows: number[] = [1, 2, 3, 4];
-  const slides: any[] = [];
-
-  for (const i of rows) {
-    // préférer les champs "list_*" s'ils existent, sinon "slide_*"
-    const img = firstOf(acf, [`list_slide_${i}_img`, `slide_${i}_img`]);
-    const title = firstOf(acf, [`list_slide_${i}_title`, `slide_${i}_title`]);
-    const text = firstOf(acf, [`list_slide_${i}_text`, `slide_${i}_text`]);
-    const meta = firstOf(acf, [`list_slide_${i}_meta`, `slide_${i}_meta`]);
-
-    if (
-      isNonEmpty(img) ||
-      isNonEmpty(title) ||
-      isNonEmpty(text) ||
-      isNonEmpty(meta)
-    ) {
-      slides.push({
-        img,
-        title,
-        text,
-        meta,
-      });
-    }
-  }
-  return slides;
-}
-
-function normalizeProjet(raw: any) {
-  // si le lib te renvoie déjà le bon shape, ne touche pas
-  if (raw?.slides && Array.isArray(raw.slides)) {
-    return {
-      cardTitle: raw.cardTitle ?? raw.list_card_title ?? raw.card_title,
-      cardIntro:
-        raw.cardIntro ?? raw.list_card_intro ?? raw.card_intro ?? raw.subtitle,
-      subtitle: raw.subtitle,
-      slides: raw.slides,
-      projet: {
-        slug: raw?.projet?.slug ?? raw?.slug,
-        siteUrl: raw?.projet?.siteUrl ?? raw?.site_url ?? raw?.acf?.site_url,
-      },
-    };
-  }
-
-  const acf = raw?.acf ?? raw; // certains endpoints mettent tout sous raw.acf
-  const cardTitle = firstOf(acf, ["list_card_title", "card_title"]);
-  const cardIntro = firstOf(acf, ["list_card_intro", "card_intro", "subtitle"]);
-  const accent = firstOf(acf, ["list_card_accent"]); // optionnel
-  const siteUrl = firstOf(acf, ["site_url", "slide_url"]); // bouton principal
-  const slug = raw?.slug ?? raw?.projet?.slug;
-
-  const slides = buildSlides(acf).map((s: any) => ({
-    ...s,
-    // si aucune URL de slide spécifique, on se rabattra sur siteUrl au rendu
-  }));
-
-  return {
-    cardTitle,
-    cardIntro,
-    accent: accent ?? undefined,
-    slides,
-    projet: { slug, siteUrl },
-  };
-}
-
-/* ---------------------------
-   Fetch + normalisation
+   Derniers projets (home)
    --------------------------- */
 let p1: any = null;
 let p2: any = null;
@@ -118,16 +38,16 @@ let p2: any = null;
 try {
   const data = await getDerniersProjetsAvecSlides(2);
   if (Array.isArray(data)) {
-    const n = data.map((d) => normalizeProjet(d)).filter(Boolean);
-    p1 = n[0] ?? null;
-    p2 = n[1] ?? null;
+    p1 = data[0] ?? null;
+    p2 = data[1] ?? null;
   } else {
     console.warn("[home] getDerniersProjetsAvecSlides a renvoyé:", typeof data);
   }
 } catch (err) {
   console.error("[home] getDerniersProjetsAvecSlides a échoué:", err);
 }
-
+console.log("p1 =", p1);
+console.log("p2 =", p2);
 /* --- Témoignages --- */
 const { items: temoins } = await getTemoignages(10);
 const safeTemoins = (temoins ?? []).map((t) => ({
@@ -146,7 +66,6 @@ const safeTemoins = (temoins ?? []).map((t) => ({
       kicker="Création de sites WordPress"
       title="Développeuse web WordPress à Béziers — sites rapides et optimisés"
       lead="Création et refonte de sites WordPress rapides, accessibles et optimisés pour le référencement. Basée près de Béziers (Hérault), j’accompagne des projets de sites vitrines, blogs et maintenance partout en France. Réponse rapide."
-      ;
       actions={[
         { href: "/contact", label: "Parler de votre projet", kind: "accent" },
         {
@@ -255,14 +174,14 @@ const safeTemoins = (temoins ?? []).map((t) => ({
 
     <!-- Mon approche -->
     <section
-      id"approche"
+      id="approche"
       class="section--halo halo-pulse-gentle section approach-stagger"
       data-reveal="fade-up"
       data-reveal-once="true"
       aria-labelledby="approach-title"
     >
       <div class="container container--xl">
-        <ApproachStagger variant="teaser" id="approach" client:visible />
+        <ApproachStagger variant="teaser" id="approche" client:visible />
         <style is:global>
           /* ===== TEASER — affichage garanti (icône + titre + snippet) ===== */
           .approach-stagger--teaser .stagger {
@@ -316,6 +235,7 @@ const safeTemoins = (temoins ?? []).map((t) => ({
             -webkit-box-orient: vertical;
             overflow: hidden;
           }
+
           /* Corrige le décalage des cards "Approche" en mobile */
           @media (max-width: 768px) {
             .approach-stagger--teaser .stagger {
@@ -331,9 +251,9 @@ const safeTemoins = (temoins ?? []).map((t) => ({
           }
         </style>
         <p class="approach-cta">
-          <a class="btn btn--accent" href="/a-propos/#approche"
-            >Voir l’approche complète</a
-          >
+          <a class="btn btn--accent" href="/a-propos/#approche">
+            Voir l’approche complète
+          </a>
         </p>
       </div>
     </section>
@@ -415,14 +335,18 @@ const safeTemoins = (temoins ?? []).map((t) => ({
                 class="btn btn--accent btn--lg cursor-hover-item"
                 href="/contact"
                 data-cursor-text="CONTACT"
-                data-cursor-text-repeat="6">Ouvrir la page Contact</a
+                data-cursor-text-repeat="6"
               >
+                Ouvrir la page Contact
+              </a>
               <a
                 class="btn btn--ghost cursor-hover-item"
                 href="mailto:contact@stephaniequibel.fr"
                 data-cursor-text="ÉCRIRE UN E-MAIL"
-                data-cursor-text-repeat="5">Envoyer un e-mail</a
+                data-cursor-text-repeat="5"
               >
+                Envoyer un e-mail
+              </a>
             </div>
           </div>
         </article>
