@@ -14,8 +14,13 @@ const {
     "Design",
     "SEO",
     "Maintenance",
-    "Sécurité",
+    "Securite",
     "Performance",
+    "Plugins",
+    "Themes",
+    "Refonte",
+    "Débuggage",
+    "Audit",
   ],
 } = Astro.props as {
   kicker?: string;
@@ -203,7 +208,8 @@ const tagKey = (s: string) =>
     inset: -8% -6% -18% -6%;
     z-index: 0;
     pointer-events: none;
-    background: radial-gradient(
+    background:
+      radial-gradient(
         42% 40% at 25% 35%,
         rgba(106, 168, 255, 0.2),
         transparent 65%
@@ -253,7 +259,8 @@ const tagKey = (s: string) =>
     white-space: nowrap;
 
     /* keep just a gentle material effect, no blur */
-    background: linear-gradient(
+    background:
+      linear-gradient(
         180deg,
         rgba(255, 255, 255, 0.1),
         rgba(255, 255, 255, 0.02)
@@ -282,39 +289,6 @@ const tagKey = (s: string) =>
     cursor: grabbing;
   }
   /* Palette = bulles du site (plus punchy) */
-  .chip[data-tag="wordpress"] {
-    --c: rgba(106, 168, 255, 0.78);
-    --cO: rgba(106, 168, 255, 0.62);
-    --cG: rgba(106, 168, 255, 0.48);
-  }
-  .chip[data-tag="design"] {
-    --c: rgba(239, 147, 85, 0.78);
-    --cO: rgba(239, 147, 85, 0.62);
-    --cG: rgba(239, 147, 85, 0.48);
-  }
-  .chip[data-tag="seo"] {
-    --c: rgba(92, 199, 160, 0.78);
-    --cO: rgba(92, 199, 160, 0.62);
-    --cG: rgba(92, 199, 160, 0.46);
-  }
-  .chip[data-tag="maintenance"] {
-    --c: rgba(185, 132, 246, 0.8);
-    --cO: rgba(185, 132, 246, 0.64);
-    --cG: rgba(185, 132, 246, 0.5);
-  }
-  .chip[data-tag="securite"],
-  .chip[data-tag="sécurité"] {
-    --c: rgba(213, 17, 17, 0.82);
-    --cO: rgba(213, 17, 17, 0.64);
-    --cG: rgba(213, 17, 17, 0.5);
-  }
-  .chip[data-tag="performance"] {
-    --c: rgba(255, 209, 102, 0.86);
-    --cO: rgba(255, 209, 102, 0.66);
-    --cG: rgba(255, 209, 102, 0.52);
-    --ink: #111;
-  }
-
   /* Fallback par index si libellés changent */
   .chip:nth-child(1) {
     --c: rgba(106, 168, 255, 0.78);
@@ -345,7 +319,80 @@ const tagKey = (s: string) =>
     --c: rgba(255, 209, 102, 0.86);
     --cO: rgba(255, 209, 102, 0.66);
     --cG: rgba(255, 209, 102, 0.52);
-    --ink: #111;
+  }
+
+  /* Couleurs par libellé (prioritaires sur le fallback) */
+  .chip[data-tag="wordpress"] {
+    --c: rgba(106, 168, 255, 0.78); /* bleu ciel */
+    --cO: rgba(106, 168, 255, 0.62);
+    --cG: rgba(106, 168, 255, 0.48);
+  }
+
+  .chip[data-tag="design"] {
+    --c: rgba(239, 147, 85, 0.78); /* orange corail */
+    --cO: rgba(239, 147, 85, 0.62);
+    --cG: rgba(239, 147, 85, 0.48);
+  }
+
+  .chip[data-tag="seo"] {
+    --c: rgba(92, 199, 160, 0.78); /* vert menthe */
+    --cO: rgba(92, 199, 160, 0.62);
+    --cG: rgba(92, 199, 160, 0.46);
+  }
+
+  .chip[data-tag="maintenance"] {
+    --c: rgba(185, 132, 246, 0.8); /* violet doux */
+    --cO: rgba(185, 132, 246, 0.64);
+    --cG: rgba(185, 132, 246, 0.5);
+  }
+
+  .chip[data-tag="securite"],
+  .chip[data-tag="sécurité"] {
+    --c: rgba(213, 17, 17, 0.82); /* rouge alerte */
+    --cO: rgba(213, 17, 17, 0.64);
+    --cG: rgba(213, 17, 17, 0.5);
+  }
+
+  .chip[data-tag="performance"] {
+    --c: rgba(255, 209, 102, 0.86); /* jaune punchy */
+    --cO: rgba(255, 209, 102, 0.66);
+    --cG: rgba(255, 209, 102, 0.52);
+  }
+
+  /* Nouvelles bulles */
+  .chip[data-tag="plugins"] {
+    /* magenta / rose soutenu */
+    --c: rgba(236, 107, 173, 0.84);
+    --cO: rgba(236, 107, 173, 0.66);
+    --cG: rgba(236, 107, 173, 0.52);
+  }
+
+  .chip[data-tag="themes"] {
+    /* cyan / turquoise clair */
+    --c: rgba(96, 214, 230, 0.84);
+    --cO: rgba(96, 214, 230, 0.66);
+    --cG: rgba(96, 214, 230, 0.5);
+  }
+
+  .chip[data-tag="refonte"] {
+    /* vert lime lumineux */
+    --c: rgba(190, 230, 120, 0.86);
+    --cO: rgba(190, 230, 120, 0.68);
+    --cG: rgba(190, 230, 120, 0.54);
+  }
+
+  .chip[data-tag="debuggage"] {
+    /* bleu indigo profond */
+    --c: rgba(110, 125, 255, 0.84);
+    --cO: rgba(110, 125, 255, 0.66);
+    --cG: rgba(110, 125, 255, 0.52);
+  }
+
+  .chip[data-tag="audit"] {
+    /* pêche / abricot doux */
+    --c: rgba(255, 174, 131, 0.84);
+    --cO: rgba(255, 174, 131, 0.66);
+    --cG: rgba(255, 174, 131, 0.52);
   }
 
   /* RDM : anim off */
@@ -389,7 +436,8 @@ const tagKey = (s: string) =>
     opacity: 0.92;
 
     /* teintes (palette proche de l’accueil) */
-    background: radial-gradient(
+    background:
+      radial-gradient(
         60% 55% at 28% 36%,
         rgba(106, 168, 255, 0.24),
         transparent 66%

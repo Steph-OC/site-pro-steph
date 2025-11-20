@@ -297,6 +297,9 @@ main.realisations .projects-grid {
     transform: none;
     margin: 0 auto;
   }
+  .listingCard__title {
+    margin: 15px 0 6px;
+  }
   .listingCard__content {
     align-self: start;
     align-content: start; /* texte en haut */
@@ -381,7 +384,7 @@ main.realisations .projects-grid {
   }
   .listingCard__title {
     font-size: clamp(18px, 5.2vw, 20px);
-    margin: 2px 0 6px;
+    margin: 15px 0 6px;
     letter-spacing: 0;
   }
   .listingCard__text {
