@@ -2,6 +2,7 @@
 // ———————————————————————————————————————————
 // Helpers WordPress REST + ACF (CPT: "projets" + "temoignage(s)")
 // ———————————————————————————————————————————
+import { buildWpSrc } from "@/lib/img";
 
 type WPImage = {
   source_url?: string;
@@ -368,33 +369,180 @@ export function listCardAccent(item?: WPItem) {
   return typeof v === "string" && /^#([0-9a-f]{3}){1,2}$/i.test(v) ? v : undefined;
 }
 
+// petit cache local pour éviter de refetch 10 fois le même media
+// petit cache local pour éviter de refetch 10 fois le même media
+const mediaUrlCache = new Map<string, string>();
+
+async function resolveMediaIdToUrl(id: string | number): Promise<string> {
+  const key = String(id);
+  if (mediaUrlCache.has(key)) return mediaUrlCache.get(key)!;
+
+  if (!WP_API) return "";
+
+  try {
+    const url = `${WP_API}/media/${key}?_fields=source_url,media_details`;
+    const res = await fetch(url, { headers: { Accept: "application/json" } });
+    if (!res.ok) return "";
+
+    const data: any = await res.json();
+
+    // on laisse buildWpSrc choisir la meilleure version (pleine largeur / grande taille)
+    const { src } = buildWpSrc(data);
+
+    if (src) {
+      mediaUrlCache.set(key, src);
+    }
+
+    return src || "";
+  } catch {
+    return "";
+  }
+}
+
+
+async function resolveAnyImg(raw: unknown): Promise<string> {
+  if (raw == null) return "";
+
+  // petit helper interne pour récupérer un ID numérique
+  const toNumericId = (v: unknown): number | null => {
+    if (typeof v === "number" && Number.isFinite(v) && v > 0) {
+      return v;
+    }
+    if (typeof v === "string") {
+      const s = v.trim();
+      if (!s) return null;
+      const n = Number(s);
+      if (Number.isInteger(n) && n > 0) {
+        return n;
+      }
+    }
+    return null;
+  };
+
+  // STRING
+  if (typeof raw === "string") {
+    const s = raw.trim();
+    if (!s) return "";
+
+    // 👉 URL absolue / protocole relatif / chemin racine
+    if (/^https?:\/\//.test(s) || s.startsWith("//") || s.startsWith("/")) {
+      return s;
+    }
+
+    // 👉 string numérique => ID média WP
+    const id = toNumericId(s);
+    if (id !== null) {
+      return await resolveMediaIdToUrl(id);
+    }
+
+    // autre string non exploitable
+    return "";
+  }
+
+  // NUMBER = ID direct
+  if (typeof raw === "number") {
+    const id = toNumericId(raw);
+    if (id !== null) {
+      return await resolveMediaIdToUrl(id);
+    }
+    return "";
+  }
+
+  // OBJET ACF (return_format = "array" ou similaire)
+  if (typeof raw === "object") {
+    const anyRaw = raw as any;
+
+    // 👉 priorité à l'URL "pleine"
+    if (typeof anyRaw.url === "string" && anyRaw.url.trim()) {
+      return anyRaw.url.trim();
+    }
+    if (typeof anyRaw.source_url === "string" && anyRaw.source_url.trim()) {
+      return anyRaw.source_url.trim();
+    }
+
+    // 👉 tailles éventuelles
+    if (anyRaw.sizes) {
+      const sizes = anyRaw.sizes;
+      const candidates = [
+        sizes.medium_large,
+        sizes.large,
+        sizes.full,
+        sizes.medium,
+      ].filter((x: any) => typeof x === "string" && x.trim());
+
+      if (candidates.length > 0) {
+        return candidates[0];
+      }
+    }
+
+    // 👉 id / ID dans l'objet
+    const maybeIdRaw = anyRaw.id ?? anyRaw.ID;
+    const id = toNumericId(maybeIdRaw);
+    if (id !== null) {
+      return await resolveMediaIdToUrl(id);
+    }
+  }
+
+  return "";
+}
+
+
+
 export async function toSlidesForListing(item?: WPItem, maxSlides = 4) {
   const a = item?.acf ?? {};
-  const hasAlt = !!a?.list_slide_1_img;
+    // 🔍 DEBUG : regarder l'ACF complet pour Mota
+  if (item?.slug?.includes("mota")) {
+    console.log("ACF complet pour Mota :", JSON.stringify(a, null, 2));
+  }
+  const slides = [];
 
-  const rawImgs = Array.from({ length: maxSlides }, (_, i) =>
-    (hasAlt ? a[`list_slide_${i + 1}_img`] : a[`slide_${i + 1}_img`])
-  );
-  const idList = rawImgs.filter(isNumericId) as (string | number)[];
-  const idMap = await resolveMediaIdsToUrls(idList);
+  for (let n = 1; n <= maxSlides; n++) {
+    // 1️⃣ on privilégie les champs "réalisations", sinon fallback sur "projet"
+    const rawImg =
+      a[`list_slide_${n}_img`] ??
+      a[`slide_${n}_img`];
+if (item?.slug?.includes("mota") && n === 1) {
+  console.log("DEBUG Mota slide 1 rawImg =", a[`list_slide_${n}_img`], a[`slide_${n}_img`]);
+}
 
-  const base = hasAlt ? "list_slide_" : "slide_";
-  return Array.from({ length: maxSlides }, (_, i) => {
-    const n = i + 1;
-    const raw = a[`${base}${n}_img`];
-    const img =
-      typeof raw === "string" && raw.startsWith("http")
-        ? raw
-        : isNumericId(raw)
-        ? idMap[String(raw)] || ""
-        : "";
-    return {
+    const img = await resolveAnyImg(rawImg);
+
+    const listTitle = a[`list_slide_${n}_title`];
+    const baseTitle = a[`slide_${n}_title`];
+
+    const listText = a[`list_slide_${n}_text`];
+    const baseText = a[`slide_${n}_text`];
+
+    const listMeta = a[`list_slide_${n}_meta`];
+    const baseMeta = a[`slide_${n}_meta`];
+
+    const title =
+      (typeof listTitle === "string" && listTitle.trim()) ||
+      (typeof baseTitle === "string" && baseTitle.trim()) ||
+      "";
+
+    const text =
+      (typeof listText === "string" && listText.trim()) ||
+      (typeof baseText === "string" && baseText.trim()) ||
+      "";
+
+    const meta =
+      (typeof listMeta === "string" && listMeta.trim()) ||
+      (typeof baseMeta === "string" && baseMeta.trim()) ||
+      "";
+
+    // si vraiment tout est vide, on skip
+    if (!img && !title && !text && !meta) continue;
+
+    slides.push({
       img,
-      title: a[`${base}${n}_title`] || "",
-      text: a[`${base}${n}_text`] || "",
-      meta: a[`${base}${n}_meta`] || undefined,
-    };
-  }).filter((s) => s.img || s.title || s.text);
+      title,
+      text,
+      meta: meta || undefined,
+    });
+  }
+
+  return slides;
 }
 
 export async function getProjectsPage({
@@ -424,6 +572,8 @@ export async function getProjectsPage({
   url.searchParams.set("status", "publish");
   url.searchParams.set("page", String(page));
   url.searchParams.set("per_page", String(perPage));
+  url.searchParams.set("orderby", "menu_order");
+  url.searchParams.set("order", "asc");
 
   try {
     const res = await fetch(url.toString(), { headers: { Accept: "application/json" } });

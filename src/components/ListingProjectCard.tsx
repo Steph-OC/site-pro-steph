@@ -7,14 +7,18 @@ export type ListingSlide = {
   title?: string;
   text?: string;
   meta?: string;
+
+  // on tolère quelques variantes possibles de clé pour l'image
+  image?: string;
+  src?: string;
 };
 
-type Props = {
+export type ListingProjectCardProps = {
   slides?: ListingSlide[];
   title: string;
   intro?: string;
   accent?: string;
-  ctaHref: string;
+  ctaHref?: string;
   ctaLabel?: string;
 };
 
@@ -25,7 +29,7 @@ export default function ListingProjectCard({
   accent = "#fd3838",
   ctaHref,
   ctaLabel = "Voir le site",
-}: Props) {
+}: ListingProjectCardProps): JSX.Element {
   const reduce = useReducedMotion();
   const count = Array.isArray(slides) ? slides.length : 0;
   const len = Math.max(1, count);
@@ -35,6 +39,12 @@ export default function ListingProjectCard({
   const go = (dir: 1 | -1) => setI((v) => safe(v + dir));
   const set = (k: number) => setI(safe(k));
 
+  // bouton seulement si vrai lien
+  const hasCta =
+    typeof ctaHref === "string" &&
+    ctaHref.trim().length > 0 &&
+    ctaHref.trim() !== "#";
+
   // autoplay
   React.useEffect(() => {
     if (reduce || count <= 1) return;
@@ -42,7 +52,15 @@ export default function ListingProjectCard({
     return () => window.clearInterval(id);
   }, [reduce, count]);
 
-  const cur = slides[i] ?? {};
+  const cur = (slides[i] ?? {}) as ListingSlide;
+
+  // 👉 on accepte plusieurs noms possibles pour l'image
+  const curImg =
+    (typeof cur.img === "string" && cur.img.trim()) ||
+    (typeof cur.image === "string" && cur.image.trim()) ||
+    (typeof cur.src === "string" && cur.src.trim()) ||
+    "";
+
   const variants = {
     enter: { opacity: 0, y: 12 },
     center: { opacity: 1, y: 0 },
@@ -50,7 +68,7 @@ export default function ListingProjectCard({
   };
 
   // molette
-  const wheelRef = React.useRef<HTMLDivElement>(null);
+  const wheelRef = React.useRef<HTMLDivElement | null>(null);
   React.useEffect(() => {
     const el = wheelRef.current;
     if (!el || count <= 1) return;
@@ -75,7 +93,7 @@ export default function ListingProjectCard({
   };
 
   // drag / swipe
-  const dragRef = React.useRef<HTMLDivElement>(null);
+  const dragRef = React.useRef<HTMLDivElement | null>(null);
   React.useEffect(() => {
     const el = dragRef.current;
     if (!el || count <= 1) return;
@@ -128,11 +146,11 @@ export default function ListingProjectCard({
         {/* MEDIA */}
         <div className="listingCard__imgWrap" ref={dragRef} aria-hidden>
           <AnimatePresence mode="wait">
-            {cur.img ? (
+            {curImg ? (
               <motion.img
-                key={`${i}-${cur.img}`}
+                key={`${i}-${curImg}`}
                 className="listingCard__img"
-                src={cur.img}
+                src={curImg}
                 alt=""
                 initial={reduce ? false : "enter"}
                 animate="center"
@@ -167,7 +185,9 @@ export default function ListingProjectCard({
               variants={variants}
               transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             >
-              {cur.meta && <span className="ps-meta">{cur.meta}</span>}
+              {cur.meta && (
+                <span className="listingCard__badge">{cur.meta}</span>
+              )}
               <h3 className="listingCard__title">{cur.title || title}</h3>
               {(cur.text || intro) && (
                 <p className="listingCard__text">{cur.text || intro}</p>
@@ -175,7 +195,7 @@ export default function ListingProjectCard({
             </motion.div>
           </AnimatePresence>
 
-          {/* FOOTER : flèches + piste + CTA (une seule ligne) */}
+          {/* FOOTER : flèches + CTA */}
           <div className="listingCard__footer">
             {count > 1 && (
               <div className="listingCard__controls">
@@ -183,6 +203,7 @@ export default function ListingProjectCard({
                   className="listingCard__arrow"
                   aria-label="Précédent"
                   onClick={() => go(-1)}
+                  type="button"
                 >
                   ←
                 </button>
@@ -191,23 +212,26 @@ export default function ListingProjectCard({
                   className="listingCard__arrow"
                   aria-label="Suivant"
                   onClick={() => go(1)}
+                  type="button"
                 >
                   →
                 </button>
               </div>
             )}
 
-            <div className="listingCard__actions">
-              <a
-                className="listingCard__button"
-                href={ctaHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`${ctaLabel} — ${cur.title || title}`}
-              >
-                {ctaLabel}
-              </a>
-            </div>
+            {hasCta && (
+              <div className="listingCard__actions">
+                <a
+                  className="listingCard__button"
+                  href={ctaHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${ctaLabel} — ${cur.title || title}`}
+                >
+                  {ctaLabel}
+                </a>
+              </div>
+            )}
           </div>
         </div>
 
@@ -226,6 +250,7 @@ export default function ListingProjectCard({
                 aria-label={`Diapo ${k + 1}`}
                 className={`dot ${k === i ? "is-active" : ""}`}
                 onClick={() => set(k)}
+                type="button"
               />
             ))}
           </div>
