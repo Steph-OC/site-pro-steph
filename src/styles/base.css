@@ -75,7 +75,7 @@
   :root[data-theme="dark"] {
     --bg: #23212e;
     --fg: #f4f4f1;
-    --muted: #c6c6c1;
+    --muted: #ffffff;
     --card: #2a2738;
     --border: #3b3950;
     --link: var(--fg);

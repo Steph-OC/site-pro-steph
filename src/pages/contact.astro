@@ -94,8 +94,6 @@ const contactFaqJsonLd = {
           id="contact-form"
           class="flow"
           method="POST"
-          action="api/contact"
-          enctype="text/plain"
           aria-describedby="contact-help"
         >
           <!-- Honeypot (anti-spam) -->
@@ -419,37 +417,85 @@ const contactFaqJsonLd = {
   <script is:inline>
     (() => {
       const form = document.getElementById("contact-form");
-      if (!form) return;
-
       const statusEl = document.getElementById("form-status");
+      const endpoint =
+        "https://wpheadless.stephaniequibel.fr/wp-json/contact-form-7/v1/contact-forms/90/feedback";
+
+      if (!form || !statusEl) return;
 
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
 
-        if (!statusEl) return;
-
         statusEl.textContent = "Envoi en cours…";
 
-        const formData = new FormData(form);
+        const raw = new FormData(form);
+
+        // on lit TES champs HTML
+        const name = (raw.get("name") || "").toString().trim();
+        const email = (raw.get("email") || "").toString().trim();
+        const phone = (raw.get("phone") || "").toString().trim();
+        const subject = (raw.get("subject") || "").toString().trim();
+        const message = (raw.get("message") || "").toString().trim();
+        const accept = raw.get("accept");
+
+        // petit contrôle front basique
+        if (!name || !email || !message || !accept) {
+          statusEl.textContent =
+            "Merci de remplir les champs obligatoires et d’accepter la politique de confidentialité.";
+          return;
+        }
+
+        // on construit le payload pour CF7 avec SES noms
+        const formData = new FormData();
+
+        // champs CF7 visibles
+        formData.set("your-name", name);
+        formData.set("your-email", email);
+        if (phone) formData.set("your-phone", phone);
+        if (subject) formData.set("your-subject", subject);
+        formData.set("your-message", message);
+
+        // case d’acceptation CF7
+        formData.set("acceptance-privacy", "1");
+
+        // champs "unitaires" obligatoires pour l’API REST CF7
+        formData.set("_wpcf7", "90");
+        formData.set("_wpcf7_unit_tag", "wpcf7-f90-o1");
+        formData.set("_wpcf7_locale", "fr_FR");
+        formData.set("_wpcf7_container_post", "0");
 
         try {
-          const res = await fetch("/api/contact", {
+          const res = await fetch(endpoint, {
             method: "POST",
             body: formData,
             headers: { Accept: "application/json" },
           });
 
-          const data = await res.json().catch(() => ({}));
+          let data = {};
+          try {
+            data = await res.json();
+          } catch (_err) {
+            data = {};
+          }
 
-          if (res.ok && data.ok) {
-            statusEl.textContent = "Merci, votre message a bien été envoyé.";
+          console.log("CF7 ->", data);
+
+          const isOk =
+            res.ok && (data.status === "mail_sent" || data.ok === true);
+
+          if (isOk) {
+            statusEl.textContent =
+              data.message || "Merci, votre message a bien été envoyé.";
             form.reset();
           } else {
-            statusEl.textContent =
+            const msg =
+              data.message ||
               data.error ||
-              "Impossible d’envoyer le message pour le moment. Vous pouvez aussi m’écrire directement par e-mail.";
+              "Un champ semble invalide. Merci de vérifier votre saisie et de réessayer.";
+            statusEl.textContent = msg;
           }
         } catch (e) {
+          console.error(e);
           statusEl.textContent =
             "Erreur réseau. Vous pouvez réessayer dans un instant, ou m’écrire directement par e-mail.";
         }

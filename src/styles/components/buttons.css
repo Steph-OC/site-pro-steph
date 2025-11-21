@@ -44,7 +44,7 @@
 .btn--accent {
   background: var(--orange);
   border-color: transparent;
-  color: var(--offwhite);
+  color: var(--muted);
 }
 
 /* Tailles utilitaires (optionnel) */
