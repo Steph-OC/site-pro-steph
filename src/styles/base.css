@@ -78,7 +78,7 @@
     --muted: #ffffff;
     --card: #2a2738;
     --border: #3b3950;
-    --link: var(--fg);
+    --link: #ffffff;
     --btn-bg: var(--green);
     --btn-fg: #ffffff;
     --shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
@@ -120,6 +120,8 @@
     font-family: var(--font-text);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale; /* ignoré par Firefox → OK */
+    font-size: 17px;
+    padding-top: var(--header-h);
   }
   p,
   li {

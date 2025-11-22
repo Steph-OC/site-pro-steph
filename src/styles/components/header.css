@@ -229,3 +229,9 @@ header:not(.site-header),
 :root:not([data-theme="dark"]) #theme-toggle:hover {
   background: color-mix(in srgb, var(--fg) 76%, var(--card) 74%);
 }
+header.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}

@@ -2,7 +2,7 @@
 
 /* ============ Section Services (layout + stacking) ============ */
 .svc3 {
-  padding-block: clamp(32px, 6vw, 72px);
+  /*padding-block: clamp(32px, 6vw, 72px);*/
   position: relative;
   isolation: isolate;
   overflow: visible;

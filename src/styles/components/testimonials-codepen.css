@@ -29,7 +29,6 @@
 /* =======================
    PALETTES LIGHT / DARK
    ======================= */
-
 /* LIGHT (par défaut) */
 :root:not([data-theme="dark"]) .testim {
   --tc-fg: #1a1a1a;
@@ -38,7 +37,7 @@
 
 /* DARK */
 :root[data-theme="dark"] .testim {
-  --tc-fg: #e7e7ea;
+  --tc-fg: #f5f6fb;
   --tc-bg: transparent;
 }
 
@@ -134,7 +133,7 @@
   margin: 10px auto 0;
   line-height: var(--tc-line-height);
   text-align: center;
-  color: color-mix(in srgb, var(--tc-fg) 70%, transparent);
+  color: color-mix(in srgb, var(--tc-fg) 90%, transparent);
 }
 
 /* =======================
