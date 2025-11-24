@@ -8,9 +8,9 @@ details.faq {
   border-radius: 12px;
   background: var(--card);
   box-shadow: var(--shadow);
-  padding: 0; /* on gère le padding sur summary + answer */
+  padding: 0;
   margin: clamp(8px, 1.2vw, 14px) 0;
-  overflow: clip; /* arrondis propres quand ça s’ouvre */
+  overflow: clip;
 }
 
 /* En-tête cliquable */
@@ -21,7 +21,7 @@ details.faq > summary {
   width: 100%;
   padding: 0.8rem 1rem;
   cursor: pointer;
-  list-style: none; /* retire le triangle natif */
+  list-style: none;
   font-weight: 700;
   color: var(--muted);
   outline: none;

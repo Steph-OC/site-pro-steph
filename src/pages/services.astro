@@ -4,7 +4,8 @@ import { getServicesPage } from "@/lib/wp";
 import { normalizeServices } from "@/lib/services";
 import { linesToItems } from "@/helpers/text";
 
-import { pickFaq } from "@/content/faq";
+import { pickFaq, FAQ_TAGS, type FaqTag } from "@/content/faq";
+
 // CSS page shell
 import "@/styles/pages/services/index.css";
 
@@ -84,24 +85,19 @@ const svcFromAcf = rawServices.slice(0, 3).map((s: any, i: number) => {
 function stripHtml(html = "") {
   return html.replace(/<[^>]+>/g, "").trim();
 }
+const FAQ_THEMES_LABELS: Record<FaqTag, string> = {
+  pricing: "Tarifs & budget",
+  timeline: "Délais & planning",
+  process: "Organisation & façon de travailler",
+  maintenance: "Maintenance",
+  seo: "Performance & SEO",
+  contact: "Prise de contact & localisation",
+};
 
-/* ✅ Liste FAQ à afficher :
-   - si ACF contient des FAQs -> on les utilise
-   - sinon on prend la source unique depuis faq.ts (surface: services)
-     en excluant les questions "pricing" (pas de prix affichés)
-*/
-const faqFromAcf = (data?.faqs ?? [])
-  .map((x) => ({ q: stripHtml(x?.q || ""), a: stripHtml(x?.a || "") }))
-  .filter((x) => x.q && x.a);
+/* Liste FAQ à afficher — TOUTES les questions, sans filtre */
+const faqAll = pickFaq(); // pas de surface, pas de excludeTags, pas de limit
 
-const faqAll = faqFromAcf.length
-  ? faqFromAcf
-  : pickFaq({
-      surface: "services",
-      excludeTags: ["pricing"], // ⛔ pas de question de prix sur cette page
-    });
-
-/* ✅ JSON-LD aligné sur l’affichage réel */
+/* JSON-LD aligné sur l’affichage réel */
 const faqJsonLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
@@ -576,13 +572,13 @@ const cardIcons = [
   })}
 />
 
-<!-- ✅ JSON-LD FAQPage aligné avec l’affichage -->
+<!-- JSON-LD FAQPage aligné avec l’affichage -->
 <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
 <!-- Interaction des bulles -->
 <script>
   (function () {
     function initBubbleCloud(cloud, opts) {
-      // 👉 Par défaut on limite au conteneur des bulles
+      // Par défaut on limite au conteneur des bulles
       var pointerArea = (opts && opts.pointerArea) || cloud;
 
       var items = Array.from(cloud.querySelectorAll("li"));

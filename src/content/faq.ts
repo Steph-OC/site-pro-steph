@@ -13,30 +13,23 @@ export type QA = Readonly<{
   q: string;
   a: string;
   tags: Readonly<FaqTag[]>;
-  surfaces: Readonly<FaqSurface[]>; // où l’item est pertinent
-  priority?: number;                // tri (1 = plus haut)
+  surfaces: Readonly<FaqSurface[]>;
+  priority?: number;  
 }>;
 
 // --- Données : cohérentes, immuables ---
+// --- Données : cohérentes, immuables ---
 export const FAQ: Readonly<QA[]> = [
   // ======================
-  // HOME + SERVICES (FAQ globale)
+  // PROCESS / FAÇON DE TRAVAILLER
   // ======================
   {
     id: "types-sites",
-    q: "Avec quels types de sites WordPress travaillez-vous ?",
-    a: "Je travaille surtout sur des sites vitrines, blogs éditoriaux et petits sites de services sous WordPress. L’objectif est d’avoir une base propre, rapide et facile à faire évoluer.",
+    q: "Travaillez-vous avec des thèmes WordPress existants ou du sur-mesure ?",
+    a: "Les deux sont possibles : soit je pars d’un thème existant que j’optimise et simplifie, soit je conçois un site plus sur mesure selon vos besoins. Dans tous les cas, l’objectif est d’avoir une base propre, rapide et facile à faire évoluer, sans empiler des extensions inutiles.",
     tags: ["process"],
     surfaces: ["home", "services"],
     priority: 1,
-  },
-  {
-    id: "zone-geo",
-    q: "Travaillez-vous uniquement autour de Béziers ?",
-    a: "Je suis basée près de Béziers (Hérault), mais j’accompagne des clientes et clients en Occitanie et partout en France, principalement à distance (visio, e-mail, téléphone).",
-    tags: ["contact"],
-    surfaces: ["home", "contact"],
-    priority: 2,
   },
   {
     id: "reprise-site",
@@ -44,11 +37,19 @@ export const FAQ: Readonly<QA[]> = [
     a: "Oui. Je peux auditer un site WordPress déjà en ligne, corriger les points bloquants (performance, bugs, thème vieillissant…) et préparer un plan de refonte progressive si nécessaire.",
     tags: ["process"],
     surfaces: ["home", "services"],
+    priority: 2,
+  },
+  {
+    id: "contenu-site",
+    q: "Qui s’occupe des textes et des images du site ?",
+    a: "Vous connaissez votre activité mieux que personne : vous fournissez donc la base du contenu (offres, présentation, contact...). De mon côté, je vous aide à structurer les pages, clarifier les textes et vous conseiller sur les visuels.",
+    tags: ["process"],
+    surfaces: ["home", "services"],
     priority: 3,
   },
 
   // ======================
-  // SERVICES
+  // DÉLAIS / PLANNING
   // ======================
   {
     id: "delais",
@@ -58,50 +59,71 @@ export const FAQ: Readonly<QA[]> = [
     surfaces: ["home", "services", "contact"],
     priority: 4,
   },
+
+  // ======================
+  // TARIFS / BUDGET
+  // ======================
   {
     id: "pricing-vitrine",
     q: "Comment se passe l’estimation d’un projet de site WordPress ?",
-    a: "Je vous pose quelques questions sur votre activité, le type de site (création ou refonte), le volume de contenu et les fonctionnalités importantes. À partir de là, je vous envoie un devis détaillé poste par poste, pour que vous sachiez exactement ce qui est inclus.",
+    a: "Il n’y a pas de tarif unique : le coût dépend du type de site, du contenu à intégrer et des fonctionnalités dont vous avez besoin. On commence donc par un échange pour poser le cadre, puis je vous envoie un devis personnalisé et clair, sans surprise.",
     tags: ["pricing"],
     surfaces: ["services"],
     priority: 5,
   },
+
+  // ======================
+  // MAINTENANCE
+  // ======================
   {
     id: "maintenance",
-    q: "Proposes-tu la maintenance et les mises à jour du site ?",
+    q: "Proposez-vous la maintenance et les mises à jour du site ?",
     a: "Oui : mises à jour WordPress, thèmes et extensions, sauvegardes régulières, veille de sécurité et petites corrections. La formule est flexible et peut être ajustée ou arrêtée selon vos besoins.",
     tags: ["maintenance"],
-    surfaces: ["services", "contact"],
+    surfaces: ["services"],
     priority: 6,
   },
+
+  // ======================
+  // SEO & PERFORMANCE
+  // ======================
   {
     id: "seo-perf",
     q: "Le site sera-t-il optimisé pour la performance et le SEO ?",
-    a: "Oui. J’accorde une attention particulière au temps de chargement (Core Web Vitals), à la structure HTML, aux balises importantes, aux images optimisées et au cache. Je peux aussi configurer Search Console et Analytics.",
+    a: "Oui. J’accorde une attention particulière au temps de chargement (Core Web Vitals), à la structure HTML, aux balises importantes, aux images optimisées et au cache. Je peux aussi configurer Search Console et Matomo.",
     tags: ["seo"],
     surfaces: ["services"],
     priority: 7,
   },
 
   // ======================
-  // CONTACT
+  // CONTACT & ZONE GÉOGRAPHIQUE
   // ======================
+  {
+    id: "zone-geo",
+    q: "Travaillez-vous uniquement autour de Béziers ?",
+    a: "Je suis basée près de Béziers (Hérault), mais j’accompagne des clientes et clients en Occitanie et partout en France, principalement à distance (visio, e-mail, téléphone).",
+    tags: ["contact"],
+    surfaces: ["home", "contact", "services"],
+    priority: 8,
+  },
   {
     id: "prise-contact",
     q: "Comment se passe la prise de contact ?",
-    a: "Vous m’écrivez via le formulaire ou par e-mail, et je vous réponds généralement sous 24 h ouvrées avec quelques questions complémentaires. On peut ensuite prévoir une courte visio si nécessaire pour clarifier votre projet.",
+    a: "Vous m’écrivez via le formulaire ou par e-mail, et je vous réponds rapidement avec quelques questions complémentaires. On peut ensuite prévoir une courte visio si nécessaire pour clarifier votre projet.",
     tags: ["contact"],
-    surfaces: ["contact"],
-    priority: 8,
+    surfaces: ["contact", "services"],
+    priority: 9,
   },
 ] as const;
+
 
 // --- Helpers ---
 type PickFaqOptions = {
   surface?: FaqSurface;
   includeTags?: FaqTag[];
   excludeTags?: FaqTag[];
-  limit?: number; // 0 => []
+  limit?: number; 
 };
 
 /**
